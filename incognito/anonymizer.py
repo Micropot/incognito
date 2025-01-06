@@ -1,12 +1,10 @@
 from __future__ import annotations
 import re
-import enum
-import polars as pl
-from typing import Optional, Union, Iterable
+from typing import Optional, Iterable
 from datetime import datetime
 
-from pydantic import BaseModel, PrivateAttr
-from flashtext2 import KeywordProcessor
+from pydantic import BaseModel
+from flashtext import KeywordProcessor
 
 
 class PersonalInfo(BaseModel):
@@ -38,8 +36,26 @@ class Strategy:
 class PiiStrategy(Strategy):
     """Remplace les infos persos"""
 
+    def __init__(self):
+        self.info: dict = None
+
+    def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]):
+        """ Hide text using keywords """
+        processor = KeywordProcessor(case_sensitive=False)
+        for key, mask in keywords:
+            print(key, mask)
+            processor.add_keyword(mask, key)
+        keywords_found = processor.extract_keywords(text)
+        print('found : ', keywords_found)
+        new_text = processor.replace_keywords(text)
+        print(new_text)
+
+        return processor.replace_keywords(text)
+
     def anonymize(self, text):
-        pass
+        keywords: tuple
+        keywords = tuple((k, v) for k, v in self.info.items())
+        return self.hide_by_keywords(text, [(info, tag)for info, tag in keywords if info])
 
 
 class RegexStrategy(Strategy):
@@ -51,16 +67,6 @@ class RegexStrategy(Strategy):
             r"\b((([!#$%&'*+\-/=?^_`{|}~\w])|([!#$%&'*+\-/=?^_`{|}~\w][!#$%&'*+\-/=?^_`{|}~\.\w]{0,}[!#$%&'*+\-/=?^_`{|}~\w]))[@]\w+([-.]\w+)*\.\w+([-.]\w+)*)\b": "<EMAIL>",
             # r"\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}": "<PHONE>",
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>"
-        }
-        self.NATURAL_PLACEHOLDERS = {
-            '<PER>': 'Margaret Hamilton',
-            '<NAME>': 'Margaret Hamilton',
-            '<CODE_POSTAL>': '42000',
-            '<DATE>': '1970/01/01',
-            '<IPP>': 'IPPPH:0987654321',
-            '<NIR>': '012345678987654',
-            '<EMAIL>': 'place.holder@anonymization.cdc',
-            '<PHONE>': '0611223344',
         }
         self.PLACEHOLDER_REGEX = re.compile(r'<[A-Z_]+>')
 
@@ -89,19 +95,30 @@ class RegexStrategy(Strategy):
 
 
 class Anonymizer:
+    # TODO : anonymiser les dates ?
     STRATEGIES = {
         "regex": RegexStrategy(),
         "pii": PiiStrategy()
     }
 
-    def __init__(self, text):
+    def __init__(self, text, infos):
         self.text = text
 
         self.used_strats = ["regex"]
 
+        self.infos = infos
+
     def anonymize_text(self):
-        for strategy in self.used_strats:
-            current_strategy = Anonymizer.STRATEGIES.get(strategy)
-            anonymized_text = current_strategy.anonymize(self.text)
-            print('ano texte', anonymized_text)
-        return anonymized_text
+        pii_infos = PiiStrategy()
+        pii_infos.info = self.infos
+        self.text = pii_infos.anonymize(self.text)
+        print("text pii ano : ", self.text)
+        # for strategy in self.used_strats:
+
+        # current_strategy = Anonymizer.STRATEGIES.get(strategy)
+        # print('current strat', current_strategy)
+        # anonymized_text = current_strategy.anonymize(self.text)
+        # print('ano texte', anonymized_text)
+
+        # self.text = anonymized_text
+        return self.text

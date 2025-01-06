@@ -1,15 +1,5 @@
 from . import anonymizer
 
-infos = {
-    "first_name": "Arthur",
-    "last_name": "Lamard",
-    "birth_name": "",
-    "birthdate": "2000-12-07",
-    "ipp": "0987654321",
-    "postal_code": "29820"
-
-}
-
 
 text = """
     Bonjour, je suis Arthur Lamard, je suis ingénieur au CDC, né le 07/12/2000, j'ai actuellement 24 ans.
@@ -21,8 +11,18 @@ text = """
 
     
 """
-ano = anonymizer.Anonymizer(text=text)
+
+
+infos = {
+    "first_name": "Arthur",
+    "last_name": "Lamard",
+    "birth_name": "",
+    "birthdate": "2000-12-07",
+    "ipp": "0987654321",
+    "postal_code": "29820"
+
+}
+ano = anonymizer.Anonymizer(text=text, infos=infos)
 # ano = ano.run_dummy_algorithm(text=text, info=infos)
 if __name__ == '__main__':
     test = ano.anonymize_text()
-    print(test)
