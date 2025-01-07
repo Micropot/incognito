@@ -1,8 +1,9 @@
 """
-    Mode pour l'anonymistaion d'un texte
+    Module pour l'anonymistaion d'un texte
 """
 from __future__ import annotations
 import re
+import argparse
 from typing import Optional, Iterable
 from datetime import datetime
 
@@ -120,6 +121,10 @@ class Anonymizer:
         self.infos = infos
         self.infos = PersonalInfo(**infos)  # dicrt to PersonalInfo
 
+    def parse_cli(self, argv):
+        parser = argparse.ArgumentParser(description=__doc__)
+        return parser.parse_args(argv)
+
     def anonymize_text(self):
         print("texte originale : ", self.text)
 
@@ -136,3 +141,6 @@ class Anonymizer:
         self.text = pii_infos.anonymize(self.text)
         print('ano texte', self.text)
         return self.text
+
+    def run(self, argv):
+        args = self.parse_cli(argv)

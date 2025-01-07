@@ -1,4 +1,5 @@
 from . import anonymizer
+import sys
 
 
 text = """
@@ -25,4 +26,4 @@ infos = {
 ano = anonymizer.Anonymizer(text=text, infos=infos)
 # ano = ano.run_dummy_algorithm(text=text, info=infos)
 if __name__ == '__main__':
-    test = ano.anonymize_text()
+    test = ano.run(argv=sys.argv[1:])
