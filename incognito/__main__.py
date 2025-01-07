@@ -6,7 +6,7 @@ text = """
     Je suis venu au CHU pour un rdv médical pour un mal de genou. L'IPP 0987654321 m'a été attribué. 
     je vis à Guilers, 29820. 
     je suis contactable aux coordonnées suivantes : 
-    email: arthur@lamard.org 
+    email: arthur.lamard@chu-brest.fr
     telephone : 0647187486
 
     
@@ -17,7 +17,7 @@ infos = {
     "first_name": "Arthur",
     "last_name": "Lamard",
     "birth_name": "",
-    "birthdate": "2000-12-07",
+    "birthdate": "2000-07-12",
     "ipp": "0987654321",
     "postal_code": "29820"
 

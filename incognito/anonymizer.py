@@ -1,3 +1,6 @@
+"""
+    Mode pour l'anonymistaion d'un texte
+"""
 from __future__ import annotations
 import re
 from typing import Optional, Iterable
@@ -37,24 +40,32 @@ class PiiStrategy(Strategy):
     """Remplace les infos persos"""
 
     def __init__(self):
-        self.info: dict = None
+        self.info: PersonalInfo = None
 
     def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]):
         """ Hide text using keywords """
         processor = KeywordProcessor(case_sensitive=False)
         for key, mask in keywords:
-            print(key, mask)
-            processor.add_keyword(mask, key)
-        keywords_found = processor.extract_keywords(text)
-        print('found : ', keywords_found)
-        new_text = processor.replace_keywords(text)
-        print(new_text)
+            processor.add_keyword(key, mask)
 
         return processor.replace_keywords(text)
 
     def anonymize(self, text):
         keywords: tuple
-        keywords = tuple((k, v) for k, v in self.info.items())
+        if isinstance(self.info, PersonalInfo):
+            keywords = (
+                (self.info.first_name, '<NAME>'),
+                (self.info.last_name, '<NAME>'),
+                (self.info.birth_name, '<NAME>'),
+                (self.info.ipp, '<IPP>'),
+                (self.info.postal_code, '<CODE_POSTAL>'),
+                (self.info.birthdate.strftime('%m/%d/%Y'), '<DATE>'),
+                (self.info.birthdate.strftime('%m %d %Y'), '<DATE>'),
+                (self.info.birthdate.strftime('%m:%d:%Y'), '<DATE>'),
+                (self.info.birthdate.strftime('%m-%d-%Y'), '<DATE>'),
+                (self.info.birthdate.strftime('%Y-%m-%d'), '<DATE>'),
+            )
+
         return self.hide_by_keywords(text, [(info, tag)for info, tag in keywords if info])
 
 
@@ -107,18 +118,21 @@ class Anonymizer:
         self.used_strats = ["regex"]
 
         self.infos = infos
+        self.infos = PersonalInfo(**infos)  # dicrt to PersonalInfo
 
     def anonymize_text(self):
+        print("texte originale : ", self.text)
+
+        # anonymise with strategies first then PII
+        for strategy in self.used_strats:
+
+            current_strategy = Anonymizer.STRATEGIES.get(strategy)
+            print('current strat', current_strategy)
+            anonymized_text = current_strategy.anonymize(self.text)
+
+            self.text = anonymized_text
         pii_infos = PiiStrategy()
         pii_infos.info = self.infos
         self.text = pii_infos.anonymize(self.text)
-        print("text pii ano : ", self.text)
-        # for strategy in self.used_strats:
-
-        # current_strategy = Anonymizer.STRATEGIES.get(strategy)
-        # print('current strat', current_strategy)
-        # anonymized_text = current_strategy.anonymize(self.text)
-        # print('ano texte', anonymized_text)
-
-        # self.text = anonymized_text
+        print('ano texte', self.text)
         return self.text
