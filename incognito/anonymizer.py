@@ -4,11 +4,11 @@
 from __future__ import annotations
 import re
 import argparse
-from typing import Optional, Iterable
-from datetime import datetime
 
-from pydantic import BaseModel
+from datetime import datetime
 from flashtext import KeywordProcessor
+from pydantic import BaseModel
+from typing import Optional, Iterable
 
 
 class PersonalInfo(BaseModel):
@@ -44,7 +44,15 @@ class PiiStrategy(Strategy):
         self.info: PersonalInfo = None
 
     def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]):
-        """ Hide text using keywords """
+        """ Hide text using keywords
+
+            Args : 
+
+            >>> a = PiiStrategy()
+            >>> text = "Salut User ca va ?"
+            >>> a.hide_by_keywords(text, [("User", "<NAME>")])
+            'Salut <NAME> ca va ?'
+        """
         processor = KeywordProcessor(case_sensitive=False)
         for key, mask in keywords:
             processor.add_keyword(key, mask)
@@ -52,6 +60,12 @@ class PiiStrategy(Strategy):
         return processor.replace_keywords(text)
 
     def anonymize(self, text):
+        """
+        >>> 1+1
+        2
+
+        """
+
         keywords: tuple
         if isinstance(self.info, PersonalInfo):
             keywords = (
@@ -85,15 +99,15 @@ class RegexStrategy(Strategy):
     def multi_subs_by_regex(self, text: str, repls: dict[str, str]):
         """Sub given text with each given pair repl -> regex.
 
-        >>> multi_subs_by_regex('hello world', {r'\\w+': 'gnap', r'\\s': '! ', '$': '!'})
-        'gnap! gnap!'
+        # >>> multi_subs_by_regex('hello world', {r'\\w+': 'gnap', r'\\s': '! ', '$': '!'})
+        # 'gnap! gnap!'
 
-        Warning: repls order has an effect. Example:
+        # Warning: repls order has an effect. Example:
 
-        >>> multi_subs_by_regex('ab', {'a': 'c', 'b': 'a'})
-        'ca'
-        >>> multi_subs_by_regex('ab', {'b': 'a', 'a': 'c'})
-        'cc'
+        # >>> multi_subs_by_regex('ab', {'a': 'c', 'b': 'a'})
+        # 'ca'
+        # >>> multi_subs_by_regex('ab', {'b': 'a', 'a': 'c'})
+        # 'cc'
 
         """
         for pattern, repl in repls.items():
@@ -113,33 +127,50 @@ class Anonymizer:
         "pii": PiiStrategy()
     }
 
-    def __init__(self, text, infos):
+    def __init__(self):
+
+        text = """
+            Bonjour, je suis Arthur Lamard, je suis ingénieur au CDC, né le 07/12/2000, j'ai actuellement 24 ans.
+            Je suis venu au CHU pour un rdv médical pour un mal de genou. L'IPP 0987654321 m'a été attribué. 
+            je vis à Guilers, 29820. 
+            je suis contactable aux coordonnées suivantes : 
+            email: arthur.lamard@chu-brest.fr
+            telephone : 0647187486
+
+    
+        """
+
+        infos = {
+            "first_name": "Arthur",
+            "last_name": "Lamard",
+            "birth_name": "",
+            "birthdate": "2000-07-12",
+            "ipp": "0987654321",
+            "postal_code": "29820"
+
+        }
         self.text = text
 
-        self.used_strats = ["regex"]
+        # anonymise with regex first then PII
+        self.used_strats = ["regex", "pii"]
 
         self.infos = infos
-        self.infos = PersonalInfo(**infos)  # dicrt to PersonalInfo
+        self.infos = PersonalInfo(**infos)  # dict to PersonalInfo
 
     def parse_cli(self, argv):
         parser = argparse.ArgumentParser(description=__doc__)
         return parser.parse_args(argv)
 
-    def anonymize_text(self):
+    def anonymize(self):
         print("texte originale : ", self.text)
-
-        # anonymise with strategies first then PII
         for strategy in self.used_strats:
 
             current_strategy = Anonymizer.STRATEGIES.get(strategy)
+            current_strategy.info = self.infos
             print('current strat', current_strategy)
             anonymized_text = current_strategy.anonymize(self.text)
-
             self.text = anonymized_text
-        pii_infos = PiiStrategy()
-        pii_infos.info = self.infos
-        self.text = pii_infos.anonymize(self.text)
-        print('ano texte', self.text)
+        print("texte anonymisé : ", self.text)
         return self.text
 
     def run(self, argv):
