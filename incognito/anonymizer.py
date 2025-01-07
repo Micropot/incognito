@@ -11,6 +11,43 @@ from pydantic import BaseModel
 from typing import Optional, Iterable
 
 
+class AnonymiserCli:
+    def __init__(self):
+
+        self.text: str = None
+
+    def parse_cli(self, argv):
+        parser = argparse.ArgumentParser(description=__doc__)
+
+        parser.add_argument(
+            "-i", "--input", "--input_file",
+            type=str,
+            help="Chemin du fichier à anonymiser.",
+            required=True
+        )
+        parser.add_argument(
+            "--verbose",
+            action="store_true",
+            help="Affiche des messages détaillés pendant l'exécution."
+        )
+
+        return parser.parse_args(argv)
+
+    def run(self, argv):
+        args = self.parse_cli(argv)
+        self.text = args.input
+        verbose = args.verbose
+        ano = Anonymizer()
+        ano.text = ano.open_text_file(self.text)
+        if verbose:
+            print("Texte sans anonymisation : ", ano.text)
+        anonymized_text = ano.anonymize()
+
+        if verbose:
+            print("Texte anonymisé : ", anonymized_text)
+            print("------ Terminé ------")
+
+
 class PersonalInfo(BaseModel):
     first_name: str
     last_name: str
@@ -129,17 +166,6 @@ class Anonymizer:
 
     def __init__(self):
 
-        text = """
-            Bonjour, je suis Arthur Lamard, je suis ingénieur au CDC, né le 07/12/2000, j'ai actuellement 24 ans.
-            Je suis venu au CHU pour un rdv médical pour un mal de genou. L'IPP 0987654321 m'a été attribué. 
-            je vis à Guilers, 29820. 
-            je suis contactable aux coordonnées suivantes : 
-            email: arthur.lamard@chu-brest.fr
-            telephone : 0647187486
-
-    
-        """
-
         infos = {
             "first_name": "Arthur",
             "last_name": "Lamard",
@@ -149,7 +175,6 @@ class Anonymizer:
             "postal_code": "29820"
 
         }
-        self.text = text
 
         # anonymise with regex first then PII
         self.used_strats = ["regex", "pii"]
@@ -157,21 +182,17 @@ class Anonymizer:
         self.infos = infos
         self.infos = PersonalInfo(**infos)  # dict to PersonalInfo
 
-    def parse_cli(self, argv):
-        parser = argparse.ArgumentParser(description=__doc__)
-        return parser.parse_args(argv)
+    def open_text_file(self, path):
+        with open(path, 'r') as f:
+            content = f.read()
+        return content
 
     def anonymize(self):
-        print("texte originale : ", self.text)
         for strategy in self.used_strats:
 
             current_strategy = Anonymizer.STRATEGIES.get(strategy)
             current_strategy.info = self.infos
-            print('current strat', current_strategy)
+            # print('current strat', current_strategy)
             anonymized_text = current_strategy.anonymize(self.text)
             self.text = anonymized_text
-        print("texte anonymisé : ", self.text)
         return self.text
-
-    def run(self, argv):
-        args = self.parse_cli(argv)
