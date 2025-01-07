@@ -33,6 +33,14 @@ class AnonymiserCli:
             required=True
         )
         parser.add_argument(
+            "-s", "--strategies",
+            type=str,
+            help="Stratégies à utiliser (pii,regex).",
+            required=True,
+            nargs='*',
+        )
+
+        parser.add_argument(
             "--verbose",
             action="store_true",
             help="Affiche des messages détaillés pendant l'exécution."
@@ -44,10 +52,12 @@ class AnonymiserCli:
         args = self.parse_cli(argv)
         input_file = args.input
         info_file = args.info
+        strats = args.strategies
         verbose = args.verbose
         ano = Anonymizer()
         ano.text = ano.open_text_file(input_file)
         ano.infos = ano.open_json_file(info_file)
+        ano.used_strats = strats
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
         anonymized_text = ano.anonymize()
@@ -137,7 +147,6 @@ class RegexStrategy(Strategy):
         self.PATTERNS = {
             r"[12][0-9]{2}(0[1-9]|1[0-2])(2[AB]|[0-9]{2})[0-9]{3}[0-9]{3}([0-9]{2})": "<NIR>",
             r"\b((([!#$%&'*+\-/=?^_`{|}~\w])|([!#$%&'*+\-/=?^_`{|}~\w][!#$%&'*+\-/=?^_`{|}~\.\w]{0,}[!#$%&'*+\-/=?^_`{|}~\w]))[@]\w+([-.]\w+)*\.\w+([-.]\w+)*)\b": "<EMAIL>",
-            # r"\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}": "<PHONE>",
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>"
         }
         self.PLACEHOLDER_REGEX = re.compile(r'<[A-Z_]+>')
@@ -176,7 +185,7 @@ class Anonymizer:
     def __init__(self):
 
         # anonymise with regex first then PII
-        self.used_strats = ["regex", "pii"]
+        # self.used_strats = ["regex", "pii"]
 
         self.infos = None
 
