@@ -2,8 +2,9 @@
     Module pour l'anonymistaion d'un texte
 """
 from __future__ import annotations
-import re
 import argparse
+import json
+import re
 
 from datetime import datetime
 from flashtext import KeywordProcessor
@@ -20,9 +21,15 @@ class AnonymiserCli:
         parser = argparse.ArgumentParser(description=__doc__)
 
         parser.add_argument(
-            "-i", "--input", "--input_file",
+            "--input", "--input_file",
             type=str,
             help="Chemin du fichier à anonymiser.",
+            required=True
+        )
+        parser.add_argument(
+            "--info", "--info_file",
+            type=str,
+            help="Chemin du fichier json d'information.",
             required=True
         )
         parser.add_argument(
@@ -35,10 +42,12 @@ class AnonymiserCli:
 
     def run(self, argv):
         args = self.parse_cli(argv)
-        self.text = args.input
+        input_file = args.input
+        info_file = args.info
         verbose = args.verbose
         ano = Anonymizer()
-        ano.text = ano.open_text_file(self.text)
+        ano.text = ano.open_text_file(input_file)
+        ano.infos = ano.open_json_file(info_file)
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
         anonymized_text = ano.anonymize()
@@ -166,28 +175,23 @@ class Anonymizer:
 
     def __init__(self):
 
-        infos = {
-            "first_name": "Arthur",
-            "last_name": "Lamard",
-            "birth_name": "",
-            "birthdate": "2000-07-12",
-            "ipp": "0987654321",
-            "postal_code": "29820"
-
-        }
-
         # anonymise with regex first then PII
         self.used_strats = ["regex", "pii"]
 
-        self.infos = infos
-        self.infos = PersonalInfo(**infos)  # dict to PersonalInfo
+        self.infos = None
 
     def open_text_file(self, path):
         with open(path, 'r') as f:
             content = f.read()
         return content
 
+    def open_json_file(self, path):
+        with open(path) as f:
+            data = json.load(f)
+        return data
+
     def anonymize(self):
+        self.infos = PersonalInfo(**self.infos)  # dict to PersonalInfo
         for strategy in self.used_strats:
 
             current_strategy = Anonymizer.STRATEGIES.get(strategy)
