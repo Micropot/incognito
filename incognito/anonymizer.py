@@ -87,13 +87,13 @@ class AnonymiserCli:
             "--first_name",
             type=str,
             help="Prénom du patient.",
-            required=False
+            required=True
         )
         info_parser.add_argument(
             "--last_name",
             type=str,
             help="Nom du patient.",
-            required=False
+            required=True
         )
         info_parser.add_argument(
             "--birthname",
@@ -106,13 +106,13 @@ class AnonymiserCli:
             "--birthdate",
             type=str,
             help="Date de naissance du patient.",
-            required=False
+            required=True
         )
         info_parser.add_argument(
             "--ipp",
             type=str,
             help="IPP du patient.",
-            required=False
+            required=True
         )
         info_parser.add_argument(
             "--postal_code",
@@ -257,6 +257,7 @@ class PiiStrategy(Strategy):
 
 class RegexStrategy(Strategy):
     """Replace par regex"""
+    # TODO : voir regex de l'AP-HP
 
     def __init__(self):
         self.PATTERNS = {
