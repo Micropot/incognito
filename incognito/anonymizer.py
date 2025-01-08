@@ -74,6 +74,7 @@ class PersonalInfo(BaseModel):
     birthdate: datetime
     ipp: str
     postal_code: Optional[str]
+    adress: Optional[str]
 
     @staticmethod
     def from_dict(d: dict):
@@ -85,6 +86,7 @@ class PersonalInfo(BaseModel):
                 year=1000, month=1, day=1),
             postal_code=d.get('CODE_POSTAL', '0'),
             ipp=d.get('IPP_PATIENT') or '',
+            adress=d.get('ADRESSE') or '',
         )
 
 
@@ -135,6 +137,7 @@ class PiiStrategy(Strategy):
                 (self.info.birthdate.strftime('%m:%d:%Y'), '<DATE>'),
                 (self.info.birthdate.strftime('%m-%d-%Y'), '<DATE>'),
                 (self.info.birthdate.strftime('%Y-%m-%d'), '<DATE>'),
+                (self.info.adress, '<ADRESS>')
             )
 
         return self.hide_by_keywords(text, [(info, tag)for info, tag in keywords if info])
@@ -145,7 +148,7 @@ class RegexStrategy(Strategy):
 
     def __init__(self):
         self.PATTERNS = {
-            r"[12][0-9]{2}(0[1-9]|1[0-2])(2[AB]|[0-9]{2})[0-9]{3}[0-9]{3}([0-9]{2})": "<NIR>",
+            r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             r"\b((([!#$%&'*+\-/=?^_`{|}~\w])|([!#$%&'*+\-/=?^_`{|}~\w][!#$%&'*+\-/=?^_`{|}~\.\w]{0,}[!#$%&'*+\-/=?^_`{|}~\w]))[@]\w+([-.]\w+)*\.\w+([-.]\w+)*)\b": "<EMAIL>",
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>"
         }
