@@ -69,7 +69,8 @@ class AnonymiserCli:
             "--birthname",
             type=str,
             help="Nom de naissance du patient.",
-            required=False
+            required=False,
+            default=""
         )
         info_parser.add_argument(
             "--birthdate",
@@ -87,13 +88,15 @@ class AnonymiserCli:
             "--postal_code",
             type=str,
             help="Code postal du patient.",
-            required=False
+            required=False,
+            default=""
         )
         info_parser.add_argument(
             "--adress",
             type=str,
             help="Adresse postal du patient.",
-            required=False
+            required=False,
+            default=""
         )
         parser.add_argument(
             "-s", "--strategies",
@@ -134,7 +137,7 @@ class AnonymiserCli:
             ipp = args.ipp
             postal_code = args.postal_code
             adress = args.adress
-            keys = ["first_name", "last_name", "birthname",
+            keys = ["first_name", "last_name", "birth_name",
                     "birthdate", "ipp", "postal_code", "adress"]
             values = [first_name, last_name, birthname,
                       birthdate, ipp, postal_code, adress]
