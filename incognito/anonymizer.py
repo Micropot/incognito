@@ -13,6 +13,8 @@ from typing import Optional, Iterable
 
 
 class AnonymiserCli:
+    """Class pour utiliser le CLI"""
+
     def __init__(self):
 
         self.text: str = None
@@ -33,6 +35,12 @@ class AnonymiserCli:
             required=True
         )
         parser.add_argument(
+            "--output", "--output_file",
+            type=str,
+            help="Chemin du fichier de sortie.",
+            required=True
+        )
+        parser.add_argument(
             "-s", "--strategies",
             type=str,
             help="Stratégies à utiliser (pii,regex).",
@@ -49,9 +57,11 @@ class AnonymiserCli:
         return parser.parse_args(argv)
 
     def run(self, argv):
+        """Fonction principal du projet"""
         args = self.parse_cli(argv)
         input_file = args.input
         info_file = args.info
+        output_file = args.output
         strats = args.strategies
         verbose = args.verbose
         ano = Anonymizer()
@@ -61,9 +71,13 @@ class AnonymiserCli:
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
         anonymized_text = ano.anonymize()
+        output = open(output_file, "w")
+        output.write(anonymized_text)
+        output.close()
 
         if verbose:
             print("Texte anonymisé : ", anonymized_text)
+            print("Texte enregistré ici : ", output_file)
             print("------ Terminé ------")
 
 
@@ -91,6 +105,8 @@ class PersonalInfo(BaseModel):
 
 
 class Strategy:
+    """Constructeur de la Class Strategy"""
+
     def anonymize(self, text):
         pass
 
@@ -119,11 +135,9 @@ class PiiStrategy(Strategy):
 
     def anonymize(self, text):
         """
-        >>> 1+1
-        2
-
+        Anonymisation par keywords
         """
-
+        # TODO : Age + PII via gamm ipp + praticiens ?
         keywords: tuple
         if isinstance(self.info, PersonalInfo):
             keywords = (
@@ -137,7 +151,7 @@ class PiiStrategy(Strategy):
                 (self.info.birthdate.strftime('%m:%d:%Y'), '<DATE>'),
                 (self.info.birthdate.strftime('%m-%d-%Y'), '<DATE>'),
                 (self.info.birthdate.strftime('%Y-%m-%d'), '<DATE>'),
-                (self.info.adress, '<ADRESS>')
+                (self.info.adress, '<ADRESSE>')
             )
 
         return self.hide_by_keywords(text, [(info, tag)for info, tag in keywords if info])
@@ -156,17 +170,6 @@ class RegexStrategy(Strategy):
 
     def multi_subs_by_regex(self, text: str, repls: dict[str, str]):
         """Sub given text with each given pair repl -> regex.
-
-        # >>> multi_subs_by_regex('hello world', {r'\\w+': 'gnap', r'\\s': '! ', '$': '!'})
-        # 'gnap! gnap!'
-
-        # Warning: repls order has an effect. Example:
-
-        # >>> multi_subs_by_regex('ab', {'a': 'c', 'b': 'a'})
-        # 'ca'
-        # >>> multi_subs_by_regex('ab', {'b': 'a', 'a': 'c'})
-        # 'cc'
-
         """
         for pattern, repl in repls.items():
             text = re.sub(pattern, repl, text)
@@ -179,25 +182,24 @@ class RegexStrategy(Strategy):
 
 
 class Anonymizer:
-    # TODO : anonymiser les dates ?
+    """Class d'anonymisation par choix des stratgies"""
     STRATEGIES = {
         "regex": RegexStrategy(),
         "pii": PiiStrategy()
-    }
+    }  # Définition des différentes stratégies
 
     def __init__(self):
-
-        # anonymise with regex first then PII
-        # self.used_strats = ["regex", "pii"]
 
         self.infos = None
 
     def open_text_file(self, path):
+        """Open input txt file"""
         with open(path, 'r') as f:
             content = f.read()
         return content
 
     def open_json_file(self, path):
+        """Open input json file for personal infos"""
         with open(path) as f:
             data = json.load(f)
         return data
@@ -208,7 +210,6 @@ class Anonymizer:
 
             current_strategy = Anonymizer.STRATEGIES.get(strategy)
             current_strategy.info = self.infos
-            # print('current strat', current_strategy)
             anonymized_text = current_strategy.anonymize(self.text)
             self.text = anonymized_text
         return self.text
