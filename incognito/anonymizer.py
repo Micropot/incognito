@@ -5,12 +5,23 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 
 from datetime import datetime
 from flashtext import KeywordProcessor
 from pydantic import BaseModel
 from typing import Optional, Iterable
+
+NATURAL_PLACEHOLDERS = {
+    '<PER>': 'Margaret Hamilton',
+    '<NAME>': 'Margaret Hamilton',
+    '<CODE_POSTAL>': '42000',
+    '<DATE>': '1970/01/01',
+    '<IPP>': 'IPPPH:0987654321',
+    '<NIR>': '012345678987654',
+    '<EMAIL>': 'place.holder@anonymization.cdc',
+    '<PHONE>': '0611223344',
+    '<ADRESSE>': '35 Rue Margaret Hamilton'
+}
 
 
 class AnonymiserCli:
@@ -19,9 +30,7 @@ class AnonymiserCli:
     @staticmethod
     def parse_cli(argv):
         # TODO : argument --fake : ajouter des natural placeholder
-        # TODO : arguments --user... au lieu de infos pour mettre dans un json
         # TODO : Faire des tests unitaires par fonctions
-        # Demander à Basile pour qu'il m'explique l'orga des documents sur MEVA (types, formulaires...)
         parser = argparse.ArgumentParser(description=__doc__)
 
         parser.add_argument(
@@ -37,9 +46,30 @@ class AnonymiserCli:
             required=True
         )
 
+        parser.add_argument(
+            "-s", "--strategies",
+            type=str,
+            help="Stratégies à utiliser (default : %(default)s).",
+            default=["regex", "pii"],
+            nargs='*',
+            choices=['regex', 'pii']
+        )
+
+        parser.add_argument(
+            "--verbose",
+            action="store_true",
+            help="Affiche des messages détaillés pendant l'exécution."
+        )
+        parser.add_argument(
+            "--fake",
+            action="store_true",
+            help="Anonymise avec le natural placeholders par défaut.",
+            required=False,
+        )
+
         # subparser pour les différences entre  json et infos dans le cli
         subparser = parser.add_subparsers(
-            dest="command", required=True, help="Choix entre un fichier JSON ou informations patient dans le CLI",)
+            dest="command", required=True, help="Choix entre un fichier JSON, informations patient dans le CLI ou anonymisation par informations par défaut",)
 
         json_parser = subparser.add_parser(
             "json", help="Fournir un fichier JSON")
@@ -98,20 +128,6 @@ class AnonymiserCli:
             required=False,
             default=""
         )
-        parser.add_argument(
-            "-s", "--strategies",
-            type=str,
-            help="Stratégies à utiliser (default : %(default)s).",
-            default=["regex", "pii"],
-            nargs='*',
-            choices=['regex', 'pii']
-        )
-
-        parser.add_argument(
-            "--verbose",
-            action="store_true",
-            help="Affiche des messages détaillés pendant l'exécution."
-        )
 
         return parser.parse_args(argv)
 
@@ -119,15 +135,18 @@ class AnonymiserCli:
         """Fonction principal du projet"""
         args = self.parse_cli(argv)
         input_file = args.input
+        fake = args.fake
         command = args.command
         output_file = args.output
         strats = args.strategies
         verbose = args.verbose
         ano = Anonymizer()
+
         if command == "json":
             json_file = args.json
             ano.infos = ano.open_json_file(json_file[0])
         ano.text = ano.open_text_file(input_file)
+
         if command == "infos":
             first_name = args.first_name
             last_name = args.last_name
@@ -143,11 +162,15 @@ class AnonymiserCli:
                       birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = infos_dict  # add elements to dictionnary
+
         ano.used_strats = strats
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
             print("strategies utilisées : ", strats)
-        anonymized_text = ano.anonymize()
+        if fake:
+            anonymized_text = ano.anonymize(use_natural_placeholders=True)
+        else:
+            anonymized_text = ano.anonymize(use_natural_placeholders=False)
         output = open(output_file, "w")
         output.write(anonymized_text)
         output.close()
@@ -197,12 +220,6 @@ class PiiStrategy(Strategy):
     def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]):
         """ Hide text using keywords
 
-            Args : 
-
-            >>> a = PiiStrategy()
-            >>> text = "Salut User ca va ?"
-            >>> a.hide_by_keywords(text, [("User", "<NAME>")])
-            'Salut <NAME> ca va ?'
         """
         processor = KeywordProcessor(case_sensitive=False)
         for key, mask in keywords:
@@ -210,7 +227,7 @@ class PiiStrategy(Strategy):
 
         return processor.replace_keywords(text)
 
-    def anonymize(self, text):
+    def anonymize(self, text, use_natural_placeholders: bool = False):
         """
         Anonymisation par keywords
         """
@@ -231,7 +248,11 @@ class PiiStrategy(Strategy):
                 (self.info.adress, '<ADRESSE>')
             )
 
-        return self.hide_by_keywords(text, [(info, tag)for info, tag in keywords if info])
+        return self.hide_by_keywords(text, [
+            (info, (NATURAL_PLACEHOLDERS[tag]
+             if use_natural_placeholders else tag))
+            for info, tag in keywords if info
+        ])
 
 
 class RegexStrategy(Strategy):
@@ -252,9 +273,15 @@ class RegexStrategy(Strategy):
             text = re.sub(pattern, repl, text)
         return text
 
-    def anonymize(self, text, ) -> str:
+    def anonymize(self, text, use_natural_placeholders: bool = False) -> str:
         """Hide text using regular expression """
-        patterns = self.PATTERNS
+        if use_natural_placeholders:
+            patterns = {
+                reg: NATURAL_PLACEHOLDERS[tag]
+                for reg, tag in self.PATTERNS.items()
+            }
+        else:
+            patterns = self.PATTERNS
         return self.multi_subs_by_regex(text, patterns)
 
 
@@ -281,12 +308,13 @@ class Anonymizer:
             data = json.load(f)
         return data
 
-    def anonymize(self):
+    def anonymize(self, use_natural_placeholders: bool = False):
         self.infos = PersonalInfo(**self.infos)  # dict to PersonalInfo
         for strategy in self.used_strats:
 
             current_strategy = Anonymizer.STRATEGIES.get(strategy)
             current_strategy.info = self.infos
-            anonymized_text = current_strategy.anonymize(self.text)
+            anonymized_text = current_strategy.anonymize(
+                self.text, use_natural_placeholders=use_natural_placeholders)
             self.text = anonymized_text
         return self.text
