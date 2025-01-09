@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[project]
+name = "incognito"
+version = "0.0.1"
+description = "A module to anonymize text data" 
+# readme = "README.md"
+dependencies = [
+  "flashtext",
+  "pydantic"
+]
+authors = [
+  {name="Arthur Lamard", email="arthur.lamard@chu-brest.fr"}
+]
+
+[project.optional-dependencies]
+dev= ["pytest", "pytest-cov", "twine", "build"]
