@@ -29,7 +29,6 @@ class AnonymiserCli:
 
     @staticmethod
     def parse_cli(argv):
-        # TODO : argument --fake : ajouter des natural placeholder
         # TODO : Faire des tests unitaires par fonctions
         parser = argparse.ArgumentParser(description=__doc__)
 
@@ -217,8 +216,13 @@ class PiiStrategy(Strategy):
     def __init__(self):
         self.info: PersonalInfo = None
 
-    def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]):
-        """ Hide text using keywords
+    def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]) -> str:
+        """ 
+        Hide text using keywords
+
+        Args:
+            text : text to anonymize
+            keywords : Tuple of word and his replacement
 
         """
         processor = KeywordProcessor(case_sensitive=False)
@@ -227,11 +231,14 @@ class PiiStrategy(Strategy):
 
         return processor.replace_keywords(text)
 
-    def anonymize(self, text, use_natural_placeholders: bool = False):
+    def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
         Anonymisation par keywords
+
+        Args:
+            text : text to anonymize
+            use_natural_placehodler : if you want the default natural placeholder instead of the tag
         """
-        # TODO : Age + PII via gamm ipp + praticiens ?
         keywords: tuple
         if isinstance(self.info, PersonalInfo):
             keywords = (
@@ -267,15 +274,21 @@ class RegexStrategy(Strategy):
         }
         self.PLACEHOLDER_REGEX = re.compile(r'<[A-Z_]+>')
 
-    def multi_subs_by_regex(self, text: str, repls: dict[str, str]):
+    def multi_subs_by_regex(self, text: str, repls: dict[str, str]) -> str:
         """Sub given text with each given pair repl -> regex.
         """
         for pattern, repl in repls.items():
             text = re.sub(pattern, repl, text)
         return text
 
-    def anonymize(self, text, use_natural_placeholders: bool = False) -> str:
-        """Hide text using regular expression """
+    def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
+        """
+        Hide text using regular expression 
+        Args:
+            text : text to anonymize
+            use_natural_placehodler : if you want the default natural placeholder instead of the tag
+        """
+
         if use_natural_placeholders:
             patterns = {
                 reg: NATURAL_PLACEHOLDERS[tag]
@@ -297,25 +310,40 @@ class Anonymizer:
 
         self.infos = None
 
-    def open_text_file(self, path):
-        """Open input txt file"""
+    def open_text_file(self, path: str) -> str:
+        """
+        Open input txt file
+        Args:
+            path : path of the input txt file
+        """
         with open(path, 'r') as f:
             content = f.read()
         return content
 
-    def open_json_file(self, path):
-        """Open input json file for personal infos"""
+    def open_json_file(self, path: str) -> str:
+        """
+        Open input json file for personal infos
+        Args:
+            path : path of the json file
+        """
+
         with open(path) as f:
             data = json.load(f)
         return data
 
-    def anonymize(self, use_natural_placeholders: bool = False):
+    def anonymize(self, use_natural_placeholders: bool = False) -> str:
+        """
+            Global function to anonymise a text base on the choosen strategies
+            Args :
+                use_natural_placehodler : if you want the default natural placeholder instead of the tag
+        """
         self.infos = PersonalInfo(**self.infos)  # dict to PersonalInfo
         for strategy in self.used_strats:
 
-            current_strategy = Anonymizer.STRATEGIES.get(strategy)
+            current_strategy = Anonymizer.STRATEGIES.get(
+                strategy)  # get the good strat class
             current_strategy.info = self.infos
             anonymized_text = current_strategy.anonymize(
                 self.text, use_natural_placeholders=use_natural_placeholders)
-            self.text = anonymized_text
-        return self.text
+            self.text = anonymized_text  # needed if you have multiple strategies in a row
+        return anonymized_text
