@@ -51,7 +51,7 @@ class AnonymiserCli:
             help="Stratégies à utiliser (default : %(default)s).",
             default=["regex", "pii"],
             nargs='*',
-            choices=['regex', 'pii']
+            choices=['regex', 'pii']  # faire de manière dynamique
         )
 
         parser.add_argument(
@@ -144,6 +144,7 @@ class AnonymiserCli:
         if command == "json":
             json_file = args.json
             ano.infos = ano.open_json_file(json_file[0])
+            ano.infos = ano.set_info(ano.infos)
         ano.text = ano.open_text_file(input_file)
 
         if command == "infos":
@@ -160,16 +161,18 @@ class AnonymiserCli:
             values = [first_name, last_name, birthname,
                       birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
-            ano.infos = infos_dict  # add elements to dictionnary
+            ano.infos = ano.set_info(infos_dict)
 
         ano.used_strats = strats
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
             print("strategies utilisées : ", strats)
         if fake:
-            anonymized_text = ano.anonymize(use_natural_placeholders=True)
+            anonymized_text = ano.anonymize(
+                text=ano.text, use_natural_placeholders=True)
         else:
-            anonymized_text = ano.anonymize(use_natural_placeholders=False)
+            anonymized_text = ano.anonymize(
+                text=ano.text, use_natural_placeholders=False)
         output = open(output_file, "w")
         output.write(anonymized_text)
         output.close()
@@ -217,7 +220,7 @@ class PiiStrategy(Strategy):
         self.info: PersonalInfo = None
 
     def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]) -> str:
-        """ 
+        """
         Hide text using keywords
 
         Args:
@@ -267,10 +270,44 @@ class RegexStrategy(Strategy):
     # TODO : voir regex de l'AP-HP
 
     def __init__(self):
+        Xxxxx = r"[A-Z]\p{Ll}+"
+        XXxX_ = r"[A-Z][A-Z\p{Ll}-]"
+        sep = r"(?:[ ]*|-)?"
+
+        # Define the full regex as a string
+
+        """
+        Choper via regex nom et prénom après :
+        - Référent :
+        - Dr.
+        - DR
+        - DR.
+        - Docteur
+        - Interne
+        - Externe
+
+        """
+
+        person_regex = rf"""
+        (?x)  # Flag verbose au début
+        (?<![/+])
+        \b
+        (?:[Dd]r[.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+
+        (?:
+            (?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)
+            |(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)
+            |(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)
+            |(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)
+        )
+        \b(?![/+])
+        """
+        # print('persin regex : ', person_regex)
+
         self.PATTERNS = {
+            r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
+            r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
-            r"\b((([!#$%&'*+\-/=?^_`{|}~\w])|([!#$%&'*+\-/=?^_`{|}~\w][!#$%&'*+\-/=?^_`{|}~\.\w]{0,}[!#$%&'*+\-/=?^_`{|}~\w]))[@]\w+([-.]\w+)*\.\w+([-.]\w+)*)\b": "<EMAIL>",
-            r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>"
+            # person_regex: "<PERSON>",
         }
         self.PLACEHOLDER_REGEX = re.compile(r'<[A-Z_]+>')
 
@@ -283,7 +320,7 @@ class RegexStrategy(Strategy):
 
     def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
-        Hide text using regular expression 
+        Hide text using regular expression
         Args:
             text : text to anonymize
             use_natural_placehodler : if you want the default natural placeholder instead of the tag
@@ -316,9 +353,12 @@ class Anonymizer:
         Args:
             path : path of the input txt file
         """
-        with open(path, 'r') as f:
-            content = f.read()
-        return content
+        try:
+            with open(path, 'r') as f:
+                content = f.read()
+            return content
+        except FileExistsError as e:
+            print(e)
 
     def open_json_file(self, path: str) -> str:
         """
@@ -326,24 +366,29 @@ class Anonymizer:
         Args:
             path : path of the json file
         """
+        try:
+            with open(path) as f:
+                data = json.load(f)
+            return data
+        except FileNotFoundError as e:
+            print(e)
 
-        with open(path) as f:
-            data = json.load(f)
-        return data
+    def set_info(self, infos: dict):
+        self.infos = PersonalInfo(**infos)
+        return self.infos
 
-    def anonymize(self, use_natural_placeholders: bool = False) -> str:
+    def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
             Global function to anonymise a text base on the choosen strategies
+
             Args :
                 use_natural_placehodler : if you want the default natural placeholder instead of the tag
         """
-        self.infos = PersonalInfo(**self.infos)  # dict to PersonalInfo
         for strategy in self.used_strats:
 
-            current_strategy = Anonymizer.STRATEGIES.get(
-                strategy)  # get the good strat class
+            current_strategy = Anonymizer.STRATEGIES.get(strategy)  # get the good strat class
             current_strategy.info = self.infos
             anonymized_text = current_strategy.anonymize(
-                self.text, use_natural_placeholders=use_natural_placeholders)
+                text=text, use_natural_placeholders=use_natural_placeholders)
             self.text = anonymized_text  # needed if you have multiple strategies in a row
         return anonymized_text
