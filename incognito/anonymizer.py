@@ -377,6 +377,9 @@ class Anonymizer:
         self.infos = PersonalInfo(**infos)
         return self.infos
 
+    # def set_info(self, info: PersonalInfo):
+    #     self.infos = info
+
     def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
             Global function to anonymise a text base on the choosen strategies
@@ -392,3 +395,13 @@ class Anonymizer:
                 text=text, use_natural_placeholders=use_natural_placeholders)
             self.text = anonymized_text  # needed if you have multiple strategies in a row
         return anonymized_text
+
+    def fuck(self):
+        """
+
+        >>> ano = Anonymizer()
+        >>> ano.fuck()
+        10
+
+        """
+        return 10

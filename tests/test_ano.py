@@ -1,19 +1,26 @@
 from incognito import Anonymizer
+import pytest
 
+dataset = {
 
-def test_hide_person():
-    data = {
-  "first_name" : "Arthur",
-  "last_name" : "Lamard",
-  "birth_name" : "",
-  "birthdate" : "2000-07-12",
-  "ipp" : "0987654321",
-  "postal_code" : "29820",
-  "adress" : ""
+    "phone": ("tél: 0651565600","tél: <PHONE>" ),
+    "phone1": ("tél: 0651565600","tél: <PHONE>" ),
+    "phone2": ("tél: 0651565600","tél: <PHONE>" ),
+    
 }
 
 
+datas = list(dataset.values())
+ids = list(dataset.keys())
+
+
+@pytest.mark.parametrize(
+    "input,output", datas, ids = ids
+)
+def test_regex_strategie(input, output):
+
+
     ano = Anonymizer()
-    ano.set_info(data)
-    ano.used_strats = ['regex', 'pii']
-    ano.anonymize("test")
+    ano.used_strats = ['regex']
+
+    assert ano.anonymize(input) == output
