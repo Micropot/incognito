@@ -4,8 +4,8 @@ import pytest
 dataset = {
 
     "phone": ("tél: 0651565600","tél: <PHONE>" ),
-    "phone1": ("tél: 0651565600","tél: <PHONE>" ),
-    "phone2": ("tél: 0651565600","tél: <PHONE>" ),
+    "emain": ("email : arthur.lamard@chu-brest.fr","email : <EMAIL>" ),
+    "nir": ("nir : 164064308898823","nir : <NIR>" ),
     
 }
 
