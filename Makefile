@@ -1,4 +1,4 @@
 
 
 test:
-	 python -m pytest tests -xvs
+	 python -m pytest tests -vs

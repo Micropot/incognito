@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import regex
 
 from datetime import datetime
 from flashtext import KeywordProcessor
@@ -270,52 +271,42 @@ class RegexStrategy(Strategy):
     # TODO : voir regex de l'AP-HP
 
     def __init__(self):
+        # Lettre majuscule puis une ou plusieurs lettres minuscules Unicode
         Xxxxx = r"[A-Z]\p{Ll}+"
+        # Lettre majuscule puis un ou plusieurs caractères qui peuvent être une majuscule, une minuscule Unicode ou un tiret
         XXxX_ = r"[A-Z][A-Z\p{Ll}-]"
+        # Séparateur qui est peut être aucun caratère, zéro ou plusieurs espaces, un tiret
         sep = r"(?:[ ]*|-)?"
 
-        # Define the full regex as a string
-
-        """
-        Choper via regex nom et prénom après :
-        - Référent :
-        - Dr.
-        - DR
-        - DR.
-        - Docteur
-        - Interne
-        - Externe
-
-        """
-
-        person_regex = rf"""
-        (?x)  # Flag verbose au début
-        (?<![/+])
-        \b
-        (?:[Dd]r[.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+
-        (?:
-            (?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)
-            |(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)
-            |(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)
-            |(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)
-        )
-        \b(?![/+])
-        """
-        # print('persin regex : ', person_regex)
+        self.title_regex = {r"(?:[Dd]r[.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:|[Ee]xterne[ ]*:|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+": "<TITLE>",
+                            }
 
         self.PATTERNS = {
-            r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
+            # Nom composé en Maj/min séparé de tiret
+            rf"(<TITLE>)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            # Nom en maj puis prénom maj/min
+            rf"(<TITLE>)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
+            # # prénom puis nom en maj
+            rf"(<TITLE>)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)": "<NAME>",
+            # # # nom avec prépo puis prénom
+            rf"(<TITLE>)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
+            # # # prenom abrégré puis nom complet
+            rf"(<TITLE>)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
+
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
-            # person_regex: "<PERSON>",
+
+            r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
         }
         self.PLACEHOLDER_REGEX = re.compile(r'<[A-Z_]+>')
 
     def multi_subs_by_regex(self, text: str, repls: dict[str, str]) -> str:
         """Sub given text with each given pair repl -> regex.
         """
+
         for pattern, repl in repls.items():
-            text = re.sub(pattern, repl, text)
+            text = regex.sub(pattern, repl, text)
         return text
 
     def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
@@ -325,7 +316,8 @@ class RegexStrategy(Strategy):
             text : text to anonymize
             use_natural_placehodler : if you want the default natural placeholder instead of the tag
         """
-
+        text = self.multi_subs_by_regex(text, self.title_regex)
+        # print("**************", text)
         if use_natural_placeholders:
             patterns = {
                 reg: NATURAL_PLACEHOLDERS[tag]
@@ -389,10 +381,11 @@ class Anonymizer:
         """
         for strategy in self.used_strats:
 
-            current_strategy = Anonymizer.STRATEGIES.get(strategy)  # get the good strat class
+            current_strategy = Anonymizer.STRATEGIES.get(
+                strategy)  # get the good strat class
             current_strategy.info = self.infos
             anonymized_text = current_strategy.anonymize(
                 text=text, use_natural_placeholders=use_natural_placeholders)
             self.text = anonymized_text  # needed if you have multiple strategies in a row
+            # print(self.text)
         return anonymized_text
-
