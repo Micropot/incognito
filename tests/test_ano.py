@@ -15,7 +15,10 @@ dataset = {
     "Titre_Interne": ("Interne", "Interne"),
     "Docteur_NOM_Prenom": ("Docteur DUPONT Jean", "<NAME>"),
     "Monsieur_P._NOM": ("Monsieur J. Jean", "<NAME>"),
-    "P._NOM": ("J. Jean", "J. Jean")
+    "P._NOM": ("J. Jean", "J. Jean"),
+    "Dr_NOM_Prenom": ("Dr LECLERC Charle", "<NAME>"),
+    "DR._NOM": ("DR. LECLERC", "<NAME>"),
+    "test_mme": ("antibiogramme", "antibiogramme")
 }
 
 

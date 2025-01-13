@@ -278,7 +278,7 @@ class RegexStrategy(Strategy):
         # Séparateur qui est peut être aucun caratère, zéro ou plusieurs espaces, un tiret
         sep = r"(?:[ ]*|-)?"
 
-        self.title_regex = {r"(?:[Dd]r[.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:|[Ee]xterne[ ]*:|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+": "<TITLE>",
+        self.title_regex = {r"(?:[Dd][Rr][.]?|[Dd]octeur|\s[mM]r?[.]?|[Ii]nterne[ ]*:|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+": "<TITLE>",
                             }
 
         self.PATTERNS = {
@@ -286,11 +286,11 @@ class RegexStrategy(Strategy):
             rf"(<TITLE>)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
             # Nom en maj puis prénom maj/min
             rf"(<TITLE>)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
-            # # prénom puis nom en maj
+            # prénom puis nom en maj
             rf"(<TITLE>)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)": "<NAME>",
-            # # # nom avec prépo puis prénom
+            # nom avec prépo puis prénom
             rf"(<TITLE>)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
-            # # # prenom abrégré puis nom complet
+            # prenom abrégré puis nom complet
             rf"(<TITLE>)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
 
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
@@ -380,12 +380,13 @@ class Anonymizer:
                 use_natural_placehodler : if you want the default natural placeholder instead of the tag
         """
         for strategy in self.used_strats:
-
+            # print("text : ", self.text)
             current_strategy = Anonymizer.STRATEGIES.get(
                 strategy)  # get the good strat class
             current_strategy.info = self.infos
             anonymized_text = current_strategy.anonymize(
                 text=text, use_natural_placeholders=use_natural_placeholders)
             self.text = anonymized_text  # needed if you have multiple strategies in a row
+            text = self.text
             # print(self.text)
         return anonymized_text
