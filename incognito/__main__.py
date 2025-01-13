@@ -1,9 +1,5 @@
-from . import anonymizer
+from . import cli
 import sys
-
-
-# ano = anonymizer.Anonymizer()
-ano_cli = anonymizer.AnonymiserCli()
+ano_cli = cli.AnonymiserCli()
 if __name__ == '__main__':
-    # ano.anonymize()
     ano_cli.run(argv=sys.argv[1:])
