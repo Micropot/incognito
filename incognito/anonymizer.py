@@ -62,7 +62,7 @@ class Anonymizer:
             current_strategy = Anonymizer.STRATEGIES.get(
                 strategy)  # get the good strat class
             current_strategy.info = self.infos
-            anonymized_text = current_strategy.anonymize(
+            anonymized_text = current_strategy.analyze(
                 text=text, use_natural_placeholders=use_natural_placeholders)
             self.text = anonymized_text  # needed if you have multiple strategies in a row
             text = self.text

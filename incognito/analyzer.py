@@ -44,7 +44,7 @@ class PersonalInfo(BaseModel):
 class Strategy:
     """Constructeur de la Class Strategy"""
 
-    def anonymize(self, text):
+    def analyze(self, text):
         pass
 
 
@@ -74,7 +74,7 @@ class PiiStrategy(Strategy):
 
         return processor.replace_keywords(text)
 
-    def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
+    def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
         Anonymisation par keywords
 
@@ -153,7 +153,7 @@ class RegexStrategy(Strategy):
             text = regex.sub(pattern, repl, text)
         return text
 
-    def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
+    def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
         Hide text using regular expression
         Args:
