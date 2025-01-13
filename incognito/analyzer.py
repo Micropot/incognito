@@ -5,17 +5,7 @@ from datetime import datetime
 from flashtext import KeywordProcessor
 from pydantic import BaseModel
 from typing import Optional, Iterable
-NATURAL_PLACEHOLDERS = {
-    '<PER>': 'Margaret Hamilton',
-    '<NAME>': 'Margaret Hamilton',
-    '<CODE_POSTAL>': '42000',
-    '<DATE>': '1970/01/01',
-    '<IPP>': 'IPPPH:0987654321',
-    '<NIR>': '012345678987654',
-    '<EMAIL>': 'place.holder@anonymization.cdc',
-    '<PHONE>': '0611223344',
-    '<ADRESSE>': '35 Rue Margaret Hamilton'
-}
+from . import mask
 
 
 class PersonalInfo(BaseModel):
@@ -69,8 +59,8 @@ class PiiStrategy(Strategy):
 
         """
         processor = KeywordProcessor(case_sensitive=False)
-        for key, mask in keywords:
-            processor.add_keyword(key, mask)
+        for key, masks in keywords:
+            processor.add_keyword(key, masks)
 
         return processor.replace_keywords(text)
 
@@ -99,7 +89,7 @@ class PiiStrategy(Strategy):
             )
 
         return self.hide_by_keywords(text, [
-            (info, (NATURAL_PLACEHOLDERS[tag]
+            (info, (mask.NATURAL_PLACEHOLDERS[tag]
              if use_natural_placeholders else tag))
             for info, tag in keywords if info
         ])
@@ -149,8 +139,9 @@ class RegexStrategy(Strategy):
             'hello! world'
         """
 
-        for pattern, repl in repls.items():
+        for pattern, repl in repls.items():  # repl = Balise
             text = regex.sub(pattern, repl, text)
+            print(text)
         return text
 
     def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
@@ -163,7 +154,7 @@ class RegexStrategy(Strategy):
         text = self.multi_subs_by_regex(text, self.title_regex)
         if use_natural_placeholders:
             patterns = {
-                reg: NATURAL_PLACEHOLDERS[tag]
+                reg: mask.NATURAL_PLACEHOLDERS[tag]
                 for reg, tag in self.PATTERNS.items()
             }
         else:
