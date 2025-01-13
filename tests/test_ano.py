@@ -18,7 +18,8 @@ dataset = {
     "P._NOM": ("J. Jean", "J. Jean"),
     "Dr_NOM_Prenom": ("Dr LECLERC Charle", "<NAME>"),
     "DR._NOM": ("DR. LECLERC", "<NAME>"),
-    "test_mme": ("antibiogramme", "antibiogramme")
+    "Interne_NOM_Prenom": ("Interne JEAN Jean", "<NAME>"),
+    "Externe_NOM_Prenom": ("Externe JEAN Jean", "<NAME>"),
 }
 
 

@@ -283,15 +283,15 @@ class RegexStrategy(Strategy):
 
         self.PATTERNS = {
             # Nom composé en Maj/min séparé de tiret
-            rf"(<TITLE>)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
             # Nom en maj puis prénom maj/min
-            rf"(<TITLE>)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
+            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
             # prénom puis nom en maj
-            rf"(<TITLE>)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)": "<NAME>",
+            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)": "<NAME>",
             # nom avec prépo puis prénom
             rf"(<TITLE>)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
             # prenom abrégré puis nom complet
-            rf"(<TITLE>)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
 
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
 
