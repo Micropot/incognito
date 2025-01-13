@@ -139,6 +139,7 @@ class AnonymiserCli:
                       birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = ano.set_info(infos_dict)
+            ano.used_strats = ano.set_strategies(strats)
 
         ano.used_strats = strats
         if verbose:

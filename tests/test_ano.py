@@ -33,6 +33,5 @@ ids = list(dataset.keys())
 def test_regex_strategie(input, output):
 
     ano = Anonymizer()
-    ano.used_strats = ['regex']
-
+    ano.set_strategies(['regex'])
     assert ano.anonymize(input) == output

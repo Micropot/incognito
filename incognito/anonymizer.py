@@ -43,9 +43,13 @@ class Anonymizer:
         except FileNotFoundError as e:
             print(e)
 
-    def set_info(self, infos: dict):
+    def set_info(self, infos: dict) -> analyzer.PersonalInfo:
         self.infos = analyzer.PersonalInfo(**infos)
         return self.infos
+
+    def set_strategies(self, strategies: list) -> list:
+        self.used_strats = strategies
+        return self.used_strats
 
     def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
