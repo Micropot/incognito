@@ -4,7 +4,7 @@ import pytest
 dataset = {
 
     "phone": ("tél: 0651565600", "tél: <PHONE>"),
-    "emain": ("email : joe.lafripouille@chu-brest.fr", "email : <EMAIL>"),
+    "email": ("email : joe.lafripouille@chu-brest.fr", "email : <EMAIL>"),
     "nir": ("nir : 164064308898823", "nir : <NIR>"),
     "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
     "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
