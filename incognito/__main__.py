@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # )
     # print(results)
     test.set_strategies(['regex'])
-    test.set_masks(['placeholder'])
+    test.set_masks('placeholder')
     # text = test.open_text_file(
     #     '/data/homes/arthur/incognito/docs/docselect/0069914276.txt')
     # text = "bonjour monsieur JEAN Jean, voici votre email : jean.jean@gmail.com"
