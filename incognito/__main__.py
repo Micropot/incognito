@@ -1,7 +1,5 @@
 from . import cli
-from . import analyzer
 from . import anonymizer
-import sys
 ano_cli = cli.AnonymiserCli()
 test = anonymizer.Anonymizer()
 if __name__ == '__main__':
@@ -12,9 +10,13 @@ if __name__ == '__main__':
     # )
     # print(results)
     test.set_strategies(['regex'])
-    test.set_masks(['fake'])
+    test.set_masks(['placeholder'])
     # text = test.open_text_file(
     #     '/data/homes/arthur/incognito/docs/docselect/0069914276.txt')
-    text = "bonjour monsieur JEAN Jean, voici votre email : jean.jean@gmail.com"
+    # text = "bonjour monsieur JEAN Jean, voici votre email : jean.jean@gmail.com"
+    text = test.open_text_file("/data/homes/arthur/incognito/docs/test.txt")
+    text_json = test.open_json_file(
+        "/data/homes/arthur/incognito/docs/infos_test.json")
+    test.set_info(text_json)
     output = test.anonymize(text)
     print("Anonymized texte : ", output)

@@ -75,27 +75,11 @@ class Anonymizer:
         for strategy in self.used_strats:
             current_strategy = Anonymizer.STRATEGIES.get(
                 strategy)  # get the good strat class
-            if strategy == 'regex':
-                current_strategy.info = self.infos
-                # for the <TITLE>
-                anonymized_text_title = current_strategy.multi_subs_by_regex(
-                    text, current_strategy.title_regex)
-                # for the other
-                pl_position = current_strategy.analyze(
-                    text=anonymized_text_title, use_natural_placeholders=use_natural_placeholders)
-                for masks in self.used_mask:
-                    current_mask = Anonymizer.MASKS.get(masks)
-                    anonymized_text = current_mask.mask(
-                        anonymized_text_title, pl_position)
-                # print("text final", anonymized_text)
-                return anonymized_text
 
-            else:
-
-                current_strategy.info = self.infos
-                pl_position = current_strategy.analyze(
-                    text=text, use_natural_placeholders=use_natural_placeholders)
-                self.position = pl_position
+            current_strategy.info = self.infos
+            pl_position = current_strategy.analyze(
+                text=text, use_natural_placeholders=use_natural_placeholders)
+            self.position = pl_position
 
             # mask les différents mots trouvés
             for masks in self.used_mask:

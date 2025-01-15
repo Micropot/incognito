@@ -11,20 +11,21 @@ dataset = {
     "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
     "Nom_compose_Prenom": ("name : De La Fontaine Jean", "name : De La Fontaine Jean"),
     "NOM-NOM_Prenom": ("name : DE-TROIS Jean", "name : DE-TROIS Jean"),
-    "INTERNE_NOM-NOM_Prenom": ("name : Interne : DE-TROIS Jean", "name : <NAME>"),
-    "Titre": ("Docteur ", "<TITLE>"),
+    "INTERNE_NOM-NOM_Prenom": ("name : Interne : DE-TROIS Jean", "name : Interne : <NAME>"),
     "Titre_Interne": ("Interne", "Interne"),
-    "Docteur_NOM_Prenom": ("Docteur DUPONT Jean", "<NAME>"),
-    "Monsieur_P._NOM": ("Monsieur J. Jean", "<NAME>"),
+    "Docteur_NOM_Prenom": ("Docteur DUPONT Jean", "Docteur <NAME>"),
+    "Monsieur_P._NOM": ("Monsieur J. Jean", "Monsieur <NAME>"),
     "P._NOM": ("J. Jean", "J. Jean"),
-    "Dr_NOM_Prenom": ("Dr LECLERC Charle", "<NAME>"),
-    "DR._NOM": ("DR. LECLERC", "<NAME>"),
-    "Interne_NOM_Prenom": ("Interne JEAN Jean", "<NAME>"),
-    "Externe_NOM_Prenom": ("Externe JEAN Jean", "<NAME>"),
-    "nom_phone": ("Monsieur JEAN Lasalle, tél : 0647482884", "<NAME>, tél : <PHONE>"),
-    "double_nom": ("Monsieur JEAN Jean, Docteur Jean JEAN, Madame JEANNE Jean", "<NAME>, <NAME>, <NAME>"),
+    "Dr_NOM_Prenom": ("Dr LECLERC Charle", "Dr <NAME>"),
+    "DR._NOM": ("DR. LECLERC", "DR. <NAME>"),
+    "Interne_NOM_Prenom": ("Interne JEAN Jean", "Interne <NAME>"),
+    "Externe_NOM_Prenom": ("Externe JEAN Jean", "Externe <NAME>"),
+    "nom_phone": ("Monsieur JEAN Lasalle, tél : 0647482884", "Monsieur <NAME>, tél : <PHONE>"),
+    "double_nom": ("Monsieur JEAN Jean, Docteur Jean JEAN, Madame JEANNE Jean", "Monsieur <NAME>, Docteur <NAME>, Madame <NAME>"),
     "email_phone": ("test@test.fr 0909090909", "<EMAIL> <PHONE>"),
-    "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour <NAME>, voici son numéro : <PHONE> et son email <EMAIL>")
+    "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour Monsieur <NAME>, voici son numéro : <PHONE> et son email <EMAIL>"),
+    "née_madame": ("Madame DUPONT Mariane née MORGAT", "Madame <NAME> née <NAME>"),
+    "né_monsieur": ("Monsieur J. Jean né LA-RUE", "Monsieur <NAME> né <NAME>")
 }
 
 

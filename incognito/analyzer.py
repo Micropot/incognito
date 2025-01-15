@@ -107,48 +107,40 @@ class RegexStrategy(Strategy):
         # Séparateur qui est peut être aucun caratère, zéro ou plusieurs espaces, un tiret
         sep = r"(?:[ ]*|-)?"
 
-        self.title_regex = {r"(?:[Dd][Rr][.]?|[Dd]octeur|\s[mM]r?[.]?|[Ii]nterne[ ]*:|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+": "<TITLE>",
-                            }
+        self.title_regex = r"(?:[Dd][Rr][.]?|[Dd]octeur|\s[mM]r?[.]?|[Ii]nterne[ ]*:|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle)[ ]+"
 
         self.PATTERNS = {
-            # Nom en maj puis prénom maj/min
-            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx}))": "<NAME>",
-            # Nom composé en Maj/min séparé de tiret
-            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+))": "<NAME>",
-            # prénom puis nom en maj
-            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+)))": "<NAME>",
-            # nom avec prépo puis prénom
-            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx}))": "<NAME>",
-            # prenom abrégré puis nom complet
-            rf"(<TITLE>|[Ii]nterne\s?|[Ee]xterne\s?)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
-
-            r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
-
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
-
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
-            # phone_pattern: "<PHONE>",
+            r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
+            # prenom abrégré puis nom complet
+            rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            # Nom en maj puis prénom maj/min
+            rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx}))": "<NAME>",
+            # prénom puis nom en maj
+            rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+)))": "<NAME>",
+            # nom avec prépo puis prénom
+            rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx}))": "<NAME>",
+            # Nom composé en Maj/min séparé de tiret
+            rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+))": "<NAME>",
+
+
 
         }
-        self.PLACEHOLDER_REGEX = re.compile(r'<[A-Z_]+>')
 
         self.position = {}
 
     def multi_subs_by_regex(self, text: str, repls: dict[str, str]) -> dict[str, list[tuple[int, int]]]:
-        """
-            Used for the first loop to get the titles in the text (Monsieur, Docteur, etc...)
-        """
         self.position = {}
         for pattern, repl in repls.items():
+
             matches = list(regex.finditer(pattern, text))
             if matches:
                 self.position[repl] = [match.span() for match in matches]
-                # Remplacer les correspondances dans le texte
-                text = regex.sub(pattern, repl, text)
         # retourne le dictionnaire avec la balise et la position
-        return text
+        return self.position
 
-    def analyze(self, text: str, use_natural_placeholders: bool = False) -> dict[str, str]:
+    def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
         Hide text using regular expression
         Args:
@@ -162,4 +154,4 @@ class RegexStrategy(Strategy):
             }
         else:
             patterns = self.PATTERNS
-        return patterns
+        return self.multi_subs_by_regex(text, patterns)
