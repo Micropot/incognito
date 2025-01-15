@@ -101,7 +101,6 @@ class Anonymizer:
             for masks in self.used_mask:
                 current_mask = Anonymizer.MASKS.get(masks)
                 anonymized_text = current_mask.mask(text, self.position)
-            # print(anonymized_text)
             return anonymized_text
 
     # def detect() -> list:

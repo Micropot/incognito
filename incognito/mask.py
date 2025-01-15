@@ -16,7 +16,7 @@ NATURAL_PLACEHOLDERS = {
 
 class Strategy:
     # dictionnaire avec le type et la position
-    def mask(self, text, coordinate: Dict[str, List[Tuple]]):
+    def mask(self, text: str, repls: dict[str, str]) -> str:
         pass
 
 
@@ -24,7 +24,7 @@ class FakeStrategy(Strategy):
     """Remplace les mots par les valeurs de Natural_placeholder"""
 
     def __init__(self):
-        natural_placehodler = {
+        self.natural_placehodler = {
             '<PER>': 'Margaret Hamilton',
             '<NAME>': 'Margaret Hamilton',
             '<CODE_POSTAL>': '42000',
@@ -36,7 +36,11 @@ class FakeStrategy(Strategy):
             '<ADRESSE>': '35 Rue Margaret Hamilton'
         }
 
-    pass
+    def mask(self, text: str, repls: dict[str, str]) -> str:
+        for pattern, repl in repls.items():
+            text = regex.sub(
+                pattern, self.natural_placehodler.get(repl, repl), text)
+        return text
 
 
 class PlaceholderStrategy(Strategy):
