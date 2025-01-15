@@ -4,6 +4,7 @@
 from __future__ import annotations
 import json
 from . import analyzer
+from . import mask
 
 
 class Anonymizer:
@@ -13,9 +14,16 @@ class Anonymizer:
         "pii": analyzer.PiiStrategy()
     }  # Définition des différentes stratégies
 
+    MASKS = {
+        "placeholder": mask.PlaceholderStrategy(),
+        "fake": mask.FakeStrategy(),
+        "hash": mask.HashStrategy(),
+    }
+
     def __init__(self):
 
         self.infos = None
+        self.position = []
 
     def open_text_file(self, path: str) -> str:
         """
@@ -51,6 +59,10 @@ class Anonymizer:
         self.used_strats = strategies
         return self.used_strats
 
+    def set_masks(self, masks: list) -> list:
+        self.used_mask = masks
+        return self.used_mask
+
     def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
         """
             Global function to anonymise a text base on the choosen strategies
@@ -58,15 +70,39 @@ class Anonymizer:
             Args :
                 use_natural_placehodler : if you want the default natural placeholder instead of the tag
         """
+
+        # analyser le text pour trouver la position et le type de placehoder
         for strategy in self.used_strats:
             current_strategy = Anonymizer.STRATEGIES.get(
                 strategy)  # get the good strat class
-            current_strategy.info = self.infos
-            anonymized_text = current_strategy.analyze(
-                text=text, use_natural_placeholders=use_natural_placeholders)
-            self.text = anonymized_text  # needed if you have multiple strategies in a row
-            text = self.text
-        return anonymized_text
+            if strategy == 'regex':
+                current_strategy.info = self.infos
+                # for the <TITLE>
+                anonymized_text_title = current_strategy.multi_subs_by_regex(
+                    text, current_strategy.title_regex)
+                # for the other
+                pl_position = current_strategy.analyze(
+                    text=anonymized_text_title, use_natural_placeholders=use_natural_placeholders)
+                for masks in self.used_mask:
+                    current_mask = Anonymizer.MASKS.get(masks)
+                    anonymized_text = current_mask.mask(
+                        anonymized_text_title, pl_position)
+                # print("text final", anonymized_text)
+                return anonymized_text
+
+            else:
+
+                current_strategy.info = self.infos
+                pl_position = current_strategy.analyze(
+                    text=text, use_natural_placeholders=use_natural_placeholders)
+                self.position = pl_position
+
+            # mask les différents mots trouvés
+            for masks in self.used_mask:
+                current_mask = Anonymizer.MASKS.get(masks)
+                anonymized_text = current_mask.mask(text, self.position)
+            # print(anonymized_text)
+            return anonymized_text
 
     # def detect() -> list:
     #     """ renvoie list des debut et fin de mot """

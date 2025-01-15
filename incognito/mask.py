@@ -1,4 +1,5 @@
 from typing import Dict, List, Tuple
+import regex
 
 NATURAL_PLACEHOLDERS = {
     '<PER>': 'Margaret Hamilton',
@@ -15,7 +16,7 @@ NATURAL_PLACEHOLDERS = {
 
 class Strategy:
     # dictionnaire avec le type et la position
-    def mask(self, coordinate: Dict[str, List[Tuple]]):
+    def mask(self, text, coordinate: Dict[str, List[Tuple]]):
         pass
 
 
@@ -40,7 +41,11 @@ class FakeStrategy(Strategy):
 
 class PlaceholderStrategy(Strategy):
     """Remplace par des balises """
-    pass
+
+    def mask(self, text: str, repls: dict[str, str]) -> str:
+        for pattern, repl in repls.items():
+            text = regex.sub(pattern, repl, text)
+        return text
 
 
 class HashStrategy(Strategy):
