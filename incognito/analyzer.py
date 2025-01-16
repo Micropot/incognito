@@ -1,11 +1,10 @@
-import re
 import regex
-
 from datetime import datetime
 from flashtext import KeywordProcessor
-from pydantic import BaseModel
-from typing import Optional, Iterable
 from .mask import NATURAL_PLACEHOLDERS
+from pydantic import BaseModel
+from typing import Dict, Tuple, Str, List, Int
+from typing import Optional, Iterable
 
 
 class PersonalInfo(BaseModel):
@@ -107,7 +106,7 @@ class RegexStrategy(Strategy):
         # Séparateur qui est peut être aucun caratère, zéro ou plusieurs espaces, un tiret
         sep = r"(?:[ ]*|-)?"
 
-        self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle)\s"
+        self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
 
         self.person_patern = rf"""
         (?:
@@ -121,44 +120,30 @@ class RegexStrategy(Strategy):
         self.patern = rf"({self.title_regex})\s{self.person_patern}"
 
         self.PATTERNS = {
-            rf"(?<={self.title_regex})(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
-            # Nom en maj puis prénom maj/min
-            rf"(?<={self.title_regex})(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
-            # # prénom puis nom en maj
-            rf"(?<={self.title_regex})(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)": "<NAME>",
-            # # # nom avec prépo puis prénom
-            rf"(?<={self.title_regex})(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
-            # # # prenom abrégré puis nom complet
-            rf"(?<={self.title_regex})(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            # rf"(?<={self.title_regex})([\s-][A-Z]+)+([\s-][A-Z][a-z]+)+(?![a-z])": "<NAME>",
 
-            # rf"(?<={self.title_regex}\s|née?\s|[Ii]nterne\s|[Ee]xterne\s)({self.person_patern})": "<NAME>",
+            rf"(?<={self.title_regex}[ ]+)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
+            rf"(?<={self.title_regex}[ ]+)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)": "<NAME>",
+            rf"(?<={self.title_regex}[ ]+)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
+            rf"(?<={self.title_regex}[ ]+)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            rf"(?<={self.title_regex}[ ]+)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
 
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
             r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
-            # rf"(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "z<NAME>",
         }
 
-        # Nom en maj puis prénom maj/min
-        # rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx}))": "<NAME>",
-        # # prénom puis nom en maj
-        # rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+)))": "<NAME>",
-        # # nom avec prépo puis prénom
-        # rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx}))": "<NAME>",
-        # Nom composé en Maj/min séparé de tiret
-        # rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+))": "<NAME>",
-        # prenom abrégré puis nom complet
-        # rf"(?<={self.title_regex}|[Ii]nterne\s?|[Ee]xterne\s?|née?\s?)(?P<FN0>[A-Z][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
         self.position = {}
 
-    def multi_subs_by_regex(self, text: str) -> dict[str, list[tuple[int, int]]]:
+    def multi_subs_by_regex(self, text: str) -> Dict[List[Tuple[Int, Int], Str]]:
         # TODO couple clé valeur {(début,fin): "<NAME>"}
         self.position = {}
         for pattern, repl in self.PATTERNS.items():
-            # print(pattern)
-            matches = list(regex.finditer(pattern, text))
+            matches = regex.findall(pattern, text, overlapped=True)
             if matches:
-                self.position[repl] = [match.span() for match in matches]
+                spans = [matches.span() for matches in regex.finditer(
+                    pattern, text, overlapped=True)]
+                self.position[repl] = spans
         # retourne le dictionnaire avec la balise et la position
         return self.position
 
