@@ -81,10 +81,12 @@ class HideStrategy(Strategy):
         all_positions.sort(key=lambda x: x[0], reverse=True)
         for start, end, repl in all_positions:
 
-            text_as_list[start:end] = list("*****")
+            text_as_list[start:end] = list("********")
         return ''.join(text_as_list)
 
 
 class HashStrategy(Strategy):
     """Replace les mots par leur hash"""
+
+    # TODO : blake256 8 digits et paper bourrin(20ene de bytes)
     pass

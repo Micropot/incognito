@@ -30,17 +30,20 @@ class AnonymiserCli:
             nargs='*',
             choices=['regex', 'pii']  # faire de manière dynamique
         )
+        parser.add_argument(
+            "-m", "--mask",
+            type=str,
+            help="Mask à utiliser (default : %(default)s).",
+            default='placeholder',
+            nargs=1,
+            # faire de manière dynamique
+            choices=['placeholder', 'fake', 'hide']
+        )
 
         parser.add_argument(
             "--verbose",
             action="store_true",
             help="Affiche des messages détaillés pendant l'exécution."
-        )
-        parser.add_argument(
-            "--fake",
-            action="store_true",
-            help="Anonymise avec le natural placeholders par défaut.",
-            required=False,
         )
 
         # subparser pour les différences entre  json et infos dans le cli
@@ -111,10 +114,10 @@ class AnonymiserCli:
         """Fonction principal du projet"""
         args = self.parse_cli(argv)
         input_file = args.input
-        fake = args.fake
         command = args.command
         output_file = args.output
         strats = args.strategies
+        mask = args.mask
         verbose = args.verbose
         ano = anonymizer.Anonymizer()
 
@@ -139,18 +142,15 @@ class AnonymiserCli:
                       birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = ano.set_info(infos_dict)
-            ano.used_strats = ano.set_strategies(strats)
 
-        ano.used_strats = strats
+        ano.set_strategies(strats)
+        ano.set_masks(mask[0])
+
+        # ano.used_strats = strats
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
             print("strategies utilisées : ", strats)
-        if fake:
-            anonymized_text = ano.anonymize(
-                text=ano.text, use_natural_placeholders=True)
-        else:
-            anonymized_text = ano.anonymize(
-                text=ano.text, use_natural_placeholders=False)
+        anonymized_text = ano.anonymize(text=ano.text)
         output = open(output_file, "w")
         output.write(anonymized_text)
         output.close()
