@@ -18,6 +18,7 @@ class Anonymizer:
         "placeholder": mask.PlaceholderStrategy(),
         "fake": mask.FakeStrategy(),
         "hash": mask.HashStrategy(),
+        "hide": mask.HideStrategy(),
     }
 
     def __init__(self):

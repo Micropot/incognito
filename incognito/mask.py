@@ -28,26 +28,16 @@ class FakeStrategy(Strategy):
         Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
 
         """
-        # Convertir le texte en liste de caractères pour modifications sans conflits
         text_as_list = list(text)
-
-        # Collecter toutes les positions avec leurs remplacements associés
         all_positions = []
         for spans, repl in coordinate.items():
             repl = self.natural_placehodler[repl]
             all_positions.extend((start, end, repl)
                                  for start, end in spans)
 
-        # Trier les positions par ordre décroissant de début
         all_positions.sort(key=lambda x: x[0], reverse=True)
-
-        # Remplacer les portions correspondantes dans la liste
         for start, end, repl in all_positions:
-
-            # Remplacer dans le texte
             text_as_list[start:end] = list(repl)
-
-        # Reconvertir la liste en chaîne de caractères
         return ''.join(text_as_list)
 
 
@@ -59,25 +49,39 @@ class PlaceholderStrategy(Strategy):
         Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
 
         """
-        # Convertir le texte en liste de caractères pour modifications sans conflits
         text_as_list = list(text)
 
-        # Collecter toutes les positions avec leurs remplacements associés
         all_positions = []
         for spans, repl in coordinate.items():
             all_positions.extend((start, end, repl)
                                  for start, end in spans)
 
-        # Trier les positions par ordre décroissant de début
         all_positions.sort(key=lambda x: x[0], reverse=True)
-
-        # Remplacer les portions correspondantes dans la liste
         for start, end, repl in all_positions:
 
-            # Remplacer dans le texte
             text_as_list[start:end] = list(repl)
+        return ''.join(text_as_list)
 
-        # Reconvertir la liste en chaîne de caractères
+
+class HideStrategy(Strategy):
+    """Remplace par des *"""
+
+    def mask(self, text, coordinate: Dict[List[Tuple], str]) -> str:
+        """
+        Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
+
+        """
+        text_as_list = list(text)
+
+        all_positions = []
+        for spans, repl in coordinate.items():
+            all_positions.extend((start, end, repl)
+                                 for start, end in spans)
+
+        all_positions.sort(key=lambda x: x[0], reverse=True)
+        for start, end, repl in all_positions:
+
+            text_as_list[start:end] = list("*****")
         return ''.join(text_as_list)
 
 
