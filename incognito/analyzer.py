@@ -1,7 +1,6 @@
 import regex
 from datetime import datetime
 from flashtext import KeywordProcessor
-from .mask import NATURAL_PLACEHOLDERS
 from pydantic import BaseModel
 from typing import Dict, Tuple
 from typing import Optional, Iterable
@@ -63,7 +62,7 @@ class PiiStrategy(Strategy):
 
         return processor.replace_keywords(text)
 
-    def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
+    def analyze(self, text: str) -> str:
         """
         Anonymisation par keywords
 
@@ -88,8 +87,7 @@ class PiiStrategy(Strategy):
             )
 
         return self.hide_by_keywords(text, [
-            (info, (NATURAL_PLACEHOLDERS[tag]
-             if use_natural_placeholders else tag))
+            (info, tag)
             for info, tag in keywords if info
         ])
 
@@ -130,7 +128,8 @@ class RegexStrategy(Strategy):
 
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             r"(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
-            r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
+            # r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
+            r"\b((([!#$%&'*+\-/=?^_`{|}~\w])|([!#$%&'*+\-/=?^_`{|}~\w][!#$%&'*+\-/=?^_`{|}~\.\w]{0,}[!#$%&'*+\-/=?^_`{|}~\w]))[@]\w+([-.]\w+)*\.\w+([-.]\w+)*)\b": "<EMAIL>",
         }
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
@@ -167,18 +166,12 @@ class RegexStrategy(Strategy):
 
         return self.position
 
-    def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
+    def analyze(self, text: str) -> str:
         """
         Hide text using regular expression
         Args:
             text : text to anonymize
             use_natural_placehodler : if you want the default natural placeholder instead of the tag
         """
-        if use_natural_placeholders:
-            patterns = {
-                reg: NATURAL_PLACEHOLDERS[tag]
-                for reg, tag in self.PATTERNS.items()
-            }
-        else:
-            patterns = self.PATTERNS
+        patterns = self.PATTERNS
         return self.multi_subs_by_regex(text)

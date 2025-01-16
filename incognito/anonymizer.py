@@ -61,7 +61,7 @@ class Anonymizer:
     def set_masks(self, masks: str):
         self.used_mask = masks
 
-    def anonymize(self, text: str, use_natural_placeholders: bool = False) -> str:
+    def anonymize(self, text: str) -> str:
         """
             Global function to anonymise a text base on the choosen strategies
 
@@ -75,8 +75,7 @@ class Anonymizer:
                 strategy)  # get the good strat class
 
             current_strategy.info = self.infos
-            span = current_strategy.analyze(
-                text=text, use_natural_placeholders=use_natural_placeholders)
+            span = current_strategy.analyze(text=text)
             spans.update(span)
 
         # mask les différents mots trouvés
