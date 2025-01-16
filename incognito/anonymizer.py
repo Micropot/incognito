@@ -78,21 +78,9 @@ class Anonymizer:
             span = current_strategy.analyze(text=text)
             spans.update(span)
 
-        # mask les différents mots trouvés
-        current_mask = Anonymizer.MASKS.get(self.used_mask)
-        anonymized_text = current_mask.mask(text, spans)
+            # mask les différents mots trouvés
+            current_mask = Anonymizer.MASKS.get(self.used_mask)
+            anonymized_text = current_mask.mask(text, spans)
+            text = anonymized_text
+            spans = {}
         return anonymized_text
-
-    # def detect() -> list:
-    #     """ renvoie list des debut et fin de mot """
-    #     pass
-
-    # def mask(words: list):
-    #     """ Cache lesm mots en fonction du mask """
-
-    #     mask_strategie[curent_mask].mask(words)
-
-    # def anonymize(self, text) -> string:
-
-    #     words = self.detect_entity()
-    #     return self.mask_entity(text, words)

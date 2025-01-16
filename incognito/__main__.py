@@ -9,7 +9,7 @@ if __name__ == '__main__':
     #     {'hi': 'hello', 'p[a-z]+s': 'world'}
     # )
     # print(results)
-    test.set_strategies(['regex'])
+    test.set_strategies(['regex', 'pii'])
     test.set_masks('placeholder')
     # text = test.open_text_file(
     #     '/data/homes/arthur/incognito/docs/docselect/0069914276.txt')

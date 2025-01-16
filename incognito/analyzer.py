@@ -42,25 +42,36 @@ class PiiStrategy(Strategy):
     def __init__(self):
         self.info: PersonalInfo = None
 
-    def hide_by_keywords(self, text: str, keywords: Iterable[tuple[str, str]]) -> str:
+    def hide_by_keywords(self, text: str, keywords: Iterable[Tuple[str, str]]) -> Dict[Tuple[int, int], str]:
         """
-        Hide text using keywords
+        Hide text using keywords and return positions with replacements.
 
         Args:
             text : text to anonymize
-            keywords : Tuple of word and his replacement
+            keywords : Iterable of tuples (word, replacement).
 
-
-        >>> strat = PiiStrategy()
-        >>> strat.hide_by_keywords("pomme", [("pomme","poire")])
-        'poire'
-
+        Returns:
+            List of tuples where each tuple contains:
+                - A tuple with the start and end positions of the word.
+                - The replacement string.
         """
         processor = KeywordProcessor(case_sensitive=False)
         for key, masks in keywords:
             processor.add_keyword(key, masks)
 
-        return processor.replace_keywords(text)
+        # Extract keywords with positions
+        found_keywords = processor.extract_keywords(text, span_info=True)
+
+        result = {}
+        for replacement, start, end in found_keywords:
+            # Wrap positions as a tuple of tuples
+            key = ((start, end),)
+            if key in result:
+                result[key] = replacement  # Handle multiple occurrences
+            else:
+                result[key] = replacement
+
+        return result
 
     def analyze(self, text: str) -> str:
         """
@@ -94,7 +105,6 @@ class PiiStrategy(Strategy):
 
 class RegexStrategy(Strategy):
     """Replace par regex"""
-    # TODO : voir regex de l'AP-HP
 
     def __init__(self):
         # Lettre majuscule puis une ou plusieurs lettres minuscules Unicode
@@ -166,7 +176,7 @@ class RegexStrategy(Strategy):
 
         return self.position
 
-    def analyze(self, text: str) -> str:
+    def analyze(self, text: str):
         """
         Hide text using regular expression
         Args:
