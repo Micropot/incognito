@@ -15,7 +15,7 @@ NATURAL_PLACEHOLDERS = {
 
 class Strategy:
     # dictionnaire avec le type et la position
-    def mask(self, text, coordinate: Dict[str, List[Tuple]]):
+    def mask(self, text, coordinate: Dict[List[Tuple], str]):
         pass
 
 
@@ -41,27 +41,17 @@ class FakeStrategy(Strategy):
 class PlaceholderStrategy(Strategy):
     """Remplace par des balises """
 
-    def mask(self, text, coordinate: Dict[str, List[Tuple]]) -> str:
+    def mask(self, text, coordinate: Dict[List[Tuple], str]) -> str:
         """
         Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
 
-        :param text: Le texte original.
-        :param positions: Un dictionnaire où les clés sont les valeurs de remplacement et les valeurs
-                          sont des listes de tuples (début, fin) représentant les positions.
-        :return: Le texte modifié avec les remplacements effectués.
-
-        >>> text = "hi! peoples"
-        >>> positions = {'hello': [(0, 2)], 'world': [(4, 11)]}
-        >>> pl = PlaceholderStrategy()
-        >>> pl.mask(text, positions)
-        'hello! world'
         """
         # Convertir le texte en liste de caractères pour modifications sans conflits
         text_as_list = list(text)
 
         # Collecter toutes les positions avec leurs remplacements associés
         all_positions = []
-        for repl, spans in coordinate.items():
+        for spans, repl in coordinate.items():
             all_positions.extend((start, end, repl)
                                  for start, end in spans)
 

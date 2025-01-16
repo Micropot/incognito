@@ -3,7 +3,7 @@ from datetime import datetime
 from flashtext import KeywordProcessor
 from .mask import NATURAL_PLACEHOLDERS
 from pydantic import BaseModel
-from typing import Dict, Tuple, Str, List, Int
+from typing import Dict, Tuple
 from typing import Optional, Iterable
 
 
@@ -114,7 +114,7 @@ class RegexStrategy(Strategy):
             |(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)
             |(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)
             |(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)
-        ) 
+        )
         """
 
         self.patern = rf"({self.title_regex})\s{self.person_patern}"
@@ -133,18 +133,38 @@ class RegexStrategy(Strategy):
             r"""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?: ?\. ?[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*") ?@ ?(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])? ?\. ?)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?) ?\. ?){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""": "<EMAIL>",
         }
 
-        self.position = {}
-
-    def multi_subs_by_regex(self, text: str) -> Dict[List[Tuple[Int, Int], Str]]:
-        # TODO couple clé valeur {(début,fin): "<NAME>"}
+    def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
         self.position = {}
         for pattern, repl in self.PATTERNS.items():
             matches = regex.findall(pattern, text, overlapped=True)
             if matches:
-                spans = [matches.span() for matches in regex.finditer(
+                spans = [match.span() for match in regex.finditer(
                     pattern, text, overlapped=True)]
-                self.position[repl] = spans
-        # retourne le dictionnaire avec la balise et la position
+
+                # Récupérer toutes les clés existantes
+                existing_keys = list(self.position.keys())
+
+                # Identifier les clés qui chevauchent ou incluent les nouvelles spans
+                overlapping_keys = []
+                for key in existing_keys:
+                    if any(span in key for span in spans) or any(k in spans for k in key):
+                        overlapping_keys.append(key)
+
+                # Fusionner les clés chevauchantes avec les nouvelles spans
+                if overlapping_keys:
+                    combined_key = tuple(
+                        sorted(set(span for key in overlapping_keys for span in key).union(spans)))
+
+                    # Supprimer les anciennes clés fusionnées
+                    for key in overlapping_keys:
+                        del self.position[key]
+
+                    # Ajouter la nouvelle clé fusionnée
+                    self.position[combined_key] = repl
+                else:
+                    # Ajouter une nouvelle entrée si aucun chevauchement n'est trouvé
+                    self.position[tuple(spans)] = repl
+
         return self.position
 
     def analyze(self, text: str, use_natural_placeholders: bool = False) -> str:
