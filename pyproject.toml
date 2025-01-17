@@ -17,4 +17,4 @@ authors = [
 ]
 
 [project.optional-dependencies]
-dev= ["pytest", "pytest-cov", "twine", "build"]
+dev= ["regex","pytest", "pytest-cov", "twine", "build"]

@@ -1,6 +1,7 @@
 """
-    Module pour l'anonymistaion d'un texte
+Text anonymization module
 """
+
 from __future__ import annotations
 import json
 from . import analyzer
@@ -8,12 +9,15 @@ from . import mask
 
 
 class Anonymizer:
-    """Class d'anonymisation par choix des stratgies"""
+    """Anonymization class based on strategies formating"""
+
+    # available strategies
     STRATEGIES = {
         "regex": analyzer.RegexStrategy(),
-        "pii": analyzer.PiiStrategy()
-    }  # Définition des différentes stratégies
+        "pii": analyzer.PiiStrategy(),
+    }
 
+    # available masks
     MASKS = {
         "placeholder": mask.PlaceholderStrategy(),
         "fake": mask.FakeStrategy(),
@@ -29,11 +33,13 @@ class Anonymizer:
     def open_text_file(self, path: str) -> str:
         """
         Open input txt file
-        Args:
-            path : path of the input txt file
+
+        :param path: path of the input txt file
+        :returns: file content
+        :raises FileExistsError: if given file not found
         """
         try:
-            with open(path, 'r') as f:
+            with open(path, "r") as f:
                 content = f.read()
             return content
         except FileExistsError as e:
@@ -42,8 +48,10 @@ class Anonymizer:
     def open_json_file(self, path: str) -> str:
         """
         Open input json file for personal infos
-        Args:
-            path : path of the json file
+
+        :param path: path of the json file
+        :returns: file content
+        :raises FileExistsError: if given file not found
         """
         try:
             with open(path) as f:
@@ -53,33 +61,44 @@ class Anonymizer:
             print(e)
 
     def set_info(self, infos: dict) -> analyzer.PersonalInfo:
+        """
+        Set dict to PersonalInfo Class
+
+        :param infos: dict with all the Personal info values
+        """
         self.infos = analyzer.PersonalInfo(**infos)
-        return self.infos
 
     def set_strategies(self, strategies: list):
+        """
+        Set strategies
+
+        :param list: list of wanted strategies
+        """
         self.used_strats = strategies
 
-    def set_masks(self, masks: str):
-        self.used_mask = masks
+    def set_masks(self, mask: str):
+        """
+        Set masks
+
+        :param mask: wanted mask
+        """
+        self.used_mask = mask
 
     def anonymize(self, text: str) -> str:
         """
-            Global function to anonymise a text base on the choosen strategies
+        Global function to anonymise a text base on the choosen strategies
 
-            Args :
-                use_natural_placehodler : if you want the default natural placeholder instead of the tag
+        :param text: text to anonymize
+        :returns: anonimized text
         """
         spans = {}
-        # analyser le text pour trouver la position et le type de placehoder
         for strategy in self.used_strats:
-            current_strategy = Anonymizer.STRATEGIES.get(
-                strategy)  # get the good strat class
+            current_strategy = Anonymizer.STRATEGIES.get(strategy)
 
             current_strategy.info = self.infos
             span = current_strategy.analyze(text=text)
             spans.update(span)
 
-            # mask les différents mots trouvés
             current_mask = Anonymizer.MASKS.get(self.used_mask)
             anonymized_text = current_mask.mask(text, spans)
             text = anonymized_text
