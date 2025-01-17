@@ -37,7 +37,7 @@ class Strategy:
 
 
 class PiiStrategy(Strategy):
-    """Remplace les infos persos"""
+    """Detect personal infos"""
 
     def __init__(self):
         self.info: PersonalInfo = None
@@ -48,12 +48,11 @@ class PiiStrategy(Strategy):
         """
         Hide text using keywords and return positions with replacements.
 
-        Args:
-            text : text to anonymize
-            keywords : Iterable of tuples (word, replacement).
+        :param text: text to anonymize
+        :param keywords: Iterable of tuples (word, replacement).
 
-        Returns:
-            List of tuples where each tuple contains:
+
+        :returns: List of tuples where each tuple contains:
                 - A tuple with the start and end positions of the word.
                 - The replacement string.
         """
@@ -77,11 +76,9 @@ class PiiStrategy(Strategy):
 
     def analyze(self, text: str) -> str:
         """
-        Anonymisation par keywords
+        Hide specific words based on keywords
 
-        Args:
-            text : text to anonymize
-            use_natural_placehodler : if you want the default natural placeholder instead of the tag
+        :param text: text to anonymize
         """
         keywords: tuple
         if isinstance(self.info, PersonalInfo):
@@ -103,7 +100,7 @@ class PiiStrategy(Strategy):
 
 
 class RegexStrategy(Strategy):
-    """Replace par regex"""
+    """Detect word based on regex"""
 
     def __init__(self):
         Xxxxx = r"[A-Z]\p{Ll}+"
@@ -111,17 +108,6 @@ class RegexStrategy(Strategy):
         sep = r"(?:[ ]*|-)?"
 
         self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P]r[.]?|[Pp]rofesseure?|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
-
-        self.person_patern = rf"""
-        (?:
-            (?P<LN0>[A-Z][A-Z](?:{sep}(?:ep[.]|de|[A-Z]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)
-            |(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-Z][A-Z]+(?:{sep}(?:ep[.]|de|[A-Z]+))*)
-            |(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)
-            |(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)
-        )
-        """
-
-        self.patern = rf"({self.title_regex})\s{self.person_patern}"
 
         self.PATTERNS = {
             # rf"(?<={self.title_regex})([\s-][A-Z]+)+([\s-][A-Z][a-z]+)+(?![a-z])": "<NAME>",
@@ -136,6 +122,14 @@ class RegexStrategy(Strategy):
         }
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
+        """
+        Find word position based on regex
+
+        :param text: text to anonymise
+        :returns: List of tuples where each tuple contains:
+                - A tuple with the start and end positions of the word.
+                - The replacement string.
+        """
         self.position = {}
         for pattern, repl in self.PATTERNS.items():
             matches = regex.findall(pattern, text, overlapped=True)
@@ -168,7 +162,6 @@ class RegexStrategy(Strategy):
     def analyze(self, text: str):
         """
         Hide text using regular expression
-        Args:
-            text : text to anonymize
+        :param text: text to anonymize
         """
         return self.multi_subs_by_regex(text)
