@@ -1,14 +1,16 @@
 from typing import Dict, List, Tuple
+"""
+    Classes to mask the word at the given coordinates
+"""
 
 
 class Strategy:
-    # dictionnaire avec le type et la position
     def mask(self, text, coordinate: Dict[List[Tuple], str]):
         pass
 
 
 class FakeStrategy(Strategy):
-    """Remplace les mots par les valeurs de Natural_placeholder"""
+    """Replace word by natural placeholder"""
 
     def __init__(self):
         self.natural_placehodler = {
@@ -25,7 +27,7 @@ class FakeStrategy(Strategy):
 
     def mask(self, text: str, coordinate: Dict[List[Tuple], str]) -> str:
         """
-        Replace in word a the specific coordinates by a natural palceholder.
+        Replace in text, words at the given coordinates by a natural palceholder.
 
         :param test: text to anonymize
         :param coordinate: position and placehoder of the word to replace
@@ -51,11 +53,21 @@ class FakeStrategy(Strategy):
 
 
 class PlaceholderStrategy(Strategy):
-    """Remplace par des balises"""
+    """Replace by placeholders"""
 
     def mask(self, text, coordinate: Dict[List[Tuple], str]) -> str:
         """
-        Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
+        Replace in text, words at the given coordinates by a placeholder.
+        :param test: text to anonymize
+        :param coordinate: position and placehoder of the word to replace
+        :returns: anonymzed text
+
+        Example :
+        >>> anonymizer = PlaceholderStrategy()
+        >>> text = "Bob"
+        >>> coordinate = {((0,3),): '<NAME>',}
+        >>> anonymizer.mask(text, coordinate)
+        '<NAME>'
 
         """
         text_as_list = list(text)
@@ -72,11 +84,21 @@ class PlaceholderStrategy(Strategy):
 
 
 class HideStrategy(Strategy):
-    """Remplace par des *"""
+    """Replace by *"""
 
     def mask(self, text, coordinate: Dict[List[Tuple], str]) -> str:
         """
-        Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
+        Replace in text, words at the given coordinates by *.
+        :param test: text to anonymize
+        :param coordinate: position and placehoder of the word to replace
+        :returns: anonymzed text
+
+        Example :
+        >>> anonymizer = HideStrategy()
+        >>> text = "Bob"
+        >>> coordinate = {((0,3),): '<NAME>',}
+        >>> anonymizer.mask(text, coordinate)
+        '********'
 
         """
         text_as_list = list(text)

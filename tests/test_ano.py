@@ -1,7 +1,7 @@
 from incognito import Anonymizer
 import pytest
 
-dataset = {
+dataset_regex = {
 
     "phone": ("tél: 0651565600", "tél: <PHONE>"),
     "phone2": ("tél: 06 51 56 56 00", "tél: <PHONE>"),
@@ -30,16 +30,47 @@ dataset = {
 }
 
 
-datas = list(dataset.values())
-ids = list(dataset.keys())
+datas_regex = list(dataset_regex.values())
+ids_regex = list(dataset_regex.keys())
 
 
 @ pytest.mark.parametrize(
-    "input,output", datas, ids=ids
+    "input,output", datas_regex, ids=ids_regex
 )
 def test_regex_strategie(input, output):
 
     ano = Anonymizer()
     ano.set_strategies(['regex'])
+    ano.set_masks('placeholder')
+    assert ano.anonymize(input) == output
+
+
+infos = {
+    "first_name": "Bob",
+    "last_name": "Jungels",
+    "birth_name": "",
+    "birthdate": "1992-09-22",
+    "ipp": "0987654321",
+    "postal_code": "01000",
+    "adress": ""
+}
+
+dataset_pii = {
+    "Nom_Prenom_PII": ("Bob Jungels", "<NAME> <NAME>"),
+    "Date_IPP_Postal": ("1992-09-22 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>")
+}
+
+datas_pii = list(dataset_pii.values())
+ids_pii = list(dataset_pii.keys())
+
+
+@ pytest.mark.parametrize(
+    "input,output", datas_pii, ids=ids_pii
+)
+def test_pii_strategie(input, output):
+
+    ano = Anonymizer()
+    ano.set_info(infos)
+    ano.set_strategies(['pii'])
     ano.set_masks('placeholder')
     assert ano.anonymize(input) == output
