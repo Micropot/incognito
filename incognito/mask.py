@@ -23,10 +23,20 @@ class FakeStrategy(Strategy):
             "<ADRESSE>": "35 Rue Margaret Hamilton",
         }
 
-    def mask(self, text, coordinate: Dict[List[Tuple], str]) -> str:
+    def mask(self, text: str, coordinate: Dict[List[Tuple], str]) -> str:
         """
-        Remplace dans le texte les mots aux positions spécifiées par leurs valeurs associées.
+        Replace in word a the specific coordinates by a natural palceholder.
 
+        :param test: text to anonymize
+        :param coordinate: position and placehoder of the word to replace
+        :returns: anonymzed text
+
+        Example :
+        >>> anonymizer = FakeStrategy()
+        >>> text = "Bob"
+        >>> coordinate = {((0,3),): '<NAME>',}
+        >>> anonymizer.mask(text, coordinate)
+        'Margaret Hamilton'
         """
         text_as_list = list(text)
         all_positions = []

@@ -42,8 +42,9 @@ class Anonymizer:
             with open(path, "r") as f:
                 content = f.read()
             return content
-        except FileExistsError as e:
+        except FileNotFoundError as e:
             print(e)
+            raise
 
     def open_json_file(self, path: str) -> str:
         """
@@ -54,11 +55,12 @@ class Anonymizer:
         :raises FileExistsError: if given file not found
         """
         try:
-            with open(path) as f:
+            with open(path, "r") as f:
                 data = json.load(f)
             return data
         except FileNotFoundError as e:
             print(e)
+            raise
 
     def set_info(self, infos: dict) -> analyzer.PersonalInfo:
         """
@@ -67,6 +69,7 @@ class Anonymizer:
         :param infos: dict with all the Personal info values
         """
         self.infos = analyzer.PersonalInfo(**infos)
+        return self.infos
 
     def set_strategies(self, strategies: list):
         """

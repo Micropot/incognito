@@ -21,7 +21,8 @@ class PersonalInfo(BaseModel):
             first_name=d.get("PRENOM_PATIENT") or "",
             last_name=d.get("NOM_USUEL_PATIENT") or "",
             birth_name=d.get("NOM_NAISSANCE") or "",
-            birthdate=d.get("DATE_NAIS") or datetime(year=1000, month=1, day=1),
+            birthdate=d.get("DATE_NAIS") or datetime(
+                year=1000, month=1, day=1),
             postal_code=d.get("CODE_POSTAL", "0"),
             ipp=d.get("IPP_PATIENT") or "",
             adress=d.get("ADRESSE") or "",
@@ -139,7 +140,8 @@ class RegexStrategy(Strategy):
         for pattern, repl in self.PATTERNS.items():
             matches = regex.findall(pattern, text, overlapped=True)
             if matches:
-                spans = [match.span() for match in regex.finditer(pattern, text, overlapped=True)]
+                spans = [match.span() for match in regex.finditer(
+                    pattern, text, overlapped=True)]
 
                 existing_keys = list(self.position.keys())
 
@@ -150,7 +152,8 @@ class RegexStrategy(Strategy):
 
                 if overlapping_keys:
                     combined_key = tuple(
-                        sorted(set(span for key in overlapping_keys for span in key).union(spans))
+                        sorted(
+                            set(span for key in overlapping_keys for span in key).union(spans))
                     )
 
                     for key in overlapping_keys:

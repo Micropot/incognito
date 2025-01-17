@@ -98,9 +98,11 @@ class AnonymiserCli:
         ano = anonymizer.Anonymizer()
 
         if command == "json":
+            print("JSON")
             json_file = args.json
-            ano.infos = ano.open_json_file(json_file[0])
-            ano.infos = ano.set_info(ano.infos)
+            infos = ano.open_json_file(json_file[0])
+            ano.infos = ano.set_info(infos)
+            print(ano.infos)
         ano.text = ano.open_text_file(input_file)
 
         if command == "infos":
@@ -124,7 +126,6 @@ class AnonymiserCli:
             values = [first_name, last_name, birthname, birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = ano.set_info(infos_dict)
-
         ano.set_strategies(strats)
         ano.set_masks(mask[0])
 
