@@ -4,17 +4,19 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "incognito"
-version = "0.0.1"
-description = "A module to anonymize text data" 
-# readme = "README.md"
+name = "incognito-anonymizer"
+version = "0.0.2"
+description = "A module to anonymize french text data" 
+readme = "README.md"
+licence="MIT"
 dependencies = [
+  "pydantic",
+  "regex",
   "flashtext",
-  "pydantic"
 ]
 authors = [
   {name="Arthur Lamard", email="arthur.lamard@chu-brest.fr"}
 ]
 
 [project.optional-dependencies]
-dev= ["regex","pytest", "pytest-cov", "twine", "build"]
+dev= ["pytest", "pytest-cov", "twine", "build"]

@@ -1,8 +1,8 @@
 
-# Incognitio
+# Incognito
 
 ## Description
-**Incognitio** is a Python module for anonymizing French text. It uses Regex and other strategies to mask names and personal information provided by the user.  
+**Incognito** is a Python module for anonymizing French text. It uses Regex and other strategies to mask names and personal information provided by the user.  
 This module was specifically designed for medical reports, ensuring that disease names remain unaltered.
 
 [![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
@@ -10,7 +10,10 @@ This module was specifically designed for medical reports, ensuring that disease
 ---
 
 ## Installation
-
+### From pip
+```bash
+pip install incognito-anonymizer
+```
 ### From this repository
 1. Clone the repository:
     ```bash
