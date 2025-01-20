@@ -1,93 +1,124 @@
-# Incognito
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.chu-brest.fr/0149422A/incognito.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.chu-brest.fr/0149422A/incognito/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Incognitio is a module for french text anonymization. The goal of this module is to anonymize text with Regex to mask all the names and personal information given by the user.
+Since this module was developed for medical reports, the diseases name are kept.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+[![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### From this repositry
+1. Clone the repository
+    ```bash
+    git clone https://github.com/Micropot/incognito
+    ```
+2. Install the the dependances (. because dependances are definded in the pyproject.toml)
+     ```bash
+     pip install . 
+     ```
+
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Python
+With personal infos in the code : 
+```python
+from . import anonymizer
+ano = anonymizer.Anonymizer()
+infos = {
+    "first_name": "Bob",
+    "last_name": "Jungels",
+    "birth_name": "",
+    "birthdate": "1992-09-22",
+    "ipp": "0987654321",
+    "postal_code": "01000",
+    "adress": ""
+}
+ano.set_info(infos)
+ano.set_strategies(['regex', 'pii'])
+ano.set_masks('placeholder')
+text_to_anonymize = ano.open_text_file("/path/to/file.txt")
+anonymized_text = ano.anonymize(text_to_anonymize)
+print(anonymized_text)
+```
+With infos in json file : 
+```python
+from . import anonymizer
+ano = anonymizer.Anonymizer()
+infos_json = ano.open_json_file("/path/to/infofile.json")
+ano.set_info(infos_jsons)
+ano.set_strategies(['regex', 'pii'])
+ano.set_masks('placeholder')
+text_to_anonymize = ano.open_text_file("/path/to/file.txt")
+anonymized_text = ano.anonymize(text_to_anonymize)
+print(anonymized_text)
+```
+### CLI
+#### Mandatory arguments for each method : 
+```bash
+python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks
+```
+Available strategies and masks can be found eather in the source code or in the cli helper. 
+```bash
+python -m incognito --help
+```
+#### Anonymizer with json file
+```bash
+python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks json --json myjsonfile.json
+```
+Helper for the json submodule : 
+```bash
+python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks json --help
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+#### Anonymizer with personal infos directly in CLI
+```bash
+python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks infos --first_name Bob --last_name Dylan --birthdate 1800-01-01 --ipp 0987654312 --postal_code 75001
+```
+Helper for the infos submodule : 
+Useful for knowing any optional arguments.
+```bash
+python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks infos --help
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Python
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```python
+from . import anonymizer
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+ano = anonymzier.Anonymizer()
+personal_infos = {
+    "first_name": "Bob",
+    "last_name": "Jungels",
+    "birth_name": "",
+    "birthdate": "1992-09-22",
+    "ipp": "0987654321",
+    "postal_code": "01000",
+    "adress": ""
+}
+ano.set_info(infos=personal_infos)
+ano.set_strategies(['regex', 'pii'])
+ano.set_masks('placeholder')
+text_to_anonymize = ano.open_text_file("/path/to/my/file.txt")
+anonymized_text = ano.anonymize(text_to_anonymize)
+print(anonymized_text)
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```
+### Unittests
+Unittest are included in this module. They are testing all the functions and can be modified depending on the needs.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+To run unittests : 
+```bash
+make test
+```
 
-## License
-For open source projects, say how it is licensed.
+To run code coverage : 
+```bash
+make cov
+```
+## Informations about the anonymization process
+### Regex
+One of the avalaible strategy is regex anonymisation. This one can extract specific informations for the input text such as email adresses, phone numbers, NIR (french security number), first and last name <b>if preceded by Monsieur, Madame, Mr, Mme, Docteur, Professeur, etc...</b> (see [`RegexStrategy Class`](https://github.com/Micropot/incognito/blob/main/incognito/analyzer.py), self.title_regex variable).
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+
+
+

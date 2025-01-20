@@ -147,7 +147,7 @@ venv.bak/
 /site
 
 # files for tests
-/docs
+/documents
 
 # mypy
 .mypy_cache/
