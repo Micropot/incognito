@@ -139,7 +139,7 @@ One available anonymization strategy is **Regex**. It can extract and mask speci
 - French NIR (social security number)
 - First and last names (if preceded by titles like "Monsieur", "Madame", "Mr", "Mme", "Docteur", "Professeur", etc.)
 
-For more details, see the [`RegexStrategy` class](main/incognito/analyzer.py) and the `self.title_regex` variable.
+For more details, see the [`RegexStrategy` class](incognito/analyzer.py) and the `self.title_regex` variable.
 
 ---
 
