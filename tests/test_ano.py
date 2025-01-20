@@ -1,4 +1,6 @@
 from incognito import Anonymizer
+from incognito import analyzer
+from incognito import mask
 import pytest
 
 dataset_regex = {
@@ -74,3 +76,13 @@ def test_pii_strategie(input, output):
     ano.set_strategies(['pii'])
     ano.set_masks('placeholder')
     assert ano.anonymize(input) == output
+
+
+def test_anaylser_not_implemented_error():
+    with pytest.raises(NotImplementedError):
+        analyzer.Strategy.analyze(text="test")
+
+
+def test_mask_not_implemented_error():
+    with pytest.raises(NotImplementedError):
+        mask.Strategy.mask("test", coordinate=((10, 10), "<TEST>"))

@@ -32,8 +32,8 @@ class PersonalInfo(BaseModel):
 class Strategy:
     """Constructeur de la Class Strategy"""
 
-    def analyze(self, text):
-        pass
+    def analyze(text):
+        raise NotImplementedError()
 
 
 class PiiStrategy(Strategy):

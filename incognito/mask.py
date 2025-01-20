@@ -5,8 +5,8 @@ from typing import Dict, List, Tuple
 
 
 class Strategy:
-    def mask(self, text, coordinate: Dict[List[Tuple], str]):
-        pass
+    def mask(text, coordinate: Dict[List[Tuple], str]):
+        raise NotImplementedError()
 
 
 class FakeStrategy(Strategy):

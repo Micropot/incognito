@@ -83,34 +83,21 @@ def test_run_valid_args():
         "--json", "infos.json"
     ]
 
- # Mock de la méthode anonymizer.Anonymizer pour ne pas appeler les vraies méthodes
     with patch("incognito.cli.anonymizer.Anonymizer") as MockAnonymizer:
         mock_ano_instance = MagicMock()
         MockAnonymizer.return_value = mock_ano_instance
 
-        # Mock de la méthode open_json_file pour qu'elle retourne un contenu simulé
         mock_ano_instance.open_json_file.return_value = {"info": "data"}
-        # Définir un retour pour la méthode anonymize
         mock_ano_instance.anonymize.return_value = "Texte anonymisé"
 
-        # Crée une instance de AnonymiserCli
         cli = AnonymiserCli()
 
-        # Patch du système de fichiers (on patch open) pour éviter l'accès réel au fichier
         with patch("builtins.open", MagicMock()) as mock_file:
-            # Appelle la méthode run avec les arguments simulés
             with patch("sys.stdout", new_callable=MagicMock) as mock_stdout:
                 cli.run(argv)
-
-            # Vérifie que la méthode `open_text_file` a été appelée avec le bon argument
             mock_ano_instance.open_text_file.assert_called_with("input.txt")
-
-            # Vérifie que la méthode anonymize a été appelée
             mock_ano_instance.anonymize.assert_called_once()
-
-            # Vérifie que l'écriture du texte anonymisé a été appelée avec le bon fichier de sortie
             mock_file.assert_called_once_with("output.txt", "w")
-            # Vérifie le contenu écrit dans le fichier
             mock_file.return_value.write.assert_called_once_with(
                 "Texte anonymisé")
 
@@ -125,34 +112,23 @@ def test_run_valid_args_json():
         "--json", "infos.json"
     ]
 
- # Mock de la méthode anonymizer.Anonymizer pour ne pas appeler les vraies méthodes
     with patch("incognito.cli.anonymizer.Anonymizer") as MockAnonymizer:
         mock_ano_instance = MagicMock()
         MockAnonymizer.return_value = mock_ano_instance
-
-        # Mock de la méthode open_json_file pour qu'elle retourne un contenu simulé
         mock_ano_instance.open_json_file.return_value = {"info": "data"}
-        # Définir un retour pour la méthode anonymize
         mock_ano_instance.anonymize.return_value = "Texte anonymisé"
 
-        # Crée une instance de AnonymiserCli
         cli = AnonymiserCli()
 
-        # Patch du système de fichiers (on patch open) pour éviter l'accès réel au fichier
         with patch("builtins.open", MagicMock()) as mock_file:
-            # Appelle la méthode run avec les arguments simulés
             with patch("sys.stdout", new_callable=MagicMock) as mock_stdout:
                 cli.run(argv)
 
-            # Vérifie que la méthode `open_text_file` a été appelée avec le bon argument
             mock_ano_instance.open_text_file.assert_called_with("input.txt")
 
-            # Vérifie que la méthode anonymize a été appelée
             mock_ano_instance.anonymize.assert_called_once()
 
-            # Vérifie que l'écriture du texte anonymisé a été appelée avec le bon fichier de sortie
             mock_file.assert_called_once_with("output.txt", "w")
-            # Vérifie le contenu écrit dans le fichier
             mock_file.return_value.write.assert_called_once_with(
                 "Texte anonymisé")
 
@@ -170,32 +146,23 @@ def test_run_valid_args_infos():
         "--ipp", "123456"
     ]
 
- # Mock de la méthode anonymizer.Anonymizer pour ne pas appeler les vraies méthodes
     with patch("incognito.cli.anonymizer.Anonymizer") as MockAnonymizer:
         mock_ano_instance = MagicMock()
         MockAnonymizer.return_value = mock_ano_instance
 
-        # Définir un retour pour la méthode anonymize
         mock_ano_instance.anonymize.return_value = "Texte anonymisé"
 
-        # Crée une instance de AnonymiserCli
         cli = AnonymiserCli()
 
-        # Patch du système de fichiers (on patch open) pour éviter l'accès réel au fichier
         with patch("builtins.open", MagicMock()) as mock_file:
-            # Appelle la méthode run avec les arguments simulés
             with patch("sys.stdout", new_callable=MagicMock) as mock_stdout:
                 cli.run(argv)
 
-            # Vérifie que la méthode `open_text_file` a été appelée avec le bon argument
             mock_ano_instance.open_text_file.assert_called_with("input.txt")
 
-            # Vérifie que la méthode anonymize a été appelée
             mock_ano_instance.anonymize.assert_called_once()
 
-            # Vérifie que l'écriture du texte anonymisé a été appelée avec le bon fichier de sortie
             mock_file.assert_called_once_with("output.txt", "w")
-            # Vérifie le contenu écrit dans le fichier
             mock_file.return_value.write.assert_called_once_with(
                 "Texte anonymisé")
 
@@ -216,6 +183,5 @@ def test_run_missing_args():
     with pytest.raises(SystemExit) as excinfo:
         cli.run(argv)
 
-    # Vérifie que l'erreur est une sortie d'arguments invalides
     assert excinfo.type == SystemExit
     assert excinfo.value.code == 2  # Code 2 pour erreur d'arguments argparse
