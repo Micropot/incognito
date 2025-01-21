@@ -148,7 +148,7 @@ venv.bak/
 
 # files for tests
 /documents
-# /docs
+/docs
 # mypy
 .mypy_cache/
 .dmypy.json
