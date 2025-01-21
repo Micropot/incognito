@@ -57,7 +57,8 @@ class AnonymiserCli:
             help="Choix entre un fichier JSON, informations patient dans le CLI ou anonymisation par informations par défaut",
         )
 
-        json_parser = subparser.add_parser("json", help="Fournir un fichier JSON")
+        json_parser = subparser.add_parser(
+            "json", help="Fournir un fichier JSON")
         json_parser.add_argument(
             "--json",
             "--json_file",
@@ -67,16 +68,20 @@ class AnonymiserCli:
             nargs=1,
         )
 
-        info_parser = subparser.add_parser("infos", help="Fournir infos partients dans le CLI")
-        info_parser.add_argument("--first_name", type=str, help="Prénom du patient.", required=True)
-        info_parser.add_argument("--last_name", type=str, help="Nom du patient.", required=True)
+        info_parser = subparser.add_parser(
+            "infos", help="Fournir infos partients dans le CLI")
+        info_parser.add_argument(
+            "--first_name", type=str, help="Prénom du patient.", required=True)
+        info_parser.add_argument(
+            "--last_name", type=str, help="Nom du patient.", required=True)
         info_parser.add_argument(
             "--birthname", type=str, help="Nom de naissance du patient.", required=False, default=""
         )
         info_parser.add_argument(
             "--birthdate", type=str, help="Date de naissance du patient.", required=True
         )
-        info_parser.add_argument("--ipp", type=str, help="IPP du patient.", required=True)
+        info_parser.add_argument(
+            "--ipp", type=str, help="IPP du patient.", required=True)
         info_parser.add_argument(
             "--postal_code", type=str, help="Code postal du patient.", required=False, default=""
         )
@@ -98,11 +103,9 @@ class AnonymiserCli:
         ano = anonymizer.Anonymizer()
 
         if command == "json":
-            print("JSON")
             json_file = args.json
             infos = ano.open_json_file(json_file[0])
             ano.infos = ano.set_info(infos)
-            print(ano.infos)
         ano.text = ano.open_text_file(input_file)
 
         if command == "infos":
@@ -123,7 +126,8 @@ class AnonymiserCli:
                 "postal_code",
                 "adress",
             ]
-            values = [first_name, last_name, birthname, birthdate, ipp, postal_code, adress]
+            values = [first_name, last_name, birthname,
+                      birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = ano.set_info(infos_dict)
         ano.set_strategies(strats)
