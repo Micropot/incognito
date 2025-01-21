@@ -4,9 +4,6 @@ on:
     branches:
       - master
       - main
-    paths: 
-      - 'docs/docs/**'
-      - 'mkdocs.yml'
 permissions:
   contents: write
 jobs:
