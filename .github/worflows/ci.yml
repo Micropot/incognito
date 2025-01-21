@@ -1,5 +1,4 @@
 name: Deploy incognito docs web page
-
 on:
   push:
     branches:
