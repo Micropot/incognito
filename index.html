@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Incognito-anonymizer</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Incognito-anonymizer
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#description">Description</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#from-pip">From pip</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#from-this-repository">From this repository</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#python-api">Python API</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#example-providing-personal-information-directly-in-code">Example: Providing Personal Information Directly in Code</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example-using-json-file-for-personal-information">Example: Using JSON File for Personal Information</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#command-line-interface-cli">Command-Line Interface (CLI)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#basic-usage">Basic Usage</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#find-available-strategies-and-masks">Find Available Strategies and Masks</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#anonymization-with-json-file">Anonymization with JSON File</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#anonymization-with-personal-information-in-cli">Anonymization with Personal Information in CLI</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#unit-tests">Unit Tests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#anonymization-process-details">Anonymization Process Details</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#regex-strategy">Regex Strategy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#license">License</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contributors">Contributors</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="api/">API</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Incognito-anonymizer</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="incognito">Incognito</h1>
+<h2 id="description">Description</h2>
+<p><strong>Incognito</strong> is a Python module for anonymizing French text. It uses Regex and other strategies to mask names and personal information provided by the user.<br />
+This module was specifically designed for medical reports, ensuring that disease names remain unaltered.</p>
+<p><a href="https://www.python.org"><img alt="python" src="https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&amp;logo=python&amp;logoColor=white" /></a></p>
+<hr />
+<h2 id="installation">Installation</h2>
+<h3 id="from-pip">From pip</h3>
+<pre><code class="language-bash">pip install incognito-anonymizer
+</code></pre>
+<h3 id="from-this-repository">From this repository</h3>
+<ol>
+<li>
+<p>Clone the repository:
+    <code>bash
+    git clone https://github.com/Micropot/incognito</code></p>
+</li>
+<li>
+<p>Install the dependencies (defined in <code>pyproject.toml</code>):
+    <code>bash
+    pip install .</code></p>
+</li>
+</ol>
+<hr />
+<h2 id="usage">Usage</h2>
+<h3 id="python-api">Python API</h3>
+<h4 id="example-providing-personal-information-directly-in-code">Example: Providing Personal Information Directly in Code</h4>
+<pre><code class="language-python">from . import anonymizer
+
+# Initialize the anonymizer
+ano = anonymizer.Anonymizer()
+
+# Define personal information
+infos = {
+    &quot;first_name&quot;: &quot;Bob&quot;,
+    &quot;last_name&quot;: &quot;Jungels&quot;,
+    &quot;birth_name&quot;: &quot;&quot;,
+    &quot;birthdate&quot;: &quot;1992-09-22&quot;,
+    &quot;ipp&quot;: &quot;0987654321&quot;,
+    &quot;postal_code&quot;: &quot;01000&quot;,
+    &quot;adress&quot;: &quot;&quot;
+}
+
+# Configure the anonymizer
+ano.set_info(infos)
+ano.set_strategies(['regex', 'pii'])
+ano.set_masks('placeholder')
+
+# Read and anonymize text
+text_to_anonymize = ano.open_text_file(&quot;/path/to/file.txt&quot;)
+anonymized_text = ano.anonymize(text_to_anonymize)
+
+print(anonymized_text)
+</code></pre>
+<h4 id="example-using-json-file-for-personal-information">Example: Using JSON File for Personal Information</h4>
+<pre><code class="language-python">from . import anonymizer
+
+# Initialize the anonymizer
+ano = anonymizer.Anonymizer()
+
+# Load personal information from JSON
+infos_json = ano.open_json_file(&quot;/path/to/infofile.json&quot;)
+
+# Configure the anonymizer
+ano.set_info(infos_json)
+ano.set_strategies(['regex', 'pii'])
+ano.set_masks('placeholder')
+
+# Read and anonymize text
+text_to_anonymize = ano.open_text_file(&quot;/path/to/file.txt&quot;)
+anonymized_text = ano.anonymize(text_to_anonymize)
+
+print(anonymized_text)
+</code></pre>
+<h3 id="command-line-interface-cli">Command-Line Interface (CLI)</h3>
+<h4 id="basic-usage">Basic Usage</h4>
+<pre><code class="language-bash">python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks
+</code></pre>
+<h4 id="find-available-strategies-and-masks">Find Available Strategies and Masks</h4>
+<pre><code class="language-bash">python -m incognito --help
+</code></pre>
+<h4 id="anonymization-with-json-file">Anonymization with JSON File</h4>
+<pre><code class="language-bash">python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks json --json myjsonfile.json
+</code></pre>
+<p>To view helper options for the JSON submodule:</p>
+<pre><code class="language-bash">python -m incognito json --help
+</code></pre>
+<h4 id="anonymization-with-personal-information-in-cli">Anonymization with Personal Information in CLI</h4>
+<pre><code class="language-bash">python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks infos --first_name Bob --last_name Dylan --birthdate 1800-01-01 --ipp 0987654312 --postal_code 75001
+</code></pre>
+<p>To view helper options for the "infos" submodule:</p>
+<pre><code class="language-bash">python -m incognito infos --help
+</code></pre>
+<hr />
+<h2 id="unit-tests">Unit Tests</h2>
+<p>Unit tests are included to ensure the module's functionality. You can modify them based on your needs.</p>
+<p>To run the tests:</p>
+<pre><code class="language-bash">make test
+</code></pre>
+<p>To check code coverage:</p>
+<pre><code class="language-bash">make cov
+</code></pre>
+<hr />
+<h2 id="anonymization-process-details">Anonymization Process Details</h2>
+<h3 id="regex-strategy">Regex Strategy</h3>
+<p>One available anonymization strategy is <strong>Regex</strong>. It can extract and mask specific information from the input text, such as:
+- Email addresses
+- Phone numbers
+- French NIR (social security number)
+- First and last names (if preceded by titles like "Monsieur", "Madame", "Mr", "Mme", "Docteur", "Professeur", etc.)</p>
+<p>For more details, see the <a href="incognito/analyzer.py"><code>RegexStrategy</code> class</a> and the <code>self.title_regex</code> variable.</p>
+<hr />
+<h2 id="license">License</h2>
+<p>This project is licensed under the terms of the <a href="LICENSE">MIT License</a>.</p>
+<hr />
+<h2 id="contributors">Contributors</h2>
+<ul>
+<li>Maintainer: Micropot<br />
+Feel free to open issues or contribute via pull requests!</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="api/" class="btn btn-neutral float-right" title="API">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="api/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-01-21 13:04:43.936239+00:00
+-->
