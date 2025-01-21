@@ -21,7 +21,7 @@ jobs:
 
       - name: Install python deps 
         run: |
-          python -m pip install mkdocs mkdocstings-python
+          python -m pip install mkdocs mkdocstrings-python
 
       - name: Build doc
         run: |
