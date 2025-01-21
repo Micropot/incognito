@@ -146,6 +146,9 @@ For more details, see the [`RegexStrategy` class](incognito/analyzer.py) and the
 
 ---
 
+## Documentation 
+The documentation is available [`here`](https://micropot.github.io/incognito/).
+
 ## License
 
 This project is licensed under the terms of the [MIT License](LICENSE).
