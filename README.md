@@ -160,3 +160,7 @@ This project is licensed under the terms of the [MIT License](LICENSE).
 - Maintainer: Micropot  
 Feel free to open issues or contribute via pull requests!
 
+## Similar project
+
+ [`EDS NLP`]('https://github.com/aphp/eds-pseudo/tree/main')
+
