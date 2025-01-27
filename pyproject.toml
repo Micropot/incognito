@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "incognito-anonymizer"
-version = "0.0.4"
+version = "0.0.5"
 description = "A module to anonymize french text data" 
 readme = "README.md"
 licence="MIT"
