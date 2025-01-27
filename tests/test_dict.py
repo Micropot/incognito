@@ -1,4 +1,4 @@
-from incognito import PersonalInfo
+from incognito_anonymizer import PersonalInfo
 import pytest
 from datetime import datetime
 

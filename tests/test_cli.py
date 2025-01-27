@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from incognito.cli import AnonymiserCli
+from incognito_anonymizer.cli import AnonymiserCli
 
 
 def test_parse_cli_valid_args():
@@ -83,7 +83,7 @@ def test_run_valid_args():
         "--json", "infos.json"
     ]
 
-    with patch("incognito.cli.anonymizer.Anonymizer") as MockAnonymizer:
+    with patch("incognito_anonymizer.cli.anonymizer.Anonymizer") as MockAnonymizer:
         mock_ano_instance = MagicMock()
         MockAnonymizer.return_value = mock_ano_instance
 
@@ -112,7 +112,7 @@ def test_run_valid_args_json():
         "--json", "infos.json"
     ]
 
-    with patch("incognito.cli.anonymizer.Anonymizer") as MockAnonymizer:
+    with patch("incognito_anonymizer.cli.anonymizer.Anonymizer") as MockAnonymizer:
         mock_ano_instance = MagicMock()
         MockAnonymizer.return_value = mock_ano_instance
         mock_ano_instance.open_json_file.return_value = {"info": "data"}
@@ -146,7 +146,7 @@ def test_run_valid_args_infos():
         "--ipp", "123456"
     ]
 
-    with patch("incognito.cli.anonymizer.Anonymizer") as MockAnonymizer:
+    with patch("incognito_anonymizer.cli.anonymizer.Anonymizer") as MockAnonymizer:
         mock_ano_instance = MagicMock()
         MockAnonymizer.return_value = mock_ano_instance
 

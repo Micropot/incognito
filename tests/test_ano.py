@@ -1,6 +1,6 @@
-from incognito import Anonymizer
-from incognito import analyzer
-from incognito import mask
+from incognito_anonymizer import Anonymizer
+from incognito_anonymizer import analyzer
+from incognito_anonymizer import mask
 import pytest
 
 dataset_regex = {

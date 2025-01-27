@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import mock_open, patch
 import json
-from incognito import Anonymizer
+from incognito_anonymizer import Anonymizer
 
 
 class TestFiles(unittest.TestCase):
