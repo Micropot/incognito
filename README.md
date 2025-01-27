@@ -162,5 +162,5 @@ Feel free to open issues or contribute via pull requests!
 
 ## Similar project
 
- [`EDS NLP`]('https://github.com/aphp/eds-pseudo/tree/main')
+ [EDS NLP]('https://github.com/aphp/eds-pseudo/tree/main')
 
