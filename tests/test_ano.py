@@ -28,7 +28,8 @@ dataset_regex = {
     "double_nom": ("Monsieur JEAN Jean, Docteur Jeanj JEAN, Madame JEANNE Jean", "Monsieur <NAME>, Docteur <NAME>, Madame <NAME>"),
     "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour Monsieur <NAME>, voici son numéro : <PHONE> et son email <EMAIL>"),
     "née_madame": ("Madame DUPONT Mariane née MORGAT", "Madame <NAME> née <NAME>"),
-    "né_monsieur": ("Monsieur J. Jean né LA RUE", "Monsieur <NAME> né <NAME>")
+    "né_monsieur": ("Monsieur J. Jean né LA RUE", "Monsieur <NAME> né <NAME>"),
+    "test_None": (None, "NaN")
 }
 
 

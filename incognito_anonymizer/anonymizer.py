@@ -94,6 +94,8 @@ class Anonymizer:
         :param text: text to anonymize
         :returns: anonimized text
         """
+        if not text:
+            text = "NaN"
         spans = {}
         for strategy in self.used_strats:
             current_strategy = Anonymizer.STRATEGIES.get(strategy)
