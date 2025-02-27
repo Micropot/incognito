@@ -21,6 +21,7 @@ dataset_regex = {
     "Docteur_NOM_Prenom": ("Docteur DUPONT Jean", "Docteur <NAME>"),
     "Monsieur_P._NOM": ("Monsieur J. Jean", "Monsieur <NAME>"),
     "Dr_NOM_Prenom": ("Dr LECLERC Charle", "Dr <NAME>"),
+    "Dr_Prenom_NOM": ("Dr Charle LECLERC", "Dr <NAME>"),
     "DR._NOM": ("DR. LECLERC", "DR. <NAME>"),
     "Interne_NOM_Prenom": ("Interne JEAN Jean", "Interne <NAME>"),
     "Externe_NOM_Prenom": ("Externe JEAN Jean", "Externe <NAME>"),
@@ -29,7 +30,10 @@ dataset_regex = {
     "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour Monsieur <NAME>, voici son numéro : <PHONE> et son email <EMAIL>"),
     "née_madame": ("Madame DUPONT Mariane née MORGAT", "Madame <NAME> née <NAME>"),
     "né_monsieur": ("Monsieur J. Jean né LA RUE", "Monsieur <NAME> né <NAME>"),
-    "test_None": (None, "NaN")
+    "test_None": (None, "NaN"),
+    "Prof_NOM_PRENOM": ("Professeur JEAN JEAN", "Professeur <NAME>"),
+    "Profe_NOM_PRENOM": ("Professeure JEAN JEAN", "Professeure <NAME>"),
+    "INT_NOM_PRENOM": ("INT JEAN JEAN", "INT <NAME>"),
 }
 
 
