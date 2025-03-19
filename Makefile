@@ -1,7 +1,7 @@
 
 
 test:
-	uv run python -m pytest tests -vs
+	uv run python -m pytest tests -v
 
 
 
