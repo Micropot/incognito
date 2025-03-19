@@ -1,6 +1,7 @@
 from incognito_anonymizer import Anonymizer
 from incognito_anonymizer import analyzer
 from incognito_anonymizer import mask
+from incognito_anonymizer import PersonalInfo
 import pytest
 
 dataset_regex = {
@@ -47,8 +48,8 @@ ids_regex = list(dataset_regex.keys())
 def test_regex_strategie(input, output):
 
     ano = Anonymizer()
-    ano.set_strategies(['regex'])
-    ano.set_masks('placeholder')
+    ano.add_analyzer('regex')
+    ano.set_mask('placeholder')
     assert ano.anonymize(input) == output
 
 
@@ -77,15 +78,15 @@ ids_pii = list(dataset_pii.keys())
 def test_pii_strategie(input, output):
 
     ano = Anonymizer()
-    ano.set_info(infos)
-    ano.set_strategies(['pii'])
-    ano.set_masks('placeholder')
+    ano.set_info(PersonalInfo(**infos))
+    ano.add_analyzer('pii')
+    ano.set_mask('placeholder')
     assert ano.anonymize(input) == output
 
 
 def test_anaylser_not_implemented_error():
     with pytest.raises(NotImplementedError):
-        analyzer.Strategy.analyze(text="test")
+        analyzer.AnalyzerStrategy.analyze(text="test")
 
 
 def test_mask_not_implemented_error():

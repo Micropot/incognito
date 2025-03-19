@@ -4,22 +4,27 @@ build-backend = "hatchling.build"
 
 
 [project]
+requires-python=">=3.10"
 name = "incognito-anonymizer"
 version = "0.0.7"
 description = "A module to anonymize french text data" 
 readme = "README.md"
 licence="MIT"
-dependencies = [
-  "pydantic",
-  "regex",
-  "flashtext",
-  "regex",
-]
 authors = [
   {name="Arthur Lamard", email="arthur@lamard.org"}
 ]
 keywords = ["anonymizer", "incognito"]
+dependencies = [
+    "flash>=1.0.3",
+    "pydantic>=2.10.6",
+]
 [project.urls]
 Repository = "https://github.com/Micropot/incognito"
-[project.optional-dependencies]
-dev= ["pytest", "pytest-cov", "twine", "build"]
+
+[dependency-groups]
+dev = [
+    "build>=1.2.2.post1",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "twine>=6.1.0",
+]

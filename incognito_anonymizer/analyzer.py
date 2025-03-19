@@ -7,36 +7,23 @@ from typing import Optional, Iterable
 
 
 class PersonalInfo(BaseModel):
-    first_name: str
-    last_name: str
-    birth_name: Optional[str]
-    birthdate: datetime
-    ipp: str
-    postal_code: Optional[str]
-    adress: Optional[str]
-
-    @staticmethod
-    def from_dict(d: dict):
-        return PersonalInfo(
-            first_name=d.get("PRENOM_PATIENT") or "",
-            last_name=d.get("NOM_USUEL_PATIENT") or "",
-            birth_name=d.get("NOM_NAISSANCE") or "",
-            birthdate=d.get("DATE_NAIS") or datetime(
-                year=1000, month=1, day=1),
-            postal_code=d.get("CODE_POSTAL", "0"),
-            ipp=d.get("IPP_PATIENT") or "",
-            adress=d.get("ADRESSE") or "",
-        )
+    first_name: str = ""
+    last_name: str = ""
+    birth_name: Optional[str] = ""
+    birthdate: datetime = datetime(year=1000, month=1, day=1)
+    ipp: str = ""
+    postal_code: Optional[str] = "0"
+    adress: Optional[str] = ""
 
 
-class Strategy:
+class AnalyzerStrategy:
     """Constructeur de la Class Strategy"""
 
     def analyze(text):
         raise NotImplementedError()
 
 
-class PiiStrategy(Strategy):
+class PiiStrategy(AnalyzerStrategy):
     """Detect personal infos"""
 
     def __init__(self):
@@ -99,7 +86,7 @@ class PiiStrategy(Strategy):
         return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
 
 
-class RegexStrategy(Strategy):
+class RegexStrategy(AnalyzerStrategy):
     """Detect word based on regex"""
 
     def __init__(self):

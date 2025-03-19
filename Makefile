@@ -1,7 +1,9 @@
 
 
 test:
-	 python -m pytest tests -vs
+	uv run python -m pytest tests -v
+
+
 
 cov:
-	python -m pytest --cov=incognito --doctest-modules incognito tests
+	uv run python -m pytest --cov=incognito --doctest-modules incognito tests
