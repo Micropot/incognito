@@ -86,7 +86,7 @@ def test_pii_strategie(input, output):
 
 def test_anaylser_not_implemented_error():
     with pytest.raises(NotImplementedError):
-        analyzer.Strategy.analyze(text="test")
+        analyzer.AnalyzerStrategy.analyze(text="test")
 
 
 def test_mask_not_implemented_error():

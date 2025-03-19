@@ -16,14 +16,14 @@ class PersonalInfo(BaseModel):
     adress: Optional[str] = ""
 
 
-class Strategy:
+class AnalyzerStrategy:
     """Constructeur de la Class Strategy"""
 
     def analyze(text):
         raise NotImplementedError()
 
 
-class PiiStrategy(Strategy):
+class PiiStrategy(AnalyzerStrategy):
     """Detect personal infos"""
 
     def __init__(self):
@@ -86,7 +86,7 @@ class PiiStrategy(Strategy):
         return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
 
 
-class RegexStrategy(Strategy):
+class RegexStrategy(AnalyzerStrategy):
     """Detect word based on regex"""
 
     def __init__(self):
