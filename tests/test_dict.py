@@ -28,15 +28,15 @@ def test_valid_personal_info():
 def test_from_dict_valid_data():
     # Transformation d'un dictionnaire valide
     data = {
-        "PRENOM_PATIENT": "Jane",
-        "NOM_USUEL_PATIENT": "Doe",
-        "NOM_NAISSANCE": "Johnson",
-        "DATE_NAIS": datetime(1985, 8, 25),
-        "IPP_PATIENT": "987654321",
-        "CODE_POSTAL": "75001",
-        "ADRESSE": "456 Elm Street"
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "birth_name": "Johnson",
+        "birthdate": datetime(1985, 8, 25),
+        "ipp": "987654321",
+        "postal_code": "75001",
+        "adress": "456 Elm Street"
     }
-    info = PersonalInfo.from_dict(data)
+    info = PersonalInfo(**data)
 
     assert info.first_name == "Jane"
     assert info.last_name == "Doe"
@@ -50,11 +50,11 @@ def test_from_dict_valid_data():
 def test_from_dict_missing_data():
     # Transformation avec données manquantes
     data = {
-        "PRENOM_PATIENT": "Alice",
-        "NOM_USUEL_PATIENT": "Wonderland"
+        "first_name": "Alice",
+        "last_name": "Wonderland"
         # Les autres champs sont absents
     }
-    info = PersonalInfo.from_dict(data)
+    info = PersonalInfo(**data)
 
     assert info.first_name == "Alice"
     assert info.last_name == "Wonderland"
