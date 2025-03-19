@@ -12,7 +12,7 @@ class Anonymizer:
     """Anonymization class based on strategies formating"""
 
     # available strategies
-    STRATEGIES = {
+    ANALYZERS = {
         "regex": analyzer.RegexStrategy(),
         "pii": analyzer.PiiStrategy(),
     }
@@ -27,8 +27,11 @@ class Anonymizer:
 
     def __init__(self):
 
-        self.infos = None
-        self.position = []
+        self._infos = None
+        self._position = []
+        self._mask = mask.PlaceholderStrategy()
+        self._analyzers = set()
+        
 
     def open_text_file(self, path: str) -> str:
         """
@@ -68,7 +71,7 @@ class Anonymizer:
 
         :param infos: PersonalInfo
         """
-        self.infos = infos
+        self._infos = infos
 
 
     def set_info_from_dict(self, **kwargs):
@@ -80,21 +83,33 @@ class Anonymizer:
         """
         self.set_info(PersonalInfo(**kwargs))
 
-    def set_strategies(self, strategies: list):
-        """
-        Set strategies
 
-        :param list: list of wanted strategies
+    def add_analyzer(self, name:str):
         """
-        self.used_strats = strategies
+        Add analyser
 
-    def set_masks(self, mask: str):
+        :param AnalyzerStrategy: analyzer used for anonymisation
+
+        """
+        if name in self.ANALYZERS:
+            analyzer = self.ANALYZERS.get(name)
+            self._analyzers.add(analyzer )
+        else:
+            raise Exception(f"{name} analyzer doesn't exists")
+        
+
+    def set_mask(self, name: str):
         """
         Set masks
 
         :param mask: wanted mask
         """
-        self.used_mask = mask
+        if name in self.MASKS:
+            self._mask = self.MASKS.get(name)
+
+        else:
+            raise Exception(f"{name} doesn't exists")
+        
 
     def anonymize(self, text: str) -> str:
         """
@@ -106,15 +121,12 @@ class Anonymizer:
         if not text:
             text = "NaN"
         spans = {}
-        for strategy in self.used_strats:
-            current_strategy = Anonymizer.STRATEGIES.get(strategy)
-
-            current_strategy.info = self.infos
-            span = current_strategy.analyze(text=text)
+        for strategy in self._analyzers:
+            strategy.info = self._infos
+            span = strategy.analyze(text=text)
             spans.update(span)
 
-            current_mask = Anonymizer.MASKS.get(self.used_mask)
-            anonymized_text = current_mask.mask(text, spans)
+            anonymized_text = self._mask.mask(text, spans)
             text = anonymized_text
             spans = {}
         return anonymized_text

@@ -48,8 +48,8 @@ ids_regex = list(dataset_regex.keys())
 def test_regex_strategie(input, output):
 
     ano = Anonymizer()
-    ano.set_strategies(['regex'])
-    ano.set_masks('placeholder')
+    ano.add_analyzer('regex')
+    ano.set_mask('placeholder')
     assert ano.anonymize(input) == output
 
 
@@ -79,8 +79,8 @@ def test_pii_strategie(input, output):
 
     ano = Anonymizer()
     ano.set_info(PersonalInfo(**infos))
-    ano.set_strategies(['pii'])
-    ano.set_masks('placeholder')
+    ano.add_analyzer('pii')
+    ano.set_mask('placeholder')
     assert ano.anonymize(input) == output
 
 

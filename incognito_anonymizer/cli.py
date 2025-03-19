@@ -31,7 +31,7 @@ class AnonymiserCli:
             help="Stratégies à utiliser (default : %(default)s).",
             default=["regex", "pii"],
             nargs="*",
-            choices=[key for key, val in anonymizer.Anonymizer.STRATEGIES.items()],
+            choices=[key for key, val in anonymizer.Anonymizer.ANALYZERS.items()],
         )
         parser.add_argument(
             "-m",
@@ -131,7 +131,7 @@ class AnonymiserCli:
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = ano.set_info(infos_dict)
         ano.set_strategies(strats)
-        ano.set_masks(mask[0])
+        ano.set_mask(mask[0])
 
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
