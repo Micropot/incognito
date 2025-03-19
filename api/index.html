@@ -53,6 +53,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer">Anonymizer</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.add_analyzer">add_analyzer</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.anonymize">anonymize</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.open_json_file">open_json_file</a>
@@ -61,15 +63,17 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_info">set_info</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_masks">set_masks</a>
+    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_info_from_dict">set_info_from_dict</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_strategies">set_strategies</a>
+    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_mask">set_mask</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#anonlyzer">Anonlyzer</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#incognito_anonymizer.analyzer">analyzer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#incognito_anonymizer.analyzer.AnalyzerStrategy">AnalyzerStrategy</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#incognito_anonymizer.analyzer.PiiStrategy">PiiStrategy</a>
         <ul>
@@ -86,8 +90,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.analyzer.RegexStrategy.multi_subs_by_regex">multi_subs_by_regex</a>
     </li>
         </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#incognito_anonymizer.analyzer.Strategy">Strategy</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#mask">Mask</a>
     </li>
@@ -159,6 +161,7 @@
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -189,13 +192,14 @@
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
                 <pre class="highlight"><code class="language-python">class Anonymizer:
     """Anonymization class based on strategies formating"""
 
     # available strategies
-    STRATEGIES = {
+    ANALYZERS = {
         "regex": analyzer.RegexStrategy(),
         "pii": analyzer.PiiStrategy(),
     }
@@ -210,8 +214,11 @@
 
     def __init__(self):
 
-        self.infos = None
-        self.position = []
+        self._infos = None
+        self._position = []
+        self._mask = mask.PlaceholderStrategy()
+        self._analyzers = set()
+
 
     def open_text_file(self, path: str) -&gt; str:
         """
@@ -245,30 +252,51 @@
             print(e)
             raise
 
-    def set_info(self, infos: dict) -&gt; analyzer.PersonalInfo:
+    def set_info(self, infos: PersonalInfo):
+        """
+        Set personal info
+
+        :param infos: PersonalInfo
+        """
+        self._infos = infos
+
+
+    def set_info_from_dict(self, **kwargs):
         """
         Set dict to PersonalInfo Class
 
         :param infos: dict with all the Personal info values
-        """
-        self.infos = analyzer.PersonalInfo(**infos)
-        return self.infos
 
-    def set_strategies(self, strategies: list):
         """
-        Set strategies
+        self.set_info(PersonalInfo(**kwargs))
 
-        :param list: list of wanted strategies
+
+    def add_analyzer(self, name:str):
         """
-        self.used_strats = strategies
+        Add analyser
 
-    def set_masks(self, mask: str):
+        :param AnalyzerStrategy: analyzer used for anonymisation
+
+        """
+        if name in self.ANALYZERS:
+            analyzer = self.ANALYZERS.get(name)
+            self._analyzers.add(analyzer )
+        else:
+            raise Exception(f"{name} analyzer doesn't exists")
+
+
+    def set_mask(self, name: str):
         """
         Set masks
 
         :param mask: wanted mask
         """
-        self.used_mask = mask
+        if name in self.MASKS:
+            self._mask = self.MASKS.get(name)
+
+        else:
+            raise Exception(f"{name} doesn't exists")
+
 
     def anonymize(self, text: str) -&gt; str:
         """
@@ -280,15 +308,12 @@
         if not text:
             text = "NaN"
         spans = {}
-        for strategy in self.used_strats:
-            current_strategy = Anonymizer.STRATEGIES.get(strategy)
-
-            current_strategy.info = self.infos
-            span = current_strategy.analyze(text=text)
+        for strategy in self._analyzers:
+            strategy.info = self._infos
+            span = strategy.analyze(text=text)
             spans.update(span)
 
-            current_mask = Anonymizer.MASKS.get(self.used_mask)
-            anonymized_text = current_mask.mask(text, spans)
+            anonymized_text = self._mask.mask(text, spans)
             text = anonymized_text
             spans = {}
         return anonymized_text</code></pre>
@@ -309,6 +334,40 @@
 <div class="doc doc-object doc-function">
 
 
+<h3 id="incognito_anonymizer.anonymizer.Anonymizer.add_analyzer" class="doc doc-heading">
+            <code class="highlight language-python">add_analyzer(name)</code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Add analyser</p>
+<p>:param AnalyzerStrategy: analyzer used for anonymisation</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
+              <pre class="highlight"><code class="language-python">def add_analyzer(self, name:str):
+    """
+    Add analyser
+
+    :param AnalyzerStrategy: analyzer used for anonymisation
+
+    """
+    if name in self.ANALYZERS:
+        analyzer = self.ANALYZERS.get(name)
+        self._analyzers.add(analyzer )
+    else:
+        raise Exception(f"{name} analyzer doesn't exists")</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="incognito_anonymizer.anonymizer.Anonymizer.anonymize" class="doc doc-heading">
             <code class="highlight language-python">anonymize(text)</code>
 
@@ -320,6 +379,7 @@
         <p>Global function to anonymise a text base on the choosen strategies</p>
 <p>:param text: text to anonymize
 :returns: anonimized text</p>
+
 
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
@@ -333,15 +393,12 @@
     if not text:
         text = "NaN"
     spans = {}
-    for strategy in self.used_strats:
-        current_strategy = Anonymizer.STRATEGIES.get(strategy)
-
-        current_strategy.info = self.infos
-        span = current_strategy.analyze(text=text)
+    for strategy in self._analyzers:
+        strategy.info = self._infos
+        span = strategy.analyze(text=text)
         spans.update(span)
 
-        current_mask = Anonymizer.MASKS.get(self.used_mask)
-        anonymized_text = current_mask.mask(text, spans)
+        anonymized_text = self._mask.mask(text, spans)
         text = anonymized_text
         spans = {}
     return anonymized_text</code></pre>
@@ -365,6 +422,7 @@
 <p>:param path: path of the json file
 :returns: file content
 :raises FileExistsError: if given file not found</p>
+
 
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
@@ -404,6 +462,7 @@
 :returns: file content
 :raises FileExistsError: if given file not found</p>
 
+
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def open_text_file(self, path: str) -&gt; str:
@@ -437,19 +496,19 @@
 
     <div class="doc doc-contents ">
 
-        <p>Set dict to PersonalInfo Class</p>
-<p>:param infos: dict with all the Personal info values</p>
+        <p>Set personal info</p>
+<p>:param infos: PersonalInfo</p>
+
 
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
-              <pre class="highlight"><code class="language-python">def set_info(self, infos: dict) -&gt; analyzer.PersonalInfo:
+              <pre class="highlight"><code class="language-python">def set_info(self, infos: PersonalInfo):
     """
-    Set dict to PersonalInfo Class
+    Set personal info
 
-    :param infos: dict with all the Personal info values
+    :param infos: PersonalInfo
     """
-    self.infos = analyzer.PersonalInfo(**infos)
-    return self.infos</code></pre>
+    self._infos = infos</code></pre>
             </details>
     </div>
 
@@ -458,8 +517,38 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="incognito_anonymizer.anonymizer.Anonymizer.set_masks" class="doc doc-heading">
-            <code class="highlight language-python">set_masks(mask)</code>
+<h3 id="incognito_anonymizer.anonymizer.Anonymizer.set_info_from_dict" class="doc doc-heading">
+            <code class="highlight language-python">set_info_from_dict(**kwargs)</code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set dict to PersonalInfo Class</p>
+<p>:param infos: dict with all the Personal info values</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
+              <pre class="highlight"><code class="language-python">def set_info_from_dict(self, **kwargs):
+    """
+    Set dict to PersonalInfo Class
+
+    :param infos: dict with all the Personal info values
+
+    """
+    self.set_info(PersonalInfo(**kwargs))</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="incognito_anonymizer.anonymizer.Anonymizer.set_mask" class="doc doc-heading">
+            <code class="highlight language-python">set_mask(name)</code>
 
 </h3>
 
@@ -469,43 +558,20 @@
         <p>Set masks</p>
 <p>:param mask: wanted mask</p>
 
+
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
-              <pre class="highlight"><code class="language-python">def set_masks(self, mask: str):
+              <pre class="highlight"><code class="language-python">def set_mask(self, name: str):
     """
     Set masks
 
     :param mask: wanted mask
     """
-    self.used_mask = mask</code></pre>
-            </details>
-    </div>
+    if name in self.MASKS:
+        self._mask = self.MASKS.get(name)
 
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="incognito_anonymizer.anonymizer.Anonymizer.set_strategies" class="doc doc-heading">
-            <code class="highlight language-python">set_strategies(strategies)</code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Set strategies</p>
-<p>:param list: list of wanted strategies</p>
-
-            <details class="quote">
-              <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
-              <pre class="highlight"><code class="language-python">def set_strategies(self, strategies: list):
-    """
-    Set strategies
-
-    :param list: list of wanted strategies
-    """
-    self.used_strats = strategies</code></pre>
+    else:
+        raise Exception(f"{name} doesn't exists")</code></pre>
             </details>
     </div>
 
@@ -543,6 +609,7 @@
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -551,6 +618,57 @@
 
 
 
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="incognito_anonymizer.analyzer.AnalyzerStrategy" class="doc doc-heading">
+            <code>AnalyzerStrategy</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>Constructeur de la Class Strategy</p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
+                <pre class="highlight"><code class="language-python">class AnalyzerStrategy:
+    """Constructeur de la Class Strategy"""
+
+    def analyze(text):
+        raise NotImplementedError()</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -565,7 +683,7 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="incognito_anonymizer.analyzer.Strategy" href="#incognito_anonymizer.analyzer.Strategy">Strategy</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AnalyzerStrategy (incognito_anonymizer.analyzer.AnalyzerStrategy)" href="#incognito_anonymizer.analyzer.AnalyzerStrategy">AnalyzerStrategy</a></code></p>
 
 
         <p>Detect personal infos</p>
@@ -575,9 +693,10 @@
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-                <pre class="highlight"><code class="language-python">class PiiStrategy(Strategy):
+                <pre class="highlight"><code class="language-python">class PiiStrategy(AnalyzerStrategy):
     """Detect personal infos"""
 
     def __init__(self):
@@ -666,6 +785,7 @@
         <p>Hide specific words based on keywords</p>
 <p>:param text: text to anonymize</p>
 
+
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
               <pre class="highlight"><code class="language-python">def analyze(self, text: str) -&gt; str:
@@ -713,6 +833,7 @@
 <p>:returns: List of tuples where each tuple contains:
         - A tuple with the start and end positions of the word.
         - The replacement string.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
@@ -773,7 +894,7 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="incognito_anonymizer.analyzer.Strategy" href="#incognito_anonymizer.analyzer.Strategy">Strategy</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AnalyzerStrategy (incognito_anonymizer.analyzer.AnalyzerStrategy)" href="#incognito_anonymizer.analyzer.AnalyzerStrategy">AnalyzerStrategy</a></code></p>
 
 
         <p>Detect word based on regex</p>
@@ -783,9 +904,10 @@
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-                <pre class="highlight"><code class="language-python">class RegexStrategy(Strategy):
+                <pre class="highlight"><code class="language-python">class RegexStrategy(AnalyzerStrategy):
     """Detect word based on regex"""
 
     def __init__(self):
@@ -882,6 +1004,7 @@
         <p>Hide text using regular expression
 :param text: text to anonymize</p>
 
+
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
               <pre class="highlight"><code class="language-python">def analyze(self, text: str):
@@ -911,6 +1034,7 @@
 :returns: List of tuples where each tuple contains:
         - A tuple with the start and end positions of the word.
         - The replacement string.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
@@ -964,56 +1088,6 @@
 
 </div>
 
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="incognito_anonymizer.analyzer.Strategy" class="doc doc-heading">
-            <code>Strategy</code>
-
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-
-        <p>Constructeur de la Class Strategy</p>
-
-
-
-
-
-
-              <details class="quote">
-                <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-                <pre class="highlight"><code class="language-python">class Strategy:
-    """Constructeur de la Class Strategy"""
-
-    def analyze(text):
-        raise NotImplementedError()</code></pre>
-              </details>
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
 
 
 
@@ -1030,6 +1104,7 @@
 
 <a id="incognito_anonymizer.mask"></a>
     <div class="doc doc-contents first">
+
 
 
 
@@ -1064,6 +1139,7 @@
 
 
         <p>Replace word by natural placeholder</p>
+
 
 
 
@@ -1155,6 +1231,7 @@ anonymizer.mask(text, coordinate)
 </blockquote>
 </blockquote>
 
+
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
               <pre class="highlight"><code class="language-python">def mask(self, text: str, coordinate: Dict[List[Tuple], str]) -&gt; str:
@@ -1218,6 +1295,7 @@ anonymizer.mask(text, coordinate)
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
                 <pre class="highlight"><code class="language-python">class HashStrategy(Strategy):
@@ -1264,6 +1342,7 @@ anonymizer.mask(text, coordinate)
 
 
         <p>Replace by *</p>
+
 
 
 
@@ -1344,6 +1423,7 @@ anonymizer.mask(text, coordinate)
 </blockquote>
 </blockquote>
 
+
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
               <pre class="highlight"><code class="language-python">def mask(self, text, coordinate: Dict[List[Tuple], str]) -&gt; str:
@@ -1403,6 +1483,7 @@ anonymizer.mask(text, coordinate)
 
 
         <p>Replace by placeholders</p>
+
 
 
 
@@ -1481,6 +1562,7 @@ anonymizer.mask(text, coordinate)
 </blockquote>
 </blockquote>
 </blockquote>
+
 
             <details class="quote">
               <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
