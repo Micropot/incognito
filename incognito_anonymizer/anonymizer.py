@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 from . import analyzer
 from . import mask
-
+from .analyzer import PersonalInfo
 
 class Anonymizer:
     """Anonymization class based on strategies formating"""
@@ -62,14 +62,23 @@ class Anonymizer:
             print(e)
             raise
 
-    def set_info(self, infos: dict) -> analyzer.PersonalInfo:
+    def set_info(self, infos: PersonalInfo):
+        """
+        Set personal info
+
+        :param infos: PersonalInfo
+        """
+        self.infos = infos
+
+
+    def set_info_from_dict(self, **kwargs):
         """
         Set dict to PersonalInfo Class
 
         :param infos: dict with all the Personal info values
+
         """
-        self.infos = analyzer.PersonalInfo(**infos)
-        return self.infos
+        self.set_info(PersonalInfo(**kwargs))
 
     def set_strategies(self, strategies: list):
         """

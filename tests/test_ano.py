@@ -1,6 +1,7 @@
 from incognito_anonymizer import Anonymizer
 from incognito_anonymizer import analyzer
 from incognito_anonymizer import mask
+from incognito_anonymizer import PersonalInfo
 import pytest
 
 dataset_regex = {
@@ -77,7 +78,7 @@ ids_pii = list(dataset_pii.keys())
 def test_pii_strategie(input, output):
 
     ano = Anonymizer()
-    ano.set_info(infos)
+    ano.set_info(PersonalInfo(**infos))
     ano.set_strategies(['pii'])
     ano.set_masks('placeholder')
     assert ano.anonymize(input) == output
