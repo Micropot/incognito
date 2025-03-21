@@ -82,7 +82,8 @@ class Anonymizer:
 
         """
         clean_data = {
-            k: ("" if v is None else v.date() if isinstance(v, datetime) else v)
+            k: ("" if v is None else v.strftime("%Y-%m-%d")
+                if isinstance(v, datetime) else v)
             for k, v in kwargs.items()
         }
         info_obj = PersonalInfo(**clean_data)
