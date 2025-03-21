@@ -69,13 +69,13 @@ def test_from_dict_missing_name():
     assert info.adress == "456 Elm Street"
 
 
-def test_from_dict_missing_name():
+def test_from_dict_full_date():
     # Transformation d'un dictionnaire valide
     data = {
         "first_name": "Jane",
         "last_name": None,
         "birth_name": "Johnson",
-        "birthdate": datetime(1985, 8, 25, 00, 00),
+        "birthdate": datetime(1985, 8, 25, 0, 0, 0),
         "ipp": "987654321",
         "postal_code": "75001",
         "adress": "456 Elm Street"

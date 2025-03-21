@@ -2,6 +2,7 @@ from incognito_anonymizer import Anonymizer
 from incognito_anonymizer import analyzer
 from incognito_anonymizer import mask
 from incognito_anonymizer import PersonalInfo
+from datetime import datetime
 import pytest
 
 dataset_regex = {
@@ -59,7 +60,7 @@ infos = {
     "first_name": "Bob",
     "last_name": "Jungels",
     "birth_name": "",
-    "birthdate": "1992-09-22",
+    "birthdate": datetime(1992, 9, 22, 0, 0, 0),
     "ipp": "0987654321",
     "postal_code": "01000",
     "adress": ""
@@ -67,7 +68,8 @@ infos = {
 
 dataset_pii = {
     "Nom_Prenom_PII": ("Bob Jungels", "<NAME> <NAME>"),
-    "Date_IPP_Postal": ("22/09/1992 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>")
+    "Date_IPP_Postal": ("22/09/1992 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>"),
+    "DN": ("DN : 22/09/1992 ", "DN : <DATE> ")
 }
 
 datas_pii = list(dataset_pii.values())
@@ -78,9 +80,9 @@ ids_pii = list(dataset_pii.keys())
     "input,output", datas_pii, ids=ids_pii
 )
 def test_pii_strategie(input, output):
-    print(infos)
     ano = Anonymizer()
     ano.set_info_from_dict(**infos)
+    print(infos)
     ano.add_analyzer('pii')
     ano.set_mask('placeholder')
     assert ano.anonymize(input) == output
