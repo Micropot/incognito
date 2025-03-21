@@ -267,7 +267,8 @@
 
         """
         clean_data = {
-            k: ("" if v is None else v.date() if isinstance(v, datetime) else v)
+            k: ("" if v is None else v.strftime("%Y-%m-%d")
+                if isinstance(v, datetime) else v)
             for k, v in kwargs.items()
         }
         info_obj = PersonalInfo(**clean_data)
@@ -542,7 +543,8 @@
 
     """
     clean_data = {
-        k: ("" if v is None else v.date() if isinstance(v, datetime) else v)
+        k: ("" if v is None else v.strftime("%Y-%m-%d")
+            if isinstance(v, datetime) else v)
         for k, v in kwargs.items()
     }
     info_obj = PersonalInfo(**clean_data)
@@ -760,6 +762,7 @@
                 (self.info.ipp, "&lt;IPP&gt;"),
                 (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
                 (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
                 (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
                 (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
                 (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
@@ -814,6 +817,7 @@
             (self.info.ipp, "&lt;IPP&gt;"),
             (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
             (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
+            (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
             (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
             (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
             (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
