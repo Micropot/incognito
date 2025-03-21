@@ -14,6 +14,8 @@ dataset_regex = {
     "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
     "Nom_compose_Prenom": ("name : De La Fontaine Jean", "name : De La Fontaine Jean"),
     "NOM-NOM_Prenom": ("name : DE-TROIS Jean", "name : DE-TROIS Jean"),
+    "NOM_accent_Prénom": ("Monsieur JOÉÇ KAKŸÇ", "Monsieur <NAME>"),
+    "NOM_accent_prénom": ("Monsieur JOÉÇ Poçèé", "Monsieur <NAME>"),
     "P._NOM": ("J. Jean", "J. Jean"),
     "Monsieur_NOM_Prenom": ("Monsieur KEAN Jean", "Monsieur <NAME>"),
     "Monsieur_NOM_Prenom_DOUBLE": ("Monsieur KEAN KEZAN Jean-Baptiste", "Monsieur <NAME>"),
