@@ -67,7 +67,7 @@ infos = {
 
 dataset_pii = {
     "Nom_Prenom_PII": ("Bob Jungels", "<NAME> <NAME>"),
-    "Date_IPP_Postal": ("1992-09-22 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>")
+    "Date_IPP_Postal": ("22/09/1992 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>")
 }
 
 datas_pii = list(dataset_pii.values())
@@ -78,9 +78,9 @@ ids_pii = list(dataset_pii.keys())
     "input,output", datas_pii, ids=ids_pii
 )
 def test_pii_strategie(input, output):
-
+    print(infos)
     ano = Anonymizer()
-    ano.set_info(PersonalInfo(**infos))
+    ano.set_info_from_dict(**infos)
     ano.add_analyzer('pii')
     ano.set_mask('placeholder')
     assert ano.anonymize(input) == output
