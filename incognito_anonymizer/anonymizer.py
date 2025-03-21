@@ -3,10 +3,12 @@ Text anonymization module
 """
 
 from __future__ import annotations
-import json
+from .analyzer import PersonalInfo
+from datetime import datetime
 from . import analyzer
 from . import mask
-from .analyzer import PersonalInfo
+import json
+
 
 class Anonymizer:
     """Anonymization class based on strategies formating"""
@@ -31,7 +33,6 @@ class Anonymizer:
         self._position = []
         self._mask = mask.PlaceholderStrategy()
         self._analyzers = set()
-        
 
     def open_text_file(self, path: str) -> str:
         """
@@ -73,7 +74,6 @@ class Anonymizer:
         """
         self._infos = infos
 
-
     def set_info_from_dict(self, **kwargs):
         """
         Set dict to PersonalInfo Class
@@ -81,10 +81,17 @@ class Anonymizer:
         :param infos: dict with all the Personal info values
 
         """
-        self.set_info(PersonalInfo(**kwargs))
+        clean_data = {
+            k: ("" if v is None else v.date() if isinstance(v, datetime) else v)
+            for k, v in kwargs.items()
+        }
+        info_obj = PersonalInfo(**clean_data)
+        self.set_info(info_obj)
+        for key, value in vars(info_obj).items():
+            setattr(self, key, value)
+        return self
 
-
-    def add_analyzer(self, name:str):
+    def add_analyzer(self, name: str):
         """
         Add analyser
 
@@ -93,10 +100,9 @@ class Anonymizer:
         """
         if name in self.ANALYZERS:
             analyzer = self.ANALYZERS.get(name)
-            self._analyzers.add(analyzer )
+            self._analyzers.add(analyzer)
         else:
             raise Exception(f"{name} analyzer doesn't exists")
-        
 
     def set_mask(self, name: str):
         """
@@ -109,7 +115,6 @@ class Anonymizer:
 
         else:
             raise Exception(f"{name} doesn't exists")
-        
 
     def anonymize(self, text: str) -> str:
         """
