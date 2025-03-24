@@ -76,11 +76,11 @@ class PiiStrategy(AnalyzerStrategy):
                 (self.info.ipp, "<IPP>"),
                 (self.info.postal_code, "<CODE_POSTAL>"),
                 (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
                 (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
                 (self.info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
                 (self.info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
                 (self.info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
+                (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
                 (self.info.adress, "<ADRESSE>"),
             )
 
