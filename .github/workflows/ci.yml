@@ -1,11 +1,17 @@
-name: Deploy incognito docs web page
+name: Deploy incognito docs web page and Publish to PyPI
+
 on:
   push:
     branches:
       - main
+  release:
+    types:
+      - created
+
 permissions:
   contents: write
-    
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,51 +42,52 @@ jobs:
         with:
           folder: docs/www
           token: ${{ secrets.GITHUB_TOKEN }} 
-    publish:
-      needs: build
-      runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4 
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
 
-        - name: Setup Python
-          uses: actions/setup-python@v5
-          with:
-            python-version: '3.x'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 
 
-        - name: Install packaging dependencies
-          run: |
-            python -m pip install build twine
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-        - name: Build package
-          run: python -m build
+      - name: Install packaging dependencies
+        run: |
+          python -m pip install build twine
 
-        - name: Publish package to PyPI
-          env:
-            PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-          run: |
-            python -m twine upload --username __token__ --password $PYPI_API_TOKEN dist/*
+      - name: Build package
+        run: python -m build
 
-    release:
-      needs: publish
-      runs-on: ubuntu-latest
+      - name: Publish package to PyPI
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python -m twine upload --username __token__ --password $PYPI_API_TOKEN dist/*
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4 
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
 
-        - name: Get version from pyproject.toml
-          id: get_version
-          run: echo "VERSION=$(grep -Po '(?<=version = ")[^"]*' pyproject.toml)" >> $GITHUB_ENV
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 
 
-        - name: Create GitHub release
-          uses: softprops/action-gh-release@v1
-          with:
-            tag_name: v${{ env.VERSION }}
-            name: Release v${{ env.VERSION }}
-            body: "New release of the package."
-            draft: false
-            prerelease: false
-            files: |
-              dist/*    
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: echo "VERSION=$(grep -Po '(?<=version = ")[^"]*' pyproject.toml)" >> $GITHUB_ENV
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          body: "New release of the package."
+          draft: false
+          prerelease: false
+          files: |
+            dist/*
