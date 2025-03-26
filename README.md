@@ -9,6 +9,8 @@ This module was specifically designed for medical reports, ensuring that disease
 
 ---
 
+**_NOTE_** The doc is not quite up to date :(
+
 ## Installation
 ### From pip
 ```bash
