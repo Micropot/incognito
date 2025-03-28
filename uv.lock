@@ -325,7 +325,7 @@ wheels = [
 
 [[package]]
 name = "incognito-anonymizer"
-version = "0.0.7"
+version = "1.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "flash" },
