@@ -68,23 +68,28 @@ class PiiStrategy(AnalyzerStrategy):
         :param text: text to anonymize
         """
         keywords: tuple
-        if isinstance(self.info, PersonalInfo):
-            keywords = (
-                (self.info.first_name, "<NAME>"),
-                (self.info.last_name, "<NAME>"),
-                (self.info.birth_name, "<NAME>"),
-                (self.info.ipp, "<IPP>"),
-                (self.info.postal_code, "<CODE_POSTAL>"),
-                (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
-                (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
-                (self.info.adress, "<ADRESSE>"),
-            )
+        print(self.info)
+        try:
+            if isinstance(self.info, PersonalInfo):
+                keywords = (
+                    (self.info.first_name, "<NAME>"),
+                    (self.info.last_name, "<NAME>"),
+                    (self.info.birth_name, "<NAME>"),
+                    (self.info.ipp, "<IPP>"),
+                    (self.info.postal_code, "<CODE_POSTAL>"),
+                    (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
+                    (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
+                    (self.info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
+                    (self.info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
+                    (self.info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
+                    (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
+                    (self.info.adress, "<ADRESSE>"),
+                )
 
-        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
+            return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
+        except Exception as e:
+            print(f"Error : {e}. Given infos not in text")
+            pass
 
 
 class RegexStrategy(AnalyzerStrategy):

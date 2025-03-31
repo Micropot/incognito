@@ -129,8 +129,9 @@ class AnonymiserCli:
             values = [first_name, last_name, birthname,
                       birthdate, ipp, postal_code, adress]
             infos_dict = {key: value for key, value in zip(keys, values)}
-            ano.infos = ano.set_info(infos_dict)
-        ano.set_strategies(strats)
+            ano.infos = ano.set_info_from_dict(**infos_dict)
+        for strat in strats:
+            ano.add_analyzer(strat)
         ano.set_mask(mask[0])
 
         if verbose:
