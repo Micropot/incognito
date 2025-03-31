@@ -754,23 +754,28 @@
         :param text: text to anonymize
         """
         keywords: tuple
-        if isinstance(self.info, PersonalInfo):
-            keywords = (
-                (self.info.first_name, "&lt;NAME&gt;"),
-                (self.info.last_name, "&lt;NAME&gt;"),
-                (self.info.birth_name, "&lt;NAME&gt;"),
-                (self.info.ipp, "&lt;IPP&gt;"),
-                (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
-                (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
-                (self.info.adress, "&lt;ADRESSE&gt;"),
-            )
+        print(self.info)
+        try:
+            if isinstance(self.info, PersonalInfo):
+                keywords = (
+                    (self.info.first_name, "&lt;NAME&gt;"),
+                    (self.info.last_name, "&lt;NAME&gt;"),
+                    (self.info.birth_name, "&lt;NAME&gt;"),
+                    (self.info.ipp, "&lt;IPP&gt;"),
+                    (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
+                    (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
+                    (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
+                    (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
+                    (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
+                    (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
+                    (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
+                    (self.info.adress, "&lt;ADRESSE&gt;"),
+                )
 
-        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])</code></pre>
+            return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
+        except Exception as e:
+            print(f"Error : {e}. Given infos not in text")
+            pass</code></pre>
               </details>
 
 
@@ -809,23 +814,28 @@
     :param text: text to anonymize
     """
     keywords: tuple
-    if isinstance(self.info, PersonalInfo):
-        keywords = (
-            (self.info.first_name, "&lt;NAME&gt;"),
-            (self.info.last_name, "&lt;NAME&gt;"),
-            (self.info.birth_name, "&lt;NAME&gt;"),
-            (self.info.ipp, "&lt;IPP&gt;"),
-            (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
-            (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
-            (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
-            (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
-            (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
-            (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
-            (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
-            (self.info.adress, "&lt;ADRESSE&gt;"),
-        )
+    print(self.info)
+    try:
+        if isinstance(self.info, PersonalInfo):
+            keywords = (
+                (self.info.first_name, "&lt;NAME&gt;"),
+                (self.info.last_name, "&lt;NAME&gt;"),
+                (self.info.birth_name, "&lt;NAME&gt;"),
+                (self.info.ipp, "&lt;IPP&gt;"),
+                (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
+                (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
+                (self.info.adress, "&lt;ADRESSE&gt;"),
+            )
 
-    return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])</code></pre>
+        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
+    except Exception as e:
+        print(f"Error : {e}. Given infos not in text")
+        pass</code></pre>
             </details>
     </div>
 
