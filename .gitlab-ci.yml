@@ -1,0 +1,18 @@
+image: gitlab.chu-brest.fr:5050/cdc/containers/packager
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "prod"
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
+  TMPDIR:  "/tmp"
+
+before_script:
+  - pip install uv 
+stages:
+  - publish
+publish:
+  stage: publish
+  script:
+    - uv build
+    - uv publish --publish-url ${PYPIPLUS_UPLOAD_URL} --username ${PYPIPLUS_UPLOADER_USR} --password ${PYPIPLUS_UPLOADER_PWD}
+
