@@ -7,6 +7,7 @@ from .analyzer import PersonalInfo
 from datetime import datetime
 from . import analyzer
 from . import mask
+from . import anotate
 import json
 
 
@@ -27,12 +28,18 @@ class Anonymizer:
         "hide": mask.HideStrategy(),
     }
 
+    # available annotator
+    ANNOTATORS = {
+        "standoff": anotate.StandoffStrategy()
+    }
+
     def __init__(self):
 
         self._infos = None
         self._position = []
         self._mask = mask.PlaceholderStrategy()
         self._analyzers = set()
+        self._annotator = None
 
     def open_text_file(self, path: str) -> str:
         """
@@ -96,7 +103,7 @@ class Anonymizer:
         """
         Add analyser
 
-        :param AnalyzerStrategy: analyzer used for anonymisation
+        :param name: analyzer used for anonymisation
 
         """
         if name in self.ANALYZERS:
@@ -109,13 +116,24 @@ class Anonymizer:
         """
         Set masks
 
-        :param mask: wanted mask
+        :param name: wanted mask
         """
         if name in self.MASKS:
             self._mask = self.MASKS.get(name)
 
         else:
-            raise Exception(f"{name} doesn't exists")
+            raise Exception(f"{name} mask doesn't exists")
+
+    def set_annotator(self, name: str):
+        """
+        Set annotator
+
+        :param name: wanted annotator
+        """
+        if name in self.ANNOTATORS:
+            self._annotator = self.ANNOTATORS.get(name)
+        else:
+            raise Exception(f"{name} annotator doesn't exists")
 
     def anonymize(self, text: str) -> str:
         """
@@ -131,8 +149,26 @@ class Anonymizer:
             strategy.info = self._infos
             span = strategy.analyze(text=text)
             spans.update(span)
-
             anonymized_text = self._mask.mask(text, spans)
             text = anonymized_text
             spans = {}
         return anonymized_text
+
+    def annotate(self, text: str) -> str:
+        """
+        Global function to annotate a text base on the choosen strategies
+
+        :param text: text to annotate
+        :returns: annonated text
+        """
+        if not text:
+            text = "NaN"
+        spans = {}
+        for strategy in self._analyzers:
+            strategy.info = self._infos
+            span = strategy.analyze(text=text)
+            spans.update(span)
+        if self._annotator:
+            annotated_text = self._annotator.annotate(text, spans)
+            print(annotated_text)
+        return annotated_text

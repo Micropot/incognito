@@ -1,4 +1,5 @@
 import argparse
+import os
 from . import anonymizer
 
 
@@ -33,14 +34,25 @@ class AnonymiserCli:
             nargs="*",
             choices=[key for key, val in anonymizer.Anonymizer.ANALYZERS.items()],
         )
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
             "-m",
             "--mask",
             type=str,
             help="Mask à utiliser (default : %(default)s).",
-            default=["placeholder"],
+            default=None,
             nargs=1,
             choices=[key for key, val in anonymizer.Anonymizer.MASKS.items()],
+            required=False,
+        )
+        group.add_argument(
+            "-a",
+            "--annotate",
+            type=str,
+            help="Annotator à utiliser (default : %(default)s).",
+            default=None,
+            nargs=1,
+            choices=[key for key, val in anonymizer.Anonymizer.ANNOTATORS.items()],
             required=False,
         )
 
@@ -99,6 +111,7 @@ class AnonymiserCli:
         output_file = args.output
         strats = args.strategies
         mask = args.mask
+        annotator = args.annotate
         verbose = args.verbose
         ano = anonymizer.Anonymizer()
 
@@ -132,17 +145,30 @@ class AnonymiserCli:
             ano.infos = ano.set_info_from_dict(**infos_dict)
         for strat in strats:
             ano.add_analyzer(strat)
-        ano.set_mask(mask[0])
+        if mask:
+            ano.set_mask(mask[0])
+        if annotator:
+            ano.set_annotator(annotator[0])
 
         if verbose:
             print("Texte sans anonymisation : ", ano.text)
             print("strategies utilisées : ", strats)
-        anonymized_text = ano.anonymize(text=ano.text)
-        output = open(output_file, "w")
-        output.write(anonymized_text)
-        output.close()
+        if not annotator:
+            anonymized_text = ano.anonymize(text=ano.text)
+            output = open(output_file, "w")
+            output.write(anonymized_text)
+            output.close()
+        else:
+            annotated_text = ano.annotate(text=ano.text)
+            _, extension = os.path.splitext(output_file)
+            if extension != ".ann":
+                output_file = output_file + ".ann"
+            output = open(output_file, "w")
+            output.write(annotated_text)
+            output.close()
 
         if verbose:
-            print("Texte anonymisé : ", anonymized_text)
+            if not annotator:
+                print("Texte anonymisé : ", anonymized_text)
             print("Texte enregistré ici : ", output_file)
             print("------ Terminé ------")
