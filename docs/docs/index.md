@@ -52,7 +52,7 @@ infos = {
 # Configure the anonymizer
 ano.set_info(infos)
 ano.set_strategies(['regex', 'pii'])
-ano.set_masks('placeholder')
+ano.set_mask('placeholder')
 
 # Read and anonymize text
 text_to_anonymize = ano.open_text_file("/path/to/file.txt")
@@ -74,13 +74,34 @@ infos_json = ano.open_json_file("/path/to/infofile.json")
 # Configure the anonymizer
 ano.set_info(infos_json)
 ano.set_strategies(['regex', 'pii'])
-ano.set_masks('placeholder')
+ano.set_mask('placeholder')
 
 # Read and anonymize text
 text_to_anonymize = ano.open_text_file("/path/to/file.txt")
 anonymized_text = ano.anonymize(text_to_anonymize)
 
 print(anonymized_text)
+```
+#### Example: Annote a file
+```python
+from . import anonymizer
+
+# Initialize the anonymizer
+ano = anonymizer.Anonymizer()
+
+# Load personal information from JSON
+infos_json = ano.open_json_file("/path/to/infofile.json")
+
+# Configure the annotator
+ano.set_info(infos_json)
+ano.set_strategies(['regex', 'pii'])
+ano.set_annotator('placeholder')
+
+# Read and annotate text
+text_to_anonymize = ano.open_text_file("/path/to/file.txt")
+annotated_text = ano.annotate(text_to_anonymize)
+
+print(annotated_text)
 ```
 
 ### Command-Line Interface (CLI)
@@ -90,7 +111,7 @@ print(anonymized_text)
 python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks
 ```
 
-#### Find Available Strategies and Masks
+#### Find Available Strategies, Masks and Annotator
 ```bash
 python -m incognito --help
 ```
@@ -115,6 +136,10 @@ To view helper options for the "infos" submodule:
 python -m incognito infos --help
 ```
 
+#### Annotation 
+```bash
+python -m incognito --input myinputfile.txt --output annotationfile.ann --strategies mystrategies --annotate myannotator infos --first_name Bob --last_name Dylan --birthdate 1800-01-01 --ipp 0987654312 --postal_code 75001
+```
 ---
 
 ## Unit Tests
@@ -144,8 +169,24 @@ One available anonymization strategy is **Regex**. It can extract and mask speci
 
 For more details, see the [`RegexStrategy` class](incognito/analyzer.py) and the `self.title_regex` variable.
 
+### PII Stategy
+This strategy is used to catch the personal informations of the patient.
+
+You can use it in CLI with the infos or in a json fil.
+
+> For further example you can see the CLI chapter
+
 ---
 
+## Anotation Process Details
+
+### Standoff Strategy
+You can create an annotation file based on the Standoff format.
+
+This file will be automatically created based on the matched entity.
+ 
+> You can find example in the CLI/API chapters
+---
 ## License
 
 This project is licensed under the terms of the [MIT License](LICENSE).

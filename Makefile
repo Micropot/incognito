@@ -6,4 +6,4 @@ test:
 
 
 cov:
-	uv run python -m pytest --cov=incognito --doctest-modules incognito tests
+	uv run python -m pytest --cov=incognito_anonymizer --doctest-modules incognito_anonymizer tests

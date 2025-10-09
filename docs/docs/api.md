@@ -1,7 +1,7 @@
 # API 
 ## Anonymizer
 :::incognito_anonymizer.anonymizer
-## Anonlyzer
+## Analyzer
 :::incognito_anonymizer.analyzer
 ## Mask
 ::: incognito_anonymizer.mask
