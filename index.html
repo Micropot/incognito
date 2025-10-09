@@ -61,17 +61,21 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#example-using-json-file-for-personal-information">Example: Using JSON File for Personal Information</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example-annote-a-file">Example: Annote a file</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#command-line-interface-cli">Command-Line Interface (CLI)</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#basic-usage">Basic Usage</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#find-available-strategies-and-masks">Find Available Strategies and Masks</a>
+    <li class="toctree-l4"><a class="reference internal" href="#find-available-strategies-masks-and-annotator">Find Available Strategies, Masks and Annotator</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#anonymization-with-json-file">Anonymization with JSON File</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#anonymization-with-personal-information-in-cli">Anonymization with Personal Information in CLI</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#annotation">Annotation</a>
     </li>
         </ul>
     </li>
@@ -83,7 +87,17 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#regex-strategy">Regex Strategy</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pii-stategy">PII Stategy</a>
+    </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#anotation-process-details">Anotation Process Details</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#standoff-strategy">Standoff Strategy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#you-can-find-example-in-the-cliapi-chapters">&gt; You can find example in the CLI/API chapters</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#license">License</a>
     </li>
@@ -165,7 +179,7 @@ infos = {
 # Configure the anonymizer
 ano.set_info(infos)
 ano.set_strategies(['regex', 'pii'])
-ano.set_masks('placeholder')
+ano.set_mask('placeholder')
 
 # Read and anonymize text
 text_to_anonymize = ano.open_text_file(&quot;/path/to/file.txt&quot;)
@@ -185,7 +199,7 @@ infos_json = ano.open_json_file(&quot;/path/to/infofile.json&quot;)
 # Configure the anonymizer
 ano.set_info(infos_json)
 ano.set_strategies(['regex', 'pii'])
-ano.set_masks('placeholder')
+ano.set_mask('placeholder')
 
 # Read and anonymize text
 text_to_anonymize = ano.open_text_file(&quot;/path/to/file.txt&quot;)
@@ -193,11 +207,31 @@ anonymized_text = ano.anonymize(text_to_anonymize)
 
 print(anonymized_text)
 </code></pre>
+<h4 id="example-annote-a-file">Example: Annote a file</h4>
+<pre><code class="language-python">from . import anonymizer
+
+# Initialize the anonymizer
+ano = anonymizer.Anonymizer()
+
+# Load personal information from JSON
+infos_json = ano.open_json_file(&quot;/path/to/infofile.json&quot;)
+
+# Configure the annotator
+ano.set_info(infos_json)
+ano.set_strategies(['regex', 'pii'])
+ano.set_annotator('placeholder')
+
+# Read and annotate text
+text_to_anonymize = ano.open_text_file(&quot;/path/to/file.txt&quot;)
+annotated_text = ano.annotate(text_to_anonymize)
+
+print(annotated_text)
+</code></pre>
 <h3 id="command-line-interface-cli">Command-Line Interface (CLI)</h3>
 <h4 id="basic-usage">Basic Usage</h4>
 <pre><code class="language-bash">python -m incognito --input myinputfile.txt --output myanonymizedfile.txt --strategies mystrategies --mask mymasks
 </code></pre>
-<h4 id="find-available-strategies-and-masks">Find Available Strategies and Masks</h4>
+<h4 id="find-available-strategies-masks-and-annotator">Find Available Strategies, Masks and Annotator</h4>
 <pre><code class="language-bash">python -m incognito --help
 </code></pre>
 <h4 id="anonymization-with-json-file">Anonymization with JSON File</h4>
@@ -211,6 +245,9 @@ print(anonymized_text)
 </code></pre>
 <p>To view helper options for the "infos" submodule:</p>
 <pre><code class="language-bash">python -m incognito infos --help
+</code></pre>
+<h4 id="annotation">Annotation</h4>
+<pre><code class="language-bash">python -m incognito --input myinputfile.txt --output annotationfile.ann --strategies mystrategies --annotate myannotator infos --first_name Bob --last_name Dylan --birthdate 1800-01-01 --ipp 0987654312 --postal_code 75001
 </code></pre>
 <hr />
 <h2 id="unit-tests">Unit Tests</h2>
@@ -230,7 +267,18 @@ print(anonymized_text)
 - French NIR (social security number)
 - First and last names (if preceded by titles like "Monsieur", "Madame", "Mr", "Mme", "Docteur", "Professeur", etc.)</p>
 <p>For more details, see the <a href="incognito/analyzer.py"><code>RegexStrategy</code> class</a> and the <code>self.title_regex</code> variable.</p>
+<h3 id="pii-stategy">PII Stategy</h3>
+<p>This strategy is used to catch the personal informations of the patient.</p>
+<p>You can use it in CLI with the infos or in a json fil.</p>
+<blockquote>
+<p>For further example you can see the CLI chapter</p>
+</blockquote>
 <hr />
+<h2 id="anotation-process-details">Anotation Process Details</h2>
+<h3 id="standoff-strategy">Standoff Strategy</h3>
+<p>You can create an annotation file based on the Standoff format.</p>
+<p>This file will be automatically created based on the matched entity.</p>
+<h2 id="you-can-find-example-in-the-cliapi-chapters">&gt; You can find example in the CLI/API chapters</h2>
 <h2 id="license">License</h2>
 <p>This project is licensed under the terms of the <a href="LICENSE">MIT License</a>.</p>
 <hr />
@@ -287,5 +335,5 @@ Feel free to open issues or contribute via pull requests!</li>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-31 08:03:46.950552+00:00
+Build Date UTC : 2025-10-09 09:54:25.724034+00:00
 -->

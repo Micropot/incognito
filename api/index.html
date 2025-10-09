@@ -55,11 +55,15 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.add_analyzer">add_analyzer</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.annotate">annotate</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.anonymize">anonymize</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.open_json_file">open_json_file</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.open_text_file">open_text_file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_annotator">set_annotator</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#incognito_anonymizer.anonymizer.Anonymizer.set_info">set_info</a>
     </li>
@@ -69,7 +73,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#anonlyzer">Anonlyzer</a>
+    <li class="toctree-l2"><a class="reference internal" href="#analyzer">Analyzer</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#incognito_anonymizer.analyzer">analyzer</a>
     </li>
@@ -162,7 +166,9 @@
 
 
 
+
   <div class="doc doc-children">
+
 
 
 
@@ -193,6 +199,7 @@
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
                 <pre class="highlight"><code class="language-python">class Anonymizer:
@@ -212,12 +219,18 @@
         "hide": mask.HideStrategy(),
     }
 
+    # available annotator
+    ANNOTATORS = {
+        "standoff": anotate.StandoffStrategy()
+    }
+
     def __init__(self):
 
         self._infos = None
         self._position = []
         self._mask = mask.PlaceholderStrategy()
         self._analyzers = set()
+        self._annotator = None
 
     def open_text_file(self, path: str) -&gt; str:
         """
@@ -281,7 +294,7 @@
         """
         Add analyser
 
-        :param AnalyzerStrategy: analyzer used for anonymisation
+        :param name: analyzer used for anonymisation
 
         """
         if name in self.ANALYZERS:
@@ -294,13 +307,24 @@
         """
         Set masks
 
-        :param mask: wanted mask
+        :param name: wanted mask
         """
         if name in self.MASKS:
             self._mask = self.MASKS.get(name)
 
         else:
-            raise Exception(f"{name} doesn't exists")
+            raise Exception(f"{name} mask doesn't exists")
+
+    def set_annotator(self, name: str):
+        """
+        Set annotator
+
+        :param name: wanted annotator
+        """
+        if name in self.ANNOTATORS:
+            self._annotator = self.ANNOTATORS.get(name)
+        else:
+            raise Exception(f"{name} annotator doesn't exists")
 
     def anonymize(self, text: str) -&gt; str:
         """
@@ -316,16 +340,35 @@
             strategy.info = self._infos
             span = strategy.analyze(text=text)
             spans.update(span)
-
             anonymized_text = self._mask.mask(text, spans)
             text = anonymized_text
             spans = {}
-        return anonymized_text</code></pre>
+        return anonymized_text
+
+    def annotate(self, text: str) -&gt; str:
+        """
+        Global function to annotate a text base on the choosen strategies
+
+        :param text: text to annotate
+        :returns: annonated text
+        """
+        if not text:
+            text = "NaN"
+        spans = {}
+        for strategy in self._analyzers:
+            strategy.info = self._infos
+            span = strategy.analyze(text=text)
+            spans.update(span)
+        if self._annotator:
+            annotated_text = self._annotator.annotate(text, spans)
+            print(annotated_text)
+        return annotated_text</code></pre>
               </details>
 
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -347,7 +390,7 @@
     <div class="doc doc-contents ">
 
         <p>Add analyser</p>
-<p>:param AnalyzerStrategy: analyzer used for anonymisation</p>
+<p>:param name: analyzer used for anonymisation</p>
 
 
             <details class="quote">
@@ -356,7 +399,7 @@
     """
     Add analyser
 
-    :param AnalyzerStrategy: analyzer used for anonymisation
+    :param name: analyzer used for anonymisation
 
     """
     if name in self.ANALYZERS:
@@ -364,6 +407,47 @@
         self._analyzers.add(analyzer)
     else:
         raise Exception(f"{name} analyzer doesn't exists")</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="incognito_anonymizer.anonymizer.Anonymizer.annotate" class="doc doc-heading">
+            <code class="highlight language-python">annotate(text)</code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Global function to annotate a text base on the choosen strategies</p>
+<p>:param text: text to annotate
+:returns: annonated text</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
+              <pre class="highlight"><code class="language-python">def annotate(self, text: str) -&gt; str:
+    """
+    Global function to annotate a text base on the choosen strategies
+
+    :param text: text to annotate
+    :returns: annonated text
+    """
+    if not text:
+        text = "NaN"
+    spans = {}
+    for strategy in self._analyzers:
+        strategy.info = self._infos
+        span = strategy.analyze(text=text)
+        spans.update(span)
+    if self._annotator:
+        annotated_text = self._annotator.annotate(text, spans)
+        print(annotated_text)
+    return annotated_text</code></pre>
             </details>
     </div>
 
@@ -401,7 +485,6 @@
         strategy.info = self._infos
         span = strategy.analyze(text=text)
         spans.update(span)
-
         anonymized_text = self._mask.mask(text, spans)
         text = anonymized_text
         spans = {}
@@ -492,6 +575,38 @@
 <div class="doc doc-object doc-function">
 
 
+<h3 id="incognito_anonymizer.anonymizer.Anonymizer.set_annotator" class="doc doc-heading">
+            <code class="highlight language-python">set_annotator(name)</code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set annotator</p>
+<p>:param name: wanted annotator</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
+              <pre class="highlight"><code class="language-python">def set_annotator(self, name: str):
+    """
+    Set annotator
+
+    :param name: wanted annotator
+    """
+    if name in self.ANNOTATORS:
+        self._annotator = self.ANNOTATORS.get(name)
+    else:
+        raise Exception(f"{name} annotator doesn't exists")</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="incognito_anonymizer.anonymizer.Anonymizer.set_info" class="doc doc-heading">
             <code class="highlight language-python">set_info(infos)</code>
 
@@ -569,7 +684,7 @@
     <div class="doc doc-contents ">
 
         <p>Set masks</p>
-<p>:param mask: wanted mask</p>
+<p>:param name: wanted mask</p>
 
 
             <details class="quote">
@@ -578,13 +693,13 @@
     """
     Set masks
 
-    :param mask: wanted mask
+    :param name: wanted mask
     """
     if name in self.MASKS:
         self._mask = self.MASKS.get(name)
 
     else:
-        raise Exception(f"{name} doesn't exists")</code></pre>
+        raise Exception(f"{name} mask doesn't exists")</code></pre>
             </details>
     </div>
 
@@ -605,7 +720,7 @@
 
     </div>
 
-</div><h2 id="anonlyzer">Anonlyzer</h2>
+</div><h2 id="analyzer">Analyzer</h2>
 
 
 <div class="doc doc-object doc-module">
@@ -623,7 +738,9 @@
 
 
 
+
   <div class="doc doc-children">
+
 
 
 
@@ -654,6 +771,7 @@
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
                 <pre class="highlight"><code class="language-python">class AnalyzerStrategy:
@@ -666,6 +784,7 @@
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -700,6 +819,7 @@
 
 
         <p>Detect personal infos</p>
+
 
 
 
@@ -781,6 +901,7 @@
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -930,6 +1051,7 @@
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
                 <pre class="highlight"><code class="language-python">class RegexStrategy(AnalyzerStrategy):
@@ -1006,6 +1128,7 @@
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1138,7 +1261,9 @@
 
 
 
+
   <div class="doc doc-children">
+
 
 
 
@@ -1164,6 +1289,7 @@
 
 
         <p>Replace word by natural placeholder</p>
+
 
 
 
@@ -1219,6 +1345,7 @@
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1321,6 +1448,7 @@ anonymizer.mask(text, coordinate)
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
                 <pre class="highlight"><code class="language-python">class HashStrategy(Strategy):
@@ -1333,6 +1461,7 @@ anonymizer.mask(text, coordinate)
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1367,6 +1496,7 @@ anonymizer.mask(text, coordinate)
 
 
         <p>Replace by *</p>
+
 
 
 
@@ -1411,6 +1541,7 @@ anonymizer.mask(text, coordinate)
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1515,6 +1646,7 @@ anonymizer.mask(text, coordinate)
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
                 <pre class="highlight"><code class="language-python">class PlaceholderStrategy(Strategy):
@@ -1551,6 +1683,7 @@ anonymizer.mask(text, coordinate)
 
 
   <div class="doc doc-children">
+
 
 
 
