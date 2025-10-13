@@ -171,5 +171,4 @@ class Anonymizer:
             spans.update(span)
         if self._annotator:
             annotated_text = self._annotator.annotate(text, spans)
-            print("annotated text", annotated_text)
         return annotated_text
