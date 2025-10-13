@@ -11,3 +11,4 @@ wheels/
 docs/
 test*.txt
 test*.ann
+test*.jsonl
