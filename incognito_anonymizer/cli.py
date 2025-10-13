@@ -160,9 +160,6 @@ class AnonymiserCli:
             output.close()
         else:
             annotated_text = ano.annotate(text=ano.text)
-            _, extension = os.path.splitext(output_file)
-            if extension != ".ann":
-                output_file = output_file + ".ann"
             output = open(output_file, "w")
             output.write(annotated_text)
             output.close()

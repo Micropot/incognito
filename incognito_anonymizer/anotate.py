@@ -1,4 +1,6 @@
 from typing import Dict, List, Tuple
+import json
+
 """
     Classes to annotate the word at the given coordinates
 """
@@ -26,4 +28,16 @@ class StandoffStrategy(Strategy):
 
 class DoccanoStrategy(Strategy):
     def annotate(self, text, coordinate: Dict[List[Tuple], str]):
-        raise NotImplementedError
+        """Generate Doccano jsonl format annotations"""
+        label_data = []
+        for spans, label in coordinate.items():
+            label = label.strip("<>")
+            for (start, end) in spans:
+                label_data.append([start, end, label])
+
+        # Tri optionnel des labels selon la position de début
+        label_data.sort(key=lambda x: x[0])
+        return json.dumps({
+            "text": text,
+            "label": label_data
+        }, ensure_ascii=False)
