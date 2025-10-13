@@ -57,7 +57,7 @@ def test_regex_strategie(input, output):
 
 
 infos = {
-    "first_name": "Bob",
+    "first_name": "Lea",
     "last_name": "Jungels",
     "birth_name": "",
     "birthdate": datetime(1992, 9, 22, 0, 0, 0),
@@ -66,7 +66,7 @@ infos = {
     "adress": ""
 }
 dataset_pii = {
-    "Nom_Prenom_PII": ("Bob Jungels", "<NAME> <NAME>"),
+    "Nom_Prenom_PII": ("Léa Jungels", "<NAME> <NAME>"),
     "Date_IPP_Postal": ("22/09/1992 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>"),
     "DN": ("DN : 22/09/1992 ", "DN : <DATE> ")
 }

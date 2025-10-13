@@ -1,4 +1,5 @@
 import regex
+import unicodedata
 from datetime import datetime
 from flashtext import KeywordProcessor
 from pydantic import BaseModel
@@ -45,10 +46,15 @@ class PiiStrategy(AnalyzerStrategy):
         """
         processor = KeywordProcessor(case_sensitive=False)
         for key, masks in keywords:
+            key = "".join((c for c in unicodedata.normalize(
+                'NFD', key) if unicodedata.category(c) != 'Mn'))
             processor.add_keyword(key, masks)
 
+        normalized_text = "".join((c for c in unicodedata.normalize(
+            'NFD', text) if unicodedata.category(c) != 'Mn'))
         # Extract keywords with positions
-        found_keywords = processor.extract_keywords(text, span_info=True)
+        found_keywords = processor.extract_keywords(
+            normalized_text, span_info=True)
 
         result = {}
         for replacement, start, end in found_keywords:
@@ -58,7 +64,6 @@ class PiiStrategy(AnalyzerStrategy):
                 result[key] = replacement  # Handle multiple occurrences
             else:
                 result[key] = replacement
-
         return result
 
     def analyze(self, text: str) -> str:
