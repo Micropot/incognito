@@ -26,6 +26,13 @@ class AnonymiserCli:
         )
 
         parser.add_argument(
+            "--erase",
+            action="store_true",
+            help="Supprime le fichier de sortie (WARN : uniquement si annotator Doccano)",
+            required=False,
+        )
+
+        parser.add_argument(
             "-s",
             "--strategies",
             type=str,
@@ -113,6 +120,7 @@ class AnonymiserCli:
         mask = args.mask
         annotator = args.annotate
         verbose = args.verbose
+        erase = args.erase
         ano = anonymizer.Anonymizer()
 
         if command == "json":
@@ -158,14 +166,25 @@ class AnonymiserCli:
             output = open(output_file, "w")
             output.write(anonymized_text)
             output.close()
-        else:
+        elif annotator[0] != "doccano":
             annotated_text = ano.annotate(text=ano.text)
             output = open(output_file, "w")
             output.write(annotated_text)
             output.close()
-
+        else:
+            annotated_text = ano.annotate(text=ano.text)
+            if not erase:
+                output = open(output_file, "a")
+                output.write(annotated_text)
+                output.close()
+            else:
+                output = open(output_file, "w")
+                output.write(annotated_text)
+                output.close()
         if verbose:
             if not annotator:
                 print("Texte anonymisé : ", anonymized_text)
+            else:
+                print("Votre texte est bien annoté.")
             print("Texte enregistré ici : ", output_file)
             print("------ Terminé ------")
