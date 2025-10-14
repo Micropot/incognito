@@ -38,6 +38,10 @@ dataset_regex = {
     "Prof_NOM_PRENOM": ("Professeur JEAN JEAN", "Professeur <NAME>"),
     "Profe_NOM_PRENOM": ("Professeure JEAN JEAN", "Professeure <NAME>"),
     "INT_NOM_PRENOM": ("INT JEAN JEAN", "INT <NAME>"),
+    "Date_/": ("01/12/2000", "<DATE>"),
+    "Date_-": ("01-12-2000", "<DATE>"),
+    "Date_-": ("01-12-2000", "<DATE>"),
+    "Date_incorrect": ("12-22-2000", "12-22-2000"),
 }
 
 

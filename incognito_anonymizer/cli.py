@@ -175,7 +175,7 @@ class AnonymiserCli:
             annotated_text = ano.annotate(text=ano.text)
             if not erase:
                 output = open(output_file, "a")
-                output.write(annotated_text)
+                output.write("\n"+annotated_text)
                 output.close()
             else:
                 output = open(output_file, "w")
