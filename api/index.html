@@ -362,7 +362,6 @@
             spans.update(span)
         if self._annotator:
             annotated_text = self._annotator.annotate(text, spans)
-            print("annotated text", annotated_text)
         return annotated_text</code></pre>
               </details>
 
@@ -447,7 +446,6 @@
         spans.update(span)
     if self._annotator:
         annotated_text = self._annotator.annotate(text, spans)
-        print("annotated text", annotated_text)
     return annotated_text</code></pre>
             </details>
     </div>
@@ -852,10 +850,15 @@
         """
         processor = KeywordProcessor(case_sensitive=False)
         for key, masks in keywords:
+            key = "".join((c for c in unicodedata.normalize(
+                'NFD', key) if unicodedata.category(c) != 'Mn'))
             processor.add_keyword(key, masks)
 
+        normalized_text = "".join((c for c in unicodedata.normalize(
+            'NFD', text) if unicodedata.category(c) != 'Mn'))
         # Extract keywords with positions
-        found_keywords = processor.extract_keywords(text, span_info=True)
+        found_keywords = processor.extract_keywords(
+            normalized_text, span_info=True)
 
         result = {}
         for replacement, start, end in found_keywords:
@@ -865,7 +868,6 @@
                 result[key] = replacement  # Handle multiple occurrences
             else:
                 result[key] = replacement
-
         return result
 
     def analyze(self, text: str) -&gt; str:
@@ -1000,10 +1002,15 @@
     """
     processor = KeywordProcessor(case_sensitive=False)
     for key, masks in keywords:
+        key = "".join((c for c in unicodedata.normalize(
+            'NFD', key) if unicodedata.category(c) != 'Mn'))
         processor.add_keyword(key, masks)
 
+    normalized_text = "".join((c for c in unicodedata.normalize(
+        'NFD', text) if unicodedata.category(c) != 'Mn'))
     # Extract keywords with positions
-    found_keywords = processor.extract_keywords(text, span_info=True)
+    found_keywords = processor.extract_keywords(
+        normalized_text, span_info=True)
 
     result = {}
     for replacement, start, end in found_keywords:
@@ -1013,7 +1020,6 @@
             result[key] = replacement  # Handle multiple occurrences
         else:
             result[key] = replacement
-
     return result</code></pre>
             </details>
     </div>
@@ -1115,6 +1121,24 @@
                     self.position[combined_key] = repl
                 else:
                     self.position[tuple(spans)] = repl
+        result = {}
+
+        for k, v in self.position.items():
+            if v != "&lt;EMAIL&gt;":
+                result[k] = v
+                continue
+
+            email_tuples = list(k)
+            ends = {}
+
+            for (start, end) in email_tuples:
+                length = end - start
+                if end not in ends or length &gt; (ends[end][1] - ends[end][0]):
+                    ends[end] = (start, end)
+
+            result[tuple(ends.values())] = "&lt;EMAIL&gt;"
+
+        self.position = result
 
         return self.position
 
@@ -1222,6 +1246,24 @@
                 self.position[combined_key] = repl
             else:
                 self.position[tuple(spans)] = repl
+    result = {}
+
+    for k, v in self.position.items():
+        if v != "&lt;EMAIL&gt;":
+            result[k] = v
+            continue
+
+        email_tuples = list(k)
+        ends = {}
+
+        for (start, end) in email_tuples:
+            length = end - start
+            if end not in ends or length &gt; (ends[end][1] - ends[end][0]):
+                ends[end] = (start, end)
+
+        result[tuple(ends.values())] = "&lt;EMAIL&gt;"
+
+    self.position = result
 
     return self.position</code></pre>
             </details>
