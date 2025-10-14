@@ -3,6 +3,7 @@ import os
 from . import anonymizer
 from cassis import Cas
 
+
 class AnonymiserCli:
     """Class pour utiliser le CLI"""
 
@@ -76,8 +77,7 @@ class AnonymiserCli:
             help="Choix entre un fichier JSON, informations patient dans le CLI ou anonymisation par informations par défaut",
         )
 
-        json_parser = subparser.add_parser(
-            "json", help="Fournir un fichier JSON")
+        json_parser = subparser.add_parser("json", help="Fournir un fichier JSON")
         json_parser.add_argument(
             "--json",
             "--json_file",
@@ -88,24 +88,40 @@ class AnonymiserCli:
         )
 
         info_parser = subparser.add_parser(
-            "infos", help="Fournir infos partients dans le CLI")
+            "infos", help="Fournir infos partients dans le CLI"
+        )
         info_parser.add_argument(
-            "--first_name", type=str, help="Prénom du patient.", required=True)
+            "--first_name", type=str, help="Prénom du patient.", required=True
+        )
         info_parser.add_argument(
-            "--last_name", type=str, help="Nom du patient.", required=True)
+            "--last_name", type=str, help="Nom du patient.", required=True
+        )
         info_parser.add_argument(
-            "--birthname", type=str, help="Nom de naissance du patient.", required=False, default=""
+            "--birthname",
+            type=str,
+            help="Nom de naissance du patient.",
+            required=False,
+            default="",
         )
         info_parser.add_argument(
             "--birthdate", type=str, help="Date de naissance du patient.", required=True
         )
         info_parser.add_argument(
-            "--ipp", type=str, help="IPP du patient.", required=True)
-        info_parser.add_argument(
-            "--postal_code", type=str, help="Code postal du patient.", required=False, default=""
+            "--ipp", type=str, help="IPP du patient.", required=True
         )
         info_parser.add_argument(
-            "--adress", type=str, help="Adresse postal du patient.", required=False, default=""
+            "--postal_code",
+            type=str,
+            help="Code postal du patient.",
+            required=False,
+            default="",
+        )
+        info_parser.add_argument(
+            "--adress",
+            type=str,
+            help="Adresse postal du patient.",
+            required=False,
+            default="",
         )
 
         return parser.parse_args(argv)
@@ -147,8 +163,15 @@ class AnonymiserCli:
                 "postal_code",
                 "adress",
             ]
-            values = [first_name, last_name, birthname,
-                      birthdate, ipp, postal_code, adress]
+            values = [
+                first_name,
+                last_name,
+                birthname,
+                birthdate,
+                ipp,
+                postal_code,
+                adress,
+            ]
             infos_dict = {key: value for key, value in zip(keys, values)}
             ano.infos = ano.set_info_from_dict(**infos_dict)
         for strat in strats:
@@ -182,7 +205,7 @@ class AnonymiserCli:
             annotated_text = ano.annotate(text=ano.text)
             if not erase:
                 output = open(output_file, "a")
-                output.write("\n"+annotated_text)
+                output.write("\n" + annotated_text)
                 output.close()
             else:
                 output = open(output_file, "w")
