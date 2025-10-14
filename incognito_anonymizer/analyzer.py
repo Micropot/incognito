@@ -157,6 +157,24 @@ class RegexStrategy(AnalyzerStrategy):
                     self.position[combined_key] = repl
                 else:
                     self.position[tuple(spans)] = repl
+        result = {}
+
+        for k, v in self.position.items():
+            if v != "<EMAIL>":
+                result[k] = v
+                continue
+
+            email_tuples = list(k)
+            ends = {}
+
+            for (start, end) in email_tuples:
+                length = end - start
+                if end not in ends or length > (ends[end][1] - ends[end][0]):
+                    ends[end] = (start, end)
+
+            result[tuple(ends.values())] = "<EMAIL>"
+
+        self.position = result
 
         return self.position
 
