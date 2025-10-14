@@ -42,6 +42,7 @@ dataset_regex = {
     "Date_-": ("01-12-2000", "<DATE>"),
     "Date_-": ("01-12-2000", "<DATE>"),
     "Date_incorrect": ("12-22-2000", "12-22-2000"),
+    "Date_phrase": ("Brest, le 01/01/2000", "Brest, le <DATE>"),
 }
 
 
