@@ -73,7 +73,6 @@ class PiiStrategy(AnalyzerStrategy):
         :param text: text to anonymize
         """
         keywords: tuple
-        print(self.info)
         try:
             if isinstance(self.info, PersonalInfo):
                 keywords = (
