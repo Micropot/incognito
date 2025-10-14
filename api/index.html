@@ -877,7 +877,6 @@
         :param text: text to anonymize
         """
         keywords: tuple
-        print(self.info)
         try:
             if isinstance(self.info, PersonalInfo):
                 keywords = (
@@ -938,7 +937,6 @@
     :param text: text to anonymize
     """
     keywords: tuple
-    print(self.info)
     try:
         if isinstance(self.info, PersonalInfo):
             keywords = (
@@ -1082,6 +1080,7 @@
             rf"(?&lt;={self.title_regex}[ ]+)(?P&lt;FN0&gt;[A-ZÀ-Ÿ][.])\s+(?P&lt;LN0&gt;{XXxX_}+(?:{sep}{XXxX_}+)*)": "&lt;NAME&gt;",
             r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "&lt;NIR&gt;",
             r"(?:(?:\+|00)33|0)[ \t]*[1-9](?:[ \t.-]*\d{2}){4}": "&lt;PHONE&gt;",
+            r"\b(0?[1-9]|[12]\d|3[01])(\/|-|\.)(0?[1-9]|1[0-2])\2((?:1[6-9]|[2-9]\d)\d{2})\b": "&lt;DATE&gt;",
 
             self.email_pattern: "&lt;EMAIL&gt;"
         }
