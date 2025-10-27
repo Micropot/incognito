@@ -60,10 +60,10 @@ class PiiStrategy(AnalyzerStrategy):
         for replacement, start, end in found_keywords:
             # Wrap positions as a tuple of tuples
             key = ((start, end),)
-            if key in result:
-                result[key] = replacement  # Handle multiple occurrences
-            else:
-                result[key] = replacement
+            # if key in result:
+            #     result[key] = replacement  # Handle multiple occurrences
+            # else:
+            result[key] = replacement
         return result
 
     def analyze(self, text: str) -> str:
@@ -73,27 +73,23 @@ class PiiStrategy(AnalyzerStrategy):
         :param text: text to anonymize
         """
         keywords: tuple
-        try:
-            if isinstance(self.info, PersonalInfo):
-                keywords = (
-                    (self.info.first_name, "<NAME>"),
-                    (self.info.last_name, "<NAME>"),
-                    (self.info.birth_name, "<NAME>"),
-                    (self.info.ipp, "<IPP>"),
-                    (self.info.postal_code, "<CODE_POSTAL>"),
-                    (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
-                    (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
-                    (self.info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
-                    (self.info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
-                    (self.info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
-                    (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
-                    (self.info.adress, "<ADRESSE>"),
-                )
+        if isinstance(self.info, PersonalInfo):
+            keywords = (
+                (self.info.first_name, "<NAME>"),
+                (self.info.last_name, "<NAME>"),
+                (self.info.birth_name, "<NAME>"),
+                (self.info.ipp, "<IPP>"),
+                (self.info.postal_code, "<CODE_POSTAL>"),
+                (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
+                (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
+                (self.info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
+                (self.info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
+                (self.info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
+                (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
+                (self.info.adress, "<ADRESSE>"),
+            )
 
-            return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
-        except Exception as e:
-            print(f"Error : {e}. Given infos not in text")
-            pass
+        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
 
 
 class RegexStrategy(AnalyzerStrategy):
