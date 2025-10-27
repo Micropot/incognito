@@ -111,7 +111,7 @@ class Anonymizer:
             analyzer = self.ANALYZERS.get(name)
             self._analyzers.add(analyzer)
         else:
-            raise Exception(f"{name} analyzer doesn't exists")
+            raise Exception(f"{name} analyzer doesn't exist")
 
     def set_mask(self, name: str):
         """
@@ -123,7 +123,7 @@ class Anonymizer:
             self._mask = self.MASKS.get(name)
 
         else:
-            raise Exception(f"{name} mask doesn't exists")
+            raise Exception(f"{name} mask doesn't exist")
 
     def set_annotator(self, name: str):
         """
@@ -134,7 +134,7 @@ class Anonymizer:
         if name in self.ANNOTATORS:
             self._annotator = self.ANNOTATORS.get(name)
         else:
-            raise Exception(f"{name} annotator doesn't exists")
+            raise Exception(f"{name} annotator doesn't exist")
 
     def anonymize(self, text: str) -> str:
         """
@@ -162,8 +162,6 @@ class Anonymizer:
         :param text: text to annotate
         :returns: annonated text
         """
-        if not text:
-            text = "NaN"
         spans = {}
         for strategy in self._analyzers:
             strategy.info = self._infos

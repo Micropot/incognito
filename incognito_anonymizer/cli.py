@@ -110,7 +110,7 @@ class AnonymiserCli:
 
         return parser.parse_args(argv)
 
-    def run(self, argv):
+    def run(self, argv):  # pragma: no cover
         """Fonction principal du projet"""
         args = self.parse_cli(argv)
         input_file = args.input

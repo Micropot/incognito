@@ -7,7 +7,7 @@ import json
 
 
 class Strategy:
-    def annotate(text, coordinate: Dict[List[Tuple], str]):
+    def annotate(text, coordinate: Dict[List[Tuple], str]):  # pragma: no cover
         raise NotImplementedError()
 
 

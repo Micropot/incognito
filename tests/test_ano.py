@@ -99,3 +99,21 @@ def test_anaylser_not_implemented_error():
 def test_mask_not_implemented_error():
     with pytest.raises(NotImplementedError):
         mask.Strategy.mask("test", coordinate=((10, 10), "<TEST>"))
+
+
+def test_add_analyser_error():
+    ano = Anonymizer()
+    with pytest.raises(Exception, match="test analyzer doesn't exist"):
+        ano.add_analyzer('test')
+
+
+def test_set_mask_error():
+    ano = Anonymizer()
+    with pytest.raises(Exception):
+        ano.set_mask('test')
+
+
+def test_set_annotator_error():
+    ano = Anonymizer()
+    with pytest.raises(Exception):
+        ano.set_annotator('test')
