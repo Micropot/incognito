@@ -302,7 +302,7 @@
             analyzer = self.ANALYZERS.get(name)
             self._analyzers.add(analyzer)
         else:
-            raise Exception(f"{name} analyzer doesn't exists")
+            raise Exception(f"{name} analyzer doesn't exist")
 
     def set_mask(self, name: str):
         """
@@ -314,7 +314,7 @@
             self._mask = self.MASKS.get(name)
 
         else:
-            raise Exception(f"{name} mask doesn't exists")
+            raise Exception(f"{name} mask doesn't exist")
 
     def set_annotator(self, name: str):
         """
@@ -325,7 +325,7 @@
         if name in self.ANNOTATORS:
             self._annotator = self.ANNOTATORS.get(name)
         else:
-            raise Exception(f"{name} annotator doesn't exists")
+            raise Exception(f"{name} annotator doesn't exist")
 
     def anonymize(self, text: str) -&gt; str:
         """
@@ -353,8 +353,6 @@
         :param text: text to annotate
         :returns: annonated text
         """
-        if not text:
-            text = "NaN"
         spans = {}
         for strategy in self._analyzers:
             strategy.info = self._infos
@@ -406,7 +404,7 @@
         analyzer = self.ANALYZERS.get(name)
         self._analyzers.add(analyzer)
     else:
-        raise Exception(f"{name} analyzer doesn't exists")</code></pre>
+        raise Exception(f"{name} analyzer doesn't exist")</code></pre>
             </details>
     </div>
 
@@ -437,8 +435,6 @@
     :param text: text to annotate
     :returns: annonated text
     """
-    if not text:
-        text = "NaN"
     spans = {}
     for strategy in self._analyzers:
         strategy.info = self._infos
@@ -597,7 +593,7 @@
     if name in self.ANNOTATORS:
         self._annotator = self.ANNOTATORS.get(name)
     else:
-        raise Exception(f"{name} annotator doesn't exists")</code></pre>
+        raise Exception(f"{name} annotator doesn't exist")</code></pre>
             </details>
     </div>
 
@@ -698,7 +694,7 @@
         self._mask = self.MASKS.get(name)
 
     else:
-        raise Exception(f"{name} mask doesn't exists")</code></pre>
+        raise Exception(f"{name} mask doesn't exist")</code></pre>
             </details>
     </div>
 
@@ -864,10 +860,10 @@
         for replacement, start, end in found_keywords:
             # Wrap positions as a tuple of tuples
             key = ((start, end),)
-            if key in result:
-                result[key] = replacement  # Handle multiple occurrences
-            else:
-                result[key] = replacement
+            # if key in result:
+            #     result[key] = replacement  # Handle multiple occurrences
+            # else:
+            result[key] = replacement
         return result
 
     def analyze(self, text: str) -&gt; str:
@@ -877,27 +873,23 @@
         :param text: text to anonymize
         """
         keywords: tuple
-        try:
-            if isinstance(self.info, PersonalInfo):
-                keywords = (
-                    (self.info.first_name, "&lt;NAME&gt;"),
-                    (self.info.last_name, "&lt;NAME&gt;"),
-                    (self.info.birth_name, "&lt;NAME&gt;"),
-                    (self.info.ipp, "&lt;IPP&gt;"),
-                    (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
-                    (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
-                    (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
-                    (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
-                    (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
-                    (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
-                    (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
-                    (self.info.adress, "&lt;ADRESSE&gt;"),
-                )
+        if isinstance(self.info, PersonalInfo):
+            keywords = (
+                (self.info.first_name, "&lt;NAME&gt;"),
+                (self.info.last_name, "&lt;NAME&gt;"),
+                (self.info.birth_name, "&lt;NAME&gt;"),
+                (self.info.ipp, "&lt;IPP&gt;"),
+                (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
+                (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
+                (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
+                (self.info.adress, "&lt;ADRESSE&gt;"),
+            )
 
-            return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
-        except Exception as e:
-            print(f"Error : {e}. Given infos not in text")
-            pass</code></pre>
+        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])</code></pre>
               </details>
 
 
@@ -937,27 +929,23 @@
     :param text: text to anonymize
     """
     keywords: tuple
-    try:
-        if isinstance(self.info, PersonalInfo):
-            keywords = (
-                (self.info.first_name, "&lt;NAME&gt;"),
-                (self.info.last_name, "&lt;NAME&gt;"),
-                (self.info.birth_name, "&lt;NAME&gt;"),
-                (self.info.ipp, "&lt;IPP&gt;"),
-                (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
-                (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
-                (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
-                (self.info.adress, "&lt;ADRESSE&gt;"),
-            )
+    if isinstance(self.info, PersonalInfo):
+        keywords = (
+            (self.info.first_name, "&lt;NAME&gt;"),
+            (self.info.last_name, "&lt;NAME&gt;"),
+            (self.info.birth_name, "&lt;NAME&gt;"),
+            (self.info.ipp, "&lt;IPP&gt;"),
+            (self.info.postal_code, "&lt;CODE_POSTAL&gt;"),
+            (self.info.birthdate.strftime("%m/%d/%Y"), "&lt;DATE&gt;"),
+            (self.info.birthdate.strftime("%m %d %Y"), "&lt;DATE&gt;"),
+            (self.info.birthdate.strftime("%m:%d:%Y"), "&lt;DATE&gt;"),
+            (self.info.birthdate.strftime("%m-%d-%Y"), "&lt;DATE&gt;"),
+            (self.info.birthdate.strftime("%Y-%m-%d"), "&lt;DATE&gt;"),
+            (self.info.birthdate.strftime("%d/%m/%Y"), "&lt;DATE&gt;"),
+            (self.info.adress, "&lt;ADRESSE&gt;"),
+        )
 
-        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
-    except Exception as e:
-        print(f"Error : {e}. Given infos not in text")
-        pass</code></pre>
+    return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])</code></pre>
             </details>
     </div>
 
@@ -1014,10 +1002,10 @@
     for replacement, start, end in found_keywords:
         # Wrap positions as a tuple of tuples
         key = ((start, end),)
-        if key in result:
-            result[key] = replacement  # Handle multiple occurrences
-        else:
-            result[key] = replacement
+        # if key in result:
+        #     result[key] = replacement  # Handle multiple occurrences
+        # else:
+        result[key] = replacement
     return result</code></pre>
             </details>
     </div>
