@@ -1,7 +1,7 @@
 import argparse
 import os
 from . import anonymizer
-
+from cassis import Cas
 
 class AnonymiserCli:
     """Class pour utiliser le CLI"""
@@ -166,6 +166,13 @@ class AnonymiserCli:
             output = open(output_file, "w")
             output.write(anonymized_text)
             output.close()
+
+        elif annotator[0] == "uimacas":
+            print(annotator[0])
+            annotated_text: Cas = ano.annotate(text=ano.text)
+            print(annotated_text)
+            annotated_text.to_json(path=output_file)
+
         elif annotator[0] != "doccano":
             annotated_text = ano.annotate(text=ano.text)
             output = open(output_file, "w")

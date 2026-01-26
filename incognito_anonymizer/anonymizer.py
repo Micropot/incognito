@@ -31,7 +31,8 @@ class Anonymizer:
     # available annotator
     ANNOTATORS = {
         "standoff": anotate.StandoffStrategy(),
-        "doccano": anotate.DoccanoStrategy()
+        "doccano": anotate.DoccanoStrategy(),
+        "uimacas": anotate.UimaCasStrategy()
     }
 
     def __init__(self):
