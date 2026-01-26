@@ -167,7 +167,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -191,8 +191,8 @@
     <div class="doc doc-contents ">
 
 
-        <p>Anonymization class based on strategies formating</p>
 
+        <p>Anonymization class based on strategies formating</p>
 
 
 
@@ -222,7 +222,8 @@
     # available annotator
     ANNOTATORS = {
         "standoff": anotate.StandoffStrategy(),
-        "doccano": anotate.DoccanoStrategy()
+        "doccano": anotate.DoccanoStrategy(),
+        "uimacas": anotate.UimaCasStrategy()
     }
 
     def __init__(self):
@@ -365,7 +366,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -391,7 +392,7 @@
 <p>:param name: analyzer used for anonymisation</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def add_analyzer(self, name: str):
     """
@@ -426,7 +427,7 @@
 :returns: annonated text</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def annotate(self, text: str) -&gt; str:
     """
@@ -464,7 +465,7 @@
 :returns: anonimized text</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def anonymize(self, text: str) -&gt; str:
     """
@@ -506,7 +507,7 @@
 :raises FileExistsError: if given file not found</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def open_json_file(self, path: str) -&gt; str:
     """
@@ -545,7 +546,7 @@
 :raises FileExistsError: if given file not found</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def open_text_file(self, path: str) -&gt; str:
     """
@@ -582,7 +583,7 @@
 <p>:param name: wanted annotator</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def set_annotator(self, name: str):
     """
@@ -614,7 +615,7 @@
 <p>:param infos: PersonalInfo</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def set_info(self, infos: PersonalInfo):
     """
@@ -643,7 +644,7 @@
 <p>:param infos: dict with all the Personal info values</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def set_info_from_dict(self, **kwargs):
     """
@@ -682,7 +683,7 @@
 <p>:param name: wanted mask</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
               <pre class="highlight"><code class="language-python">def set_mask(self, name: str):
     """
@@ -705,6 +706,7 @@
   </div>
 
     </div>
+
 
 </div>
 
@@ -734,7 +736,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -758,8 +760,8 @@
     <div class="doc doc-contents ">
 
 
-        <p>Constructeur de la Class Strategy</p>
 
+        <p>Constructeur de la Class Strategy</p>
 
 
 
@@ -778,7 +780,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -794,6 +796,7 @@
   </div>
 
     </div>
+
 
 </div>
 
@@ -813,8 +816,8 @@
               Bases: <code><a class="autorefs autorefs-internal" title="AnalyzerStrategy (incognito_anonymizer.analyzer.AnalyzerStrategy)" href="#incognito_anonymizer.analyzer.AnalyzerStrategy">AnalyzerStrategy</a></code></p>
 
 
-        <p>Detect personal infos</p>
 
+        <p>Detect personal infos</p>
 
 
 
@@ -894,7 +897,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -920,7 +923,7 @@
 <p>:param text: text to anonymize</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
               <pre class="highlight"><code class="language-python">def analyze(self, text: str) -&gt; str:
     """
@@ -970,7 +973,7 @@
         - The replacement string.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
               <pre class="highlight"><code class="language-python">def hide_by_keywords(
     self, text: str, keywords: Iterable[Tuple[str, str]]
@@ -1018,6 +1021,7 @@
 
     </div>
 
+
 </div>
 
 <div class="doc doc-object doc-class">
@@ -1036,8 +1040,8 @@
               Bases: <code><a class="autorefs autorefs-internal" title="AnalyzerStrategy (incognito_anonymizer.analyzer.AnalyzerStrategy)" href="#incognito_anonymizer.analyzer.AnalyzerStrategy">AnalyzerStrategy</a></code></p>
 
 
-        <p>Detect word based on regex</p>
 
+        <p>Detect word based on regex</p>
 
 
 
@@ -1139,7 +1143,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -1165,7 +1169,7 @@
 :param text: text to anonymize</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
               <pre class="highlight"><code class="language-python">def analyze(self, text: str):
     """
@@ -1196,7 +1200,7 @@
         - The replacement string.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
               <pre class="highlight"><code class="language-python">def multi_subs_by_regex(self, text: str) -&gt; Dict[Tuple[Tuple[int, int]], str]:
     """
@@ -1264,6 +1268,7 @@
 
     </div>
 
+
 </div>
 
 
@@ -1292,7 +1297,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -1318,8 +1323,8 @@
               Bases: <code><span title="incognito_anonymizer.mask.Strategy">Strategy</span></code></p>
 
 
-        <p>Replace word by natural placeholder</p>
 
+        <p>Replace word by natural placeholder</p>
 
 
 
@@ -1374,7 +1379,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -1414,7 +1419,7 @@ anonymizer.mask(text, coordinate)
 </blockquote>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
               <pre class="highlight"><code class="language-python">def mask(self, text: str, coordinate: Dict[List[Tuple], str]) -&gt; str:
     """
@@ -1452,6 +1457,7 @@ anonymizer.mask(text, coordinate)
 
     </div>
 
+
 </div>
 
 <div class="doc doc-object doc-class">
@@ -1470,8 +1476,8 @@ anonymizer.mask(text, coordinate)
               Bases: <code><span title="incognito_anonymizer.mask.Strategy">Strategy</span></code></p>
 
 
-        <p>Replace les mots par leur hash</p>
 
+        <p>Replace les mots par leur hash</p>
 
 
 
@@ -1490,7 +1496,7 @@ anonymizer.mask(text, coordinate)
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -1506,6 +1512,7 @@ anonymizer.mask(text, coordinate)
   </div>
 
     </div>
+
 
 </div>
 
@@ -1525,8 +1532,8 @@ anonymizer.mask(text, coordinate)
               Bases: <code><span title="incognito_anonymizer.mask.Strategy">Strategy</span></code></p>
 
 
-        <p>Replace by *</p>
 
+        <p>Replace by *</p>
 
 
 
@@ -1570,7 +1577,7 @@ anonymizer.mask(text, coordinate)
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -1610,7 +1617,7 @@ anonymizer.mask(text, coordinate)
 </blockquote>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
               <pre class="highlight"><code class="language-python">def mask(self, text, coordinate: Dict[List[Tuple], str]) -&gt; str:
     """
@@ -1650,6 +1657,7 @@ anonymizer.mask(text, coordinate)
 
     </div>
 
+
 </div>
 
 <div class="doc doc-object doc-class">
@@ -1668,8 +1676,8 @@ anonymizer.mask(text, coordinate)
               Bases: <code><span title="incognito_anonymizer.mask.Strategy">Strategy</span></code></p>
 
 
-        <p>Replace by placeholders</p>
 
+        <p>Replace by placeholders</p>
 
 
 
@@ -1712,7 +1720,7 @@ anonymizer.mask(text, coordinate)
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -1752,7 +1760,7 @@ anonymizer.mask(text, coordinate)
 </blockquote>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/mask.py</code></summary>
               <pre class="highlight"><code class="language-python">def mask(self, text, coordinate: Dict[List[Tuple], str]) -&gt; str:
     """
@@ -1790,6 +1798,7 @@ anonymizer.mask(text, coordinate)
   </div>
 
     </div>
+
 
 </div>
 
