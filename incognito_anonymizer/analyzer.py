@@ -151,7 +151,6 @@ class RegexStrategy(AnalyzerStrategy):
 
             spans = [match.span() for match in matches_iter]
 
-            print(spans)
             # Dédoublonnage : pour les spans overlappants, garder uniquement le plus long
             filtered_spans = self._remove_overlapping_spans(spans)
 
@@ -196,7 +195,6 @@ class RegexStrategy(AnalyzerStrategy):
 
         self.position = result
 
-        print("FINAL POSITIONS", self.position)
         return self.position
 
     def analyze(self, text: str):
