@@ -46,15 +46,24 @@ class PiiStrategy(AnalyzerStrategy):
         """
         processor = KeywordProcessor(case_sensitive=False)
         for key, masks in keywords:
-            key = "".join((c for c in unicodedata.normalize(
-                'NFD', key) if unicodedata.category(c) != 'Mn'))
+            key = "".join(
+                (
+                    c
+                    for c in unicodedata.normalize("NFD", key)
+                    if unicodedata.category(c) != "Mn"
+                )
+            )
             processor.add_keyword(key, masks)
 
-        normalized_text = "".join((c for c in unicodedata.normalize(
-            'NFD', text) if unicodedata.category(c) != 'Mn'))
+        normalized_text = "".join(
+            (
+                c
+                for c in unicodedata.normalize("NFD", text)
+                if unicodedata.category(c) != "Mn"
+            )
+        )
         # Extract keywords with positions
-        found_keywords = processor.extract_keywords(
-            normalized_text, span_info=True)
+        found_keywords = processor.extract_keywords(normalized_text, span_info=True)
 
         result = {}
         for replacement, start, end in found_keywords:
@@ -89,7 +98,9 @@ class PiiStrategy(AnalyzerStrategy):
                 (self.info.adress, "<ADRESSE>"),
             )
 
-        return self.hide_by_keywords(text, [(info, tag) for info, tag in keywords if info])
+        return self.hide_by_keywords(
+            text, [(info, tag) for info, tag in keywords if info]
+        )
 
 
 class RegexStrategy(AnalyzerStrategy):
@@ -118,7 +129,7 @@ class RegexStrategy(AnalyzerStrategy):
             r"\b(0?[1-9]|[12]\d|3[01])(\/|-|\.)(0?[1-9]|1[0-2])\2((?:1[6-9]|[2-9]\d)\d{2})\b": "<DATE>",
             self.email_pattern: "<EMAIL>",
             self.adresse_pattern: "<ADRESSE>",
-            r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{9,}\d": "<NUMBER>"
+            r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{9,}\d": "<NUMBER>",
         }
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
@@ -130,32 +141,42 @@ class RegexStrategy(AnalyzerStrategy):
                 - A tuple with the start and end positions of the word.
                 - The replacement string.
         """
+
         self.position = {}
+
         for pattern, repl in self.PATTERNS.items():
-            matches = regex.findall(pattern, text, overlapped=True)
-            if matches:
-                spans = [match.span() for match in regex.finditer(
-                    pattern, text, overlapped=True)]
+            matches_iter = list(regex.finditer(pattern, text, overlapped=True))
+            if not matches_iter:
+                continue
 
-                existing_keys = list(self.position.keys())
+            spans = [match.span() for match in matches_iter]
 
-                overlapping_keys = []
-                for key in existing_keys:
-                    if any(span in key for span in spans) or any(k in spans for k in key):
-                        overlapping_keys.append(key)
+            print(spans)
+            # Dédoublonnage : pour les spans overlappants, garder uniquement le plus long
+            filtered_spans = self._remove_overlapping_spans(spans)
 
-                if overlapping_keys:
-                    combined_key = tuple(
-                        sorted(
-                            set(span for key in overlapping_keys for span in key).union(spans))
+            existing_keys = list(self.position.keys())
+            overlapping_keys = []
+            for key in existing_keys:
+                if any(span in key for span in filtered_spans) or any(
+                    k in filtered_spans for k in key
+                ):
+                    overlapping_keys.append(key)
+
+            if overlapping_keys:
+                combined_key = tuple(
+                    sorted(
+                        set(span for key in overlapping_keys for span in key).union(
+                            filtered_spans
+                        )
                     )
+                )
+                for key in overlapping_keys:
+                    del self.position[key]
+                self.position[combined_key] = repl
+            else:
+                self.position[tuple(filtered_spans)] = repl
 
-                    for key in overlapping_keys:
-                        del self.position[key]
-
-                    self.position[combined_key] = repl
-                else:
-                    self.position[tuple(spans)] = repl
         result = {}
 
         for k, v in self.position.items():
@@ -166,7 +187,7 @@ class RegexStrategy(AnalyzerStrategy):
             email_tuples = list(k)
             ends = {}
 
-            for (start, end) in email_tuples:
+            for start, end in email_tuples:
                 length = end - start
                 if end not in ends or length > (ends[end][1] - ends[end][0]):
                     ends[end] = (start, end)
@@ -175,6 +196,7 @@ class RegexStrategy(AnalyzerStrategy):
 
         self.position = result
 
+        print("FINAL POSITIONS", self.position)
         return self.position
 
     def analyze(self, text: str):
@@ -183,3 +205,28 @@ class RegexStrategy(AnalyzerStrategy):
         :param text: text to anonymize
         """
         return self.multi_subs_by_regex(text)
+
+    def _remove_overlapping_spans(self, spans: list) -> list:
+        """
+        Pour un ensemble de spans potentiellement overlappants,
+        ne garder que les spans non-overlappants les plus longs.
+        """
+        if not spans:
+            return spans
+
+        # Trier par longueur décroissante (garder les plus longs en priorité)
+        sorted_spans = sorted(spans, key=lambda s: s[1] - s[0], reverse=True)
+
+        kept = []
+        for span in sorted_spans:
+            start, end = span
+            # Vérifier si ce span overlap avec un span déjà gardé
+            overlaps = any(
+                not (end <= kept_start or start >= kept_end)
+                for kept_start, kept_end in kept
+            )
+            if not overlaps:
+                kept.append(span)
+
+        # Retrier par position
+        return sorted(kept, key=lambda s: s[0])

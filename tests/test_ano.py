@@ -6,12 +6,11 @@ from datetime import datetime
 import pytest
 
 dataset_regex = {
-
     "phone": ("tél: 0651565600", "tél: <NUMBER>"),
     "phone2": ("tél: 06 51 56 56 00", "tél: <NUMBER>"),
     "email": ("email : joe.lafripouille@chu-brest.fr", "email : <EMAIL>"),
     "nir": ("nir : 164064308898823", "nir : <NUMBER>"),
-    "nir_space": ("nir : 1 64 06 43 088 988 (23)", "nir : <NUMBER>"),
+    "nir_space": ("nir : 1 64 06 43 088 988 (23)", "nir : <NUMBER> (23)"),
     "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
     "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
     "Nom_compose_Prenom": ("name : De La Fontaine Jean", "name : De La Fontaine Jean"),
@@ -20,8 +19,14 @@ dataset_regex = {
     "NOM_accent_prénom": ("Monsieur JOÉÇ Poçèé", "Monsieur <NAME>"),
     "P._NOM": ("J. Jean", "J. Jean"),
     "Monsieur_NOM_Prenom": ("Monsieur KEAN Jean", "Monsieur <NAME>"),
-    "Monsieur_NOM_Prenom_DOUBLE": ("Monsieur KEAN KEZAN Jean-Baptiste", "Monsieur <NAME>"),
-    "INTERNE_NOM-NOM_Prenom": ("name : Interne : DE-TROIS Jean", "name : Interne : <NAME>"),
+    "Monsieur_NOM_Prenom_DOUBLE": (
+        "Monsieur KEAN KEZAN Jean-Baptiste",
+        "Monsieur <NAME>",
+    ),
+    "INTERNE_NOM-NOM_Prenom": (
+        "name : Interne : DE-TROIS Jean",
+        "name : Interne : <NAME>",
+    ),
     "Titre_Interne": ("Interne", "Interne"),
     "Docteur_NOM_Prenom": ("Docteur DUPONT Jean", "Docteur <NAME>"),
     "Monsieur_P._NOM": ("Monsieur J. Jean", "Monsieur <NAME>"),
@@ -31,9 +36,18 @@ dataset_regex = {
     "PR_NAME": ("PR ABGRAL RONAN", "PR <NAME>"),
     "Interne_NOM_Prenom": ("Interne JEAN Jean", "Interne <NAME>"),
     "Externe_NOM_Prenom": ("Externe JEAN Jean", "Externe <NAME>"),
-    "nom_phone": ("Monsieur JEAN Lasalle, tél : 0647482884", "Monsieur <NAME>, tél : <NUMBER>"),
-    "double_nom": ("Monsieur JEAN Jean, Docteur Jeanj JEAN, Madame JEANNE Jean", "Monsieur <NAME>, Docteur <NAME>, Madame <NAME>"),
-    "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour Monsieur <NAME>, voici son numéro : <NUMBER> et son email <EMAIL>"),
+    "nom_phone": (
+        "Monsieur JEAN Lasalle, tél : 0647482884",
+        "Monsieur <NAME>, tél : <NUMBER>",
+    ),
+    "double_nom": (
+        "Monsieur JEAN Jean, Docteur Jeanj JEAN, Madame JEANNE Jean",
+        "Monsieur <NAME>, Docteur <NAME>, Madame <NAME>",
+    ),
+    "test": (
+        "Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr",
+        "Bonjour Monsieur <NAME>, voici son numéro : <NUMBER> et son email <EMAIL>",
+    ),
     "née_madame": ("Madame DUPONT Mariane née MORGAT", "Madame <NAME> née <NAME>"),
     "né_monsieur": ("Monsieur J. Jean né LA RUE", "Monsieur <NAME> né <NAME>"),
     "test_None": (None, "NaN"),
@@ -45,8 +59,39 @@ dataset_regex = {
     "Date_-": ("01-12-2000", "<DATE>"),
     "Date_incorrect": ("12-22-2000", "12-22-2000"),
     "Date_phrase": ("Brest, le 01/01/2000", "Brest, le <DATE>"),
-    "adresse": ("05 TER ROUTE DE SAINT RENAN   29280 PLOUZANE", "<ADRESSE>"),
-    "adresse_2": ("155 rue de Noadegalet, 29820, Guilers", "<ADRESSE>"),
+    "adresse_2": ("155 rue de Brest, 29820, Guilers", "<ADRESSE>"),
+    "all_numbers": (
+        """
+            Hospitalisation
+02 98 22 36 64 - 02 98 22 33 88
+
+Secrétariats
+Tél. Pédiatrie Médicale :
+02 98 22 36 59 - 02 98 22 36 53
+Fax : 02 98 22 37 71
+Tél. Neurologie :
+02 98 22 36 57 - 02 98 22 38 71
+Fax : 02 98 22 31 11
+Tél. Oncologie :
+02 98 22 33 81
+Fax : 02 98 22 31 11
+        """,
+        """
+            Hospitalisation
+<NUMBER> - <NUMBER>
+
+Secrétariats
+Tél. Pédiatrie Médicale :
+<NUMBER> - <NUMBER>
+Fax : <NUMBER>
+Tél. Neurologie :
+<NUMBER> - <NUMBER>
+Fax : <NUMBER>
+Tél. Oncologie :
+<NUMBER>
+Fax : <NUMBER>
+        """,
+    ),
 }
 
 
@@ -54,14 +99,12 @@ datas_regex = list(dataset_regex.values())
 ids_regex = list(dataset_regex.keys())
 
 
-@ pytest.mark.parametrize(
-    "input,output", datas_regex, ids=ids_regex
-)
+@pytest.mark.parametrize("input,output", datas_regex, ids=ids_regex)
 def test_regex_strategie(input, output):
 
     ano = Anonymizer()
-    ano.add_analyzer('regex')
-    ano.set_mask('placeholder')
+    ano.add_analyzer("regex")
+    ano.set_mask("placeholder")
     assert ano.anonymize(input) == output
 
 
@@ -72,26 +115,24 @@ infos = {
     "birthdate": datetime(1992, 9, 22, 0, 0, 0),
     "ipp": "0987654321",
     "postal_code": "01000",
-    "adress": ""
+    "adress": "",
 }
 dataset_pii = {
     "Nom_Prenom_PII": ("Léa Jungels", "<NAME> <NAME>"),
     "Date_IPP_Postal": ("22/09/1992 0987654321 01000", "<DATE> <IPP> <CODE_POSTAL>"),
-    "DN": ("DN : 22/09/1992 ", "DN : <DATE> ")
+    "DN": ("DN : 22/09/1992 ", "DN : <DATE> "),
 }
 
 datas_pii = list(dataset_pii.values())
 ids_pii = list(dataset_pii.keys())
 
 
-@ pytest.mark.parametrize(
-    "input,output", datas_pii, ids=ids_pii
-)
+@pytest.mark.parametrize("input,output", datas_pii, ids=ids_pii)
 def test_pii_strategie(input, output):
     ano = Anonymizer()
     ano.set_info_from_dict(**infos)
-    ano.add_analyzer('pii')
-    ano.set_mask('placeholder')
+    ano.add_analyzer("pii")
+    ano.set_mask("placeholder")
     assert ano.anonymize(input) == output
 
 
@@ -108,16 +149,16 @@ def test_mask_not_implemented_error():
 def test_add_analyser_error():
     ano = Anonymizer()
     with pytest.raises(Exception, match="test analyzer doesn't exist"):
-        ano.add_analyzer('test')
+        ano.add_analyzer("test")
 
 
 def test_set_mask_error():
     ano = Anonymizer()
     with pytest.raises(Exception):
-        ano.set_mask('test')
+        ano.set_mask("test")
 
 
 def test_set_annotator_error():
     ano = Anonymizer()
     with pytest.raises(Exception):
-        ano.set_annotator('test')
+        ano.set_annotator("test")
