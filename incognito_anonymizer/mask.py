@@ -23,6 +23,7 @@ class FakeStrategy(Strategy):
             "<EMAIL>": "place.holder@anonymization.cdc",
             "<PHONE>": "0611223344",
             "<ADRESSE>": "35 Rue Margaret Hamilton",
+            "<NUMBER>": "123456789"
         }
 
     def mask(self, text: str, coordinate: Dict[List[Tuple], str]) -> str:
