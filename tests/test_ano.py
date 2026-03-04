@@ -60,38 +60,6 @@ dataset_regex = {
     "Date_incorrect": ("12-22-2000", "12-22-2000"),
     "Date_phrase": ("Brest, le 01/01/2000", "Brest, le <DATE>"),
     "adresse_2": ("155 rue de Brest, 29820, Guilers", "<ADRESSE>"),
-    "all_numbers": (
-        """
-            Hospitalisation
-02 98 22 36 64 - 02 98 22 33 88
-
-Secrétariats
-Tél. Pédiatrie Médicale :
-02 98 22 36 59 - 02 98 22 36 53
-Fax : 02 98 22 37 71
-Tél. Neurologie :
-02 98 22 36 57 - 02 98 22 38 71
-Fax : 02 98 22 31 11
-Tél. Oncologie :
-02 98 22 33 81
-Fax : 02 98 22 31 11
-        """,
-        """
-            Hospitalisation
-<NUMBER> - <NUMBER>
-
-Secrétariats
-Tél. Pédiatrie Médicale :
-<NUMBER> - <NUMBER>
-Fax : <NUMBER>
-Tél. Neurologie :
-<NUMBER> - <NUMBER>
-Fax : <NUMBER>
-Tél. Oncologie :
-<NUMBER>
-Fax : <NUMBER>
-        """,
-    ),
 }
 
 
