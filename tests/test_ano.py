@@ -7,10 +7,11 @@ import pytest
 
 dataset_regex = {
 
-    "phone": ("tél: 0651565600", "tél: <PHONE>"),
-    "phone2": ("tél: 06 51 56 56 00", "tél: <PHONE>"),
+    "phone": ("tél: 0651565600", "tél: <NUMBER>"),
+    "phone2": ("tél: 06 51 56 56 00", "tél: <NUMBER>"),
     "email": ("email : joe.lafripouille@chu-brest.fr", "email : <EMAIL>"),
-    "nir": ("nir : 164064308898823", "nir : <NIR>"),
+    "nir": ("nir : 164064308898823", "nir : <NUMBER>"),
+    "nir_space": ("nir : 1 64 06 43 088 988 (23)", "nir : <NUMBER>"),
     "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
     "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
     "Nom_compose_Prenom": ("name : De La Fontaine Jean", "name : De La Fontaine Jean"),
@@ -27,11 +28,12 @@ dataset_regex = {
     "Dr_NOM_Prenom": ("Dr LECLERC Charle", "Dr <NAME>"),
     "Dr_Prenom_NOM": ("Dr Charle LECLERC", "Dr <NAME>"),
     "DR._NOM": ("DR. LECLERC", "DR. <NAME>"),
+    "PR_NAME": ("PR ABGRAL RONAN", "PR <NAME>"),
     "Interne_NOM_Prenom": ("Interne JEAN Jean", "Interne <NAME>"),
     "Externe_NOM_Prenom": ("Externe JEAN Jean", "Externe <NAME>"),
-    "nom_phone": ("Monsieur JEAN Lasalle, tél : 0647482884", "Monsieur <NAME>, tél : <PHONE>"),
+    "nom_phone": ("Monsieur JEAN Lasalle, tél : 0647482884", "Monsieur <NAME>, tél : <NUMBER>"),
     "double_nom": ("Monsieur JEAN Jean, Docteur Jeanj JEAN, Madame JEANNE Jean", "Monsieur <NAME>, Docteur <NAME>, Madame <NAME>"),
-    "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour Monsieur <NAME>, voici son numéro : <PHONE> et son email <EMAIL>"),
+    "test": ("Bonjour Monsieur JEAN Jean, voici son numéro : 0606060606 et son email jean.jean@gmail.fr", "Bonjour Monsieur <NAME>, voici son numéro : <NUMBER> et son email <EMAIL>"),
     "née_madame": ("Madame DUPONT Mariane née MORGAT", "Madame <NAME> née <NAME>"),
     "né_monsieur": ("Monsieur J. Jean né LA RUE", "Monsieur <NAME> né <NAME>"),
     "test_None": (None, "NaN"),
@@ -43,6 +45,8 @@ dataset_regex = {
     "Date_-": ("01-12-2000", "<DATE>"),
     "Date_incorrect": ("12-22-2000", "12-22-2000"),
     "Date_phrase": ("Brest, le 01/01/2000", "Brest, le <DATE>"),
+    "adresse": ("05 TER ROUTE DE SAINT RENAN   29280 PLOUZANE", "<ADRESSE>"),
+    "adresse_2": ("155 rue de Noadegalet, 29820, Guilers", "<ADRESSE>"),
 }
 
 
