@@ -1,4 +1,4 @@
-from incognito_anonymizer import Anonymizer
+[<35;160;39Mfrom incognito_anonymizer import Anonymizer
 from incognito_anonymizer import analyzer
 from incognito_anonymizer import mask
 from incognito_anonymizer import PersonalInfo
