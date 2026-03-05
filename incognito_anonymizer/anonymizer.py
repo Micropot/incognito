@@ -14,28 +14,27 @@ import json
 class Anonymizer:
     """Anonymization class based on strategies formating"""
 
-    # available strategies
-    ANALYZERS = {
-        "regex": analyzer.RegexStrategy(),
-        "pii": analyzer.PiiStrategy(),
-    }
-
-    # available masks
-    MASKS = {
-        "placeholder": mask.PlaceholderStrategy(),
-        "fake": mask.FakeStrategy(),
-        "hash": mask.HashStrategy(),
-        "hide": mask.HideStrategy(),
-    }
-
-    # available annotator
-    ANNOTATORS = {
-        "standoff": anotate.StandoffStrategy(),
-        "doccano": anotate.DoccanoStrategy(),
-        "uimacas": anotate.UimaCasStrategy()
-    }
-
     def __init__(self):
+        # available strategies
+        self.ANALYZERS = {
+            "regex": analyzer.RegexStrategy(),
+            "pii": analyzer.PiiStrategy(),
+        }
+
+        # available masks
+        self.MASKS = {
+            "placeholder": mask.PlaceholderStrategy(),
+            "fake": mask.FakeStrategy(),
+            "hash": mask.HashStrategy(),
+            "hide": mask.HideStrategy(),
+        }
+
+        # available annotator
+        self.ANNOTATORS = {
+            "standoff": anotate.StandoffStrategy(),
+            "doccano": anotate.DoccanoStrategy(),
+            "uimacas": anotate.UimaCasStrategy(),
+        }
 
         self._infos = None
         self._position = []
@@ -91,8 +90,13 @@ class Anonymizer:
 
         """
         clean_data = {
-            k: ("" if v is None else v.strftime("%Y-%m-%d")
-                if isinstance(v, datetime) else v)
+            k: (
+                ""
+                if v is None
+                else v.strftime("%Y-%m-%d")
+                if isinstance(v, datetime)
+                else v
+            )
             for k, v in kwargs.items()
         }
         info_obj = PersonalInfo(**clean_data)

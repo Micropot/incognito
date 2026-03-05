@@ -39,7 +39,7 @@ class AnonymiserCli:
             help="Stratégies à utiliser (default : %(default)s).",
             default=["regex", "pii"],
             nargs="*",
-            choices=[key for key, val in anonymizer.Anonymizer.ANALYZERS.items()],
+            choices=[key for key, val in anonymizer.Anonymizer().ANALYZERS.items()],
         )
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument(
@@ -49,7 +49,7 @@ class AnonymiserCli:
             help="Mask à utiliser (default : %(default)s).",
             default=None,
             nargs=1,
-            choices=[key for key, val in anonymizer.Anonymizer.MASKS.items()],
+            choices=[key for key, val in anonymizer.Anonymizer().MASKS.items()],
             required=False,
         )
         group.add_argument(
@@ -59,7 +59,7 @@ class AnonymiserCli:
             help="Annotator à utiliser (default : %(default)s).",
             default=None,
             nargs=1,
-            choices=[key for key, val in anonymizer.Anonymizer.ANNOTATORS.items()],
+            choices=[key for key, val in anonymizer.Anonymizer().ANNOTATORS.items()],
             required=False,
         )
 
