@@ -1,10 +1,11 @@
-import regex
 import unicodedata
 from datetime import datetime
+from typing import Dict, Iterable, Optional, Tuple
+
+import polars as pl
+import regex
 from flashtext import KeywordProcessor
 from pydantic import BaseModel
-from typing import Dict, Tuple
-from typing import Optional, Iterable
 
 
 class PersonalInfo(BaseModel):
@@ -21,6 +22,9 @@ class AnalyzerStrategy:
     """Constructeur de la Class Strategy"""
 
     def analyze(text):
+        raise NotImplementedError()
+
+    def analyse_df(df: pl.DataFrame, text_column: str):
         raise NotImplementedError()
 
 

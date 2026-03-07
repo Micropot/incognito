@@ -9,6 +9,7 @@ from . import analyzer
 from . import mask
 from . import anotate
 import json
+import polars as pl
 
 
 class Anonymizer:
@@ -154,6 +155,26 @@ class Anonymizer:
         for strategy in self._analyzers:
             strategy.info = self._infos
             span = strategy.analyze(text=text)
+            spans.update(span)
+            anonymized_text = self._mask.mask(text, spans)
+            text = anonymized_text
+            spans = {}
+        return anonymized_text
+
+    def anonymize_df(self, df: pl.DataFrame, text_column: str) -> pl.DataFrame:
+        """
+        Global function to anonymise a poalrs dataframe base on the choosen strategies
+
+        :param df: df to anonymize
+        :param text_column: colmumn of the dataframe containing text
+        :returns: anonimized text
+        """
+        if not text:
+            text = "NaN"
+        spans = {}
+        for strategy in self._analyzers:
+            strategy.info = self._infos
+            span = strategy.analyze_df(df, text_column)
             spans.update(span)
             anonymized_text = self._mask.mask(text, spans)
             text = anonymized_text
