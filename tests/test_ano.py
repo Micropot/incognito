@@ -36,7 +36,6 @@ dataset_regex = {
     "Dr_NOM_Prenom": ("Dr LECLERC Charle", "Dr <NAME>"),
     "Dr_Prenom_NOM": ("Dr Charle LECLERC", "Dr <NAME>"),
     "Dr_P._P._NOM": ("Dr J.F. LECLERC", "Dr <NAME>"),
-    "Dr_P._P._NOM": ("Dr J.F. LECLERC dsfjqsdjf", "Dr <NAME>"),
     "DR._NOM": ("DR. LECLERC", "DR. <NAME>"),
     "PR_NAME": ("PR ABGRAL RONAN", "PR <NAME>"),
     "Interne_NOM_Prenom": ("Interne JEAN Jean", "Interne <NAME>"),
@@ -65,6 +64,13 @@ dataset_regex = {
     "Date_incorrect": ("12-22-2000", "12-22-2000"),
     "Date_phrase": ("Brest, le 01/01/2000", "Brest, le <DATE>"),
     "adresse_2": ("155 rue de Brest, 29820, Guilers", "<ADRESSE>"),
+    "date_mois": ("8 juillet 2020", "<DATE>"),
+    "date_fourchette": ("du 15 au 24 octobre 2015", "du 15 au <DATE>"),
+    "ville_date": ("BREST, le 4 Juin 2015", "BREST, le <DATE>"),
+    "date_.": ("née le 27.05.31", "née le <DATE>"),
+    "zip_name": ("29760 PENMARCH", "<ADRESSE>"),
+    "zip_name_2": ("29270 CARHAIX PLOUGUER", "<ADRESSE>"),
+    "zip_name_3": ("29270 AIX-EN-PROVENCE", "<ADRESSE>"),
 }
 
 

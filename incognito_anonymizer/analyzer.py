@@ -113,13 +113,24 @@ class RegexStrategy(AnalyzerStrategy):
         XXxX_apostrophe = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*(?:[''][A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*)?"
 
         sep = r"(?:[ ]*|-)?"
+        mois = r"(?i)(?:janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv?[.]?|févr?[.]?|fevr?[.]?|avr[.]?|juil[.]?|sept?[.]?|oct[.]?|nov[.]?|déc[.]?|dec[.]?)"
 
+        # Date complète littérale : "8 juillet 2020"
+        self.date_litteral_full = rf"\b(0?[1-9]|[12]\d|3[01])[\s]+{mois}[\s,]+((?:1[6-9]|[2-9]\d)\d{{2}})\b"
+
+        # Date partielle sans année : "20 mars"
+        self.date_litteral_partial = rf"\b(0?[1-9]|[12]\d|3[01])[\s]+{mois}\b"
+
+        # Mois seul : "juillet 2020" ou juste "juillet"
+        self.mois_pattern = rf"\b{mois}(?:[\s]+((?:1[6-9]|[2-9]\d)\d{{2}}))?\b"
         self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
 
         self.email_pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
 
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
         self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
+
+        self.zip_city_name = r"\b(\d{5})\s+([A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ][A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ\s\-]+)\b"
         self.PATTERNS = {
             # rf"(?<={self.title_regex})([\s-][A-Z]+)+([\s-][A-Z][a-z]+)+(?![a-z])": "<NAME>",
             rf"(?<={self.title_regex}[ ]+)(?P<LN0>[A-ZÀ-Ÿ][A-ZÀ-Ÿ](?:{sep}(?:ep[.]|de|[A-ZÀ-Ÿ]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
@@ -130,9 +141,14 @@ class RegexStrategy(AnalyzerStrategy):
             rf"(?<={self.title_regex}[ ]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
             # r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             # r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
-            r"\b(0?[1-9]|[12]\d|3[01])(\/|-|\.)(0?[1-9]|1[0-2])\2((?:1[6-9]|[2-9]\d)\d{2})\b": "<DATE>",
+            self.date_litteral_full: "<DATE>",     # 8 juillet 2020  ← plus spécifique en premier
+            self.date_litteral_partial: "<DATE>",  # 20 mars
+            self.mois_pattern: "<DATE>",
+            r"\b(0?[1-9]|[12]\d|3[01])(\/|-|\.)(0?[1-9]|1[0-2])\2((?:(?:1[6-9]|[2-9]\d)\d{2}|\d{2}))\b": "<DATE>",
             self.email_pattern: "<EMAIL>",
             self.adresse_pattern: "<ADRESSE>",
+            self.zip_city_name: "<ADRESSE>",
+            self.mois_pattern: "<DATE>",
             r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{9,}\d": "<NUMBER>",
         }
 
