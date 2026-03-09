@@ -24,9 +24,6 @@ class AnalyzerStrategy:
     def analyze(text):
         raise NotImplementedError()
 
-    def analyse_df(df: pl.DataFrame, text_column: str):
-        raise NotImplementedError()
-
 
 class PiiStrategy(AnalyzerStrategy):
     """Detect personal infos"""
