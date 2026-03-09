@@ -110,6 +110,8 @@ class RegexStrategy(AnalyzerStrategy):
     def __init__(self):
         Xxxxx = r"[A-ZÀ-Ÿ]\p{Ll}+"
         XXxX_ = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]"
+        XXxX_apostrophe = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*(?:[''][A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*)?"
+
         sep = r"(?:[ ]*|-)?"
 
         self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
@@ -125,6 +127,7 @@ class RegexStrategy(AnalyzerStrategy):
             rf"(?<={self.title_regex}[ ]+)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
             rf"(?<={self.title_regex}[ ]+)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
             rf"(?<={self.title_regex}[ ]+)(?P<FN0>[A-ZÀ-Ÿ][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            rf"(?<={self.title_regex}[ ]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
             # r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             # r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
             r"\b(0?[1-9]|[12]\d|3[01])(\/|-|\.)(0?[1-9]|1[0-2])\2((?:1[6-9]|[2-9]\d)\d{2})\b": "<DATE>",
