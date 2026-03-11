@@ -208,7 +208,6 @@ class RegexStrategy(AnalyzerStrategy):
                 self.position[tuple(filtered_spans)] = repl
 
         result = {}
-        print(self.position)
         for k, v in self.position.items():
             if v != "<EMAIL>":
                 result[k] = v
