@@ -1,5 +1,4 @@
-name: Deploy incognito docs web page and Publish to PyPI
-
+[<35;142;30Mname: Deploy incognito docs web page and Publish to PyPI
 on:
   push:
     branches:
@@ -7,80 +6,78 @@ on:
   release:
     types:
       - created
-
 permissions:
   contents: write
   packages: write
-
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 
-
+        uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
-      - name: Install python deps 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Run tests
+        run: make test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install python deps
         run: |
           python -m pip install mkdocs mkdocstrings-python
-
       - name: Build doc
         run: |
           python -m  mkdocs build -f ./docs/mkdocs.yml -d www
-
-      - name: Check files 
+      - name: Check files
         run: |
           ls docs/www
-
       - name: Deploy page
-        uses: JamesIves/github-pages-deploy-action@v4 
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/www
-          token: ${{ secrets.GITHUB_TOKEN }} 
-
+          token: ${{ secrets.GITHUB_TOKEN }}
   publish:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 
-
+        uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
       - name: Install packaging dependencies
         run: |
           python -m pip install build twine
-
       - name: Build package
         run: python -m build
-
       - name: Publish package to PyPI
         env:
           PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           python -m twine upload --username __token__ --password $PYPI_API_TOKEN dist/*
-
   release:
     needs: publish
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 
-
+        uses: actions/checkout@v4
       - name: Get version from pyproject.toml
         id: get_version
         run: echo "VERSION=$(grep -Po '(?<=version = ")[^"]*' pyproject.toml)" >> $GITHUB_ENV
-
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
