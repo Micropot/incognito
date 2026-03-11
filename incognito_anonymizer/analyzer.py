@@ -134,8 +134,7 @@ class RegexStrategy(AnalyzerStrategy):
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
         self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
 
-
-        # INFO: Non restrictive regexp for matching 3 word after a street description. 
+        # INFO: Non restrictive regexp for matching 3 word after a street description.
         self.fast_adresse_pattern = r"(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|place|square|villa|passage|cité|cite|voie|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}"
 
         self.zip_city_name = (
@@ -159,7 +158,7 @@ class RegexStrategy(AnalyzerStrategy):
             self.adresse_pattern: "<ADRESSE>",
             self.zip_city_name: "<ADRESSE>",
             self.mois_pattern: "<DATE>",
-            r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{9,}\d": "<NUMBER>",
+            r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{6,}\d": "<NUMBER>",
             self.fast_adresse_pattern: "<ADRESSE>",
         }
 
@@ -181,7 +180,6 @@ class RegexStrategy(AnalyzerStrategy):
                 continue
 
             spans = [match.span() for match in matches_iter]
-
 
             # Dédoublonnage : pour les spans overlappants, garder uniquement le plus long
             filtered_spans = self._remove_overlapping_spans(spans)
@@ -262,7 +260,9 @@ class RegexStrategy(AnalyzerStrategy):
         """Vérifie si deux spans se chevauchent"""
         return not (span1[1] <= span2[0] or span2[1] <= span1[0])
 
-    def _resolve_position_conflicts(self, positions: Dict[Tuple[Tuple[int, int]], str]) -> Dict[Tuple[Tuple[int, int]], str]:
+    def _resolve_position_conflicts(
+        self, positions: Dict[Tuple[Tuple[int, int]], str]
+    ) -> Dict[Tuple[Tuple[int, int]], str]:
         """
         Pour des clés de position qui se chevauchent avec la même valeur,
         ne garder que la clé avec le span le plus large.
@@ -277,16 +277,14 @@ class RegexStrategy(AnalyzerStrategy):
         for i, key1 in enumerate(keys):
             if key1 in to_delete:
                 continue
-            for key2 in keys[i+1:]:
+            for key2 in keys[i + 1 :]:
                 if key2 in to_delete:
                     continue
                 if result[key1] != result[key2]:
                     continue
 
                 has_overlap = any(
-                    self._spans_overlap(s1, s2)
-                    for s1 in key1
-                    for s2 in key2
+                    self._spans_overlap(s1, s2) for s1 in key1 for s2 in key2
                 )
 
                 if has_overlap:
