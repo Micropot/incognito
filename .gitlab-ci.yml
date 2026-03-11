@@ -1,18 +1,33 @@
 image: gitlab.chu-brest.fr:5050/cdc/containers/packager
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "prod"
+    - if: $CI_COMMIT_BRANCH == "main"
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
   TMPDIR:  "/tmp"
+  UV_NATIVE_TLS: true
+  UV_INSECURE_HOST: https://cdc-package.chu-brest.fr
+  DEPLOYMENT: test
+  UV_LINK_MODE: copy
+
 
 before_script:
   - pip install uv 
 stages:
-  - publish
-publish:
-  stage: publish
+  - test
+
+unit_tests:
+  stage: test  
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+    - if: $CI_COMMIT_BRANCH == 'test-ci'
+  before_script:
+    - pip install uv  --index-url https://cdc-package.chu-brest.fr/nexus/repository/pypiplus/simple --no-build-isolation
+ 
   script:
-    - uv build
-    - uv publish --publish-url ${PYPIPLUS_UPLOAD_URL} --username ${PYPIPLUS_UPLOADER_USR} --password ${PYPIPLUS_UPLOADER_PWD}
+    - uv self version
+    - uv sync --native-tls
+    - uv sync --dev --native-tls
+    - make test
+
 
