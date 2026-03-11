@@ -129,10 +129,14 @@ class RegexStrategy(AnalyzerStrategy):
         self.mois_pattern = rf"\b{mois}(?:[\s]+((?:1[6-9]|[2-9]\d)\d{{2}}))?\b"
         self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|\s[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
 
-        self.email_pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+        self.email_pattern = r"(?i)(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
 
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
         self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
+
+
+        # INFO: Non restrictive regexp for matching 3 word after a street description.
+        self.fast_adresse_pattern = r"(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|place|square|villa|passage|cité|cite|voie|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}"
 
         self.zip_city_name = (
             r"\b(\d{5})\s+([A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ][A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ\s\-]+)\b"
@@ -156,6 +160,7 @@ class RegexStrategy(AnalyzerStrategy):
             self.zip_city_name: "<ADRESSE>",
             self.mois_pattern: "<DATE>",
             r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{9,}\d": "<NUMBER>",
+            self.fast_adresse_pattern: "<ADRESSE>",
         }
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
