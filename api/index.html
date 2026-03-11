@@ -1716,9 +1716,7 @@
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegexStrategy</span><span class="p">(</span><span class="n">AnalyzerStrategy</span><span class="p">):</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegexStrategy</span><span class="p">(</span><span class="n">AnalyzerStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect word based on regex&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1746,8 +1744,7 @@
         <span class="c1"># needs a comma  or \r to match. If it&#39;s in a middle of a phrase it won&#39;t match</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adresse_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ&#39;\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ&#39;\-\.]+){0,10},?\s*\d</span><span class="si">{5}</span><span class="s2">,?\s*[a-zéèàùâêîôûïëüçæœ&#39;\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ&#39;\-\.]+){0,5}(?=\s*[,\{\n]|$)&quot;</span>
 
-
-        <span class="c1"># INFO: Non restrictive regexp for matching 3 word after a street description. </span>
+        <span class="c1"># INFO: Non restrictive regexp for matching 3 word after a street description.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fast_adresse_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|place|square|villa|passage|cité|cite|voie|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">zip_city_name</span> <span class="o">=</span> <span class="p">(</span>
@@ -1771,7 +1768,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">adresse_pattern</span><span class="p">:</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">zip_city_name</span><span class="p">:</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mois_pattern</span><span class="p">:</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">,</span>
-            <span class="sa">r</span><span class="s2">&quot;(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d</span><span class="si">{2}</span><span class="s2">)</span><span class="si">{4}</span><span class="s2">|\(?\d[\d\s]{9,}\d&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NUMBER&gt;&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d</span><span class="si">{2}</span><span class="s2">)</span><span class="si">{4}</span><span class="s2">|\(?\d[\d\s]{6,}\d&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NUMBER&gt;&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fast_adresse_pattern</span><span class="p">:</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -1793,7 +1790,6 @@
                 <span class="k">continue</span>
 
             <span class="n">spans</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">()</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches_iter</span><span class="p">]</span>
-
 
             <span class="c1"># Dédoublonnage : pour les spans overlappants, garder uniquement le plus long</span>
             <span class="n">filtered_spans</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_overlapping_spans</span><span class="p">(</span><span class="n">spans</span><span class="p">)</span>
@@ -1874,7 +1870,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Vérifie si deux spans se chevauchent&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">span1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">span2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">span2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">span1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_position_conflicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_position_conflicts</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pour des clés de position qui se chevauchent avec la même valeur,</span>
 <span class="sd">        ne garder que la clé avec le span le plus large.</span>
@@ -1889,16 +1887,14 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">key1</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]:</span>
                 <span class="k">if</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">result</span><span class="p">[</span><span class="n">key2</span><span class="p">]:</span>
                     <span class="k">continue</span>
 
                 <span class="n">has_overlap</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_spans_overlap</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">s1</span> <span class="ow">in</span> <span class="n">key1</span>
-                    <span class="k">for</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">key2</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_spans_overlap</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span> <span class="k">for</span> <span class="n">s1</span> <span class="ow">in</span> <span class="n">key1</span> <span class="k">for</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">key2</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">has_overlap</span><span class="p">:</span>
@@ -1943,12 +1939,12 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hide text using regular expression</span>
 <span class="sd">    :param text: text to anonymize</span>
@@ -1980,7 +1976,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+<span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
@@ -2039,9 +2036,7 @@
 <span class="normal">222</span>
 <span class="normal">223</span>
 <span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find word position based on regex</span>
 
@@ -2059,7 +2054,6 @@
             <span class="k">continue</span>
 
         <span class="n">spans</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">()</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches_iter</span><span class="p">]</span>
-
 
         <span class="c1"># Dédoublonnage : pour les spans overlappants, garder uniquement le plus long</span>
         <span class="n">filtered_spans</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_overlapping_spans</span><span class="p">(</span><span class="n">spans</span><span class="p">)</span>
