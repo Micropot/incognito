@@ -2,7 +2,6 @@ import unicodedata
 from datetime import datetime
 from typing import Dict, Iterable, Optional, Tuple
 
-import polars as pl
 import regex
 from flashtext import KeywordProcessor
 from pydantic import BaseModel

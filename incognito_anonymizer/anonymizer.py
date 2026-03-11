@@ -9,7 +9,6 @@ from . import analyzer
 from . import mask
 from . import anotate
 import json
-import polars as pl
 
 
 class Anonymizer:
