@@ -14,6 +14,7 @@ class PersonalInfo(BaseModel):
     birth_name: Optional[str] = ""
     birthdate: datetime = datetime(year=1000, month=1, day=1)
     ipp: str = ""
+    iep: str = ""
     postal_code: Optional[str] = "0"
     adress: Optional[str] = ""
 
@@ -89,6 +90,7 @@ class PiiStrategy(AnalyzerStrategy):
                 (self.info.last_name, "<NAME>"),
                 (self.info.birth_name, "<NAME>"),
                 (self.info.ipp, "<IPP>"),
+                (self.info.iep, "<IEP>"),
                 (self.info.postal_code, "<CODE_POSTAL>"),
                 (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
                 (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
@@ -116,7 +118,9 @@ class RegexStrategy(AnalyzerStrategy):
         mois = r"(?i)(?:janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv?[.]?|févr?[.]?|fevr?[.]?|avr[.]?|juil[.]?|sept?[.]?|oct[.]?|nov[.]?|déc[.]?|dec[.]?)"
 
         # Date complète littérale : "8 juillet 2020"
-        self.date_litteral_full = rf"\b(0?[1-9]|[12]\d|3[01])[\s]+{mois}[\s,]+((?:1[6-9]|[2-9]\d)\d{{2}})\b"
+        self.date_litteral_full = (
+            rf"\b(0?[1-9]|[12]\d|3[01])[\s]+{mois}[\s,]+((?:1[6-9]|[2-9]\d)\d{{2}})\b"
+        )
 
         # Date partielle sans année : "20 mars"
         self.date_litteral_partial = rf"\b(0?[1-9]|[12]\d|3[01])[\s]+{mois}\b"
@@ -130,7 +134,9 @@ class RegexStrategy(AnalyzerStrategy):
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
         self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
 
-        self.zip_city_name = r"\b(\d{5})\s+([A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ][A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ\s\-]+)\b"
+        self.zip_city_name = (
+            r"\b(\d{5})\s+([A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ][A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ\s\-]+)\b"
+        )
         self.PATTERNS = {
             # rf"(?<={self.title_regex})([\s-][A-Z]+)+([\s-][A-Z][a-z]+)+(?![a-z])": "<NAME>",
             rf"(?<={self.title_regex}[ ]+)(?P<LN0>[A-ZÀ-Ÿ][A-ZÀ-Ÿ](?:{sep}(?:ep[.]|de|[A-ZÀ-Ÿ]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
@@ -141,7 +147,7 @@ class RegexStrategy(AnalyzerStrategy):
             rf"(?<={self.title_regex}[ ]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
             # r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             # r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
-            self.date_litteral_full: "<DATE>",     # 8 juillet 2020  ← plus spécifique en premier
+            self.date_litteral_full: "<DATE>",  # 8 juillet 2020  ← plus spécifique en premier
             self.date_litteral_partial: "<DATE>",  # 20 mars
             self.mois_pattern: "<DATE>",
             r"\b(0?[1-9]|[12]\d|3[01])(\/|-|\.)(0?[1-9]|1[0-2])\2((?:(?:1[6-9]|[2-9]\d)\d{2}|\d{2}))\b": "<DATE>",
