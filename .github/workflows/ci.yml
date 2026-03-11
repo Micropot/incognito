@@ -1,4 +1,4 @@
-[<35;142;30Mname: Deploy incognito docs web page and Publish to PyPI
+name: Deploy incognito docs web page and Publish in PyPI
 on:
   push:
     branches:
