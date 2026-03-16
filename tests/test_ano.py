@@ -37,6 +37,8 @@ dataset_regex = {
     "Dr_NOM_Prenom": ("Dr LECLERC Charle", "Dr <NAME>"),
     "Dr_Prenom_NOM": ("Dr Charle LECLERC", "Dr <NAME>"),
     "Dr_P._P._NOM": ("Dr J.F. LECLERC", "Dr <NAME>"),
+    "Dr_P._P._NOM_2": ("Dr J. LECLERC", "Dr <NAME>"),
+    "Mme_P._NOM": ("Mme C. CCCCC", "Mme <NAME>"),
     "DR._NOM": ("DR. LECLERC", "DR. <NAME>"),
     "PR_NAME": ("PR ABGRAL RONAN", "PR <NAME>"),
     "Interne_NOM_Prenom": ("Interne JEAN Jean", "Interne <NAME>"),
