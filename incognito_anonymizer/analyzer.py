@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Dict, Iterable, Optional, Tuple
 
 import regex
+import warnings
 from flashtext import KeywordProcessor
 from pydantic import BaseModel
 
@@ -160,6 +161,7 @@ class RegexStrategy(AnalyzerStrategy):
             self.mois_pattern: "<DATE>",
             r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}|\(?\d[\d\s]{6,}\d": "<NUMBER>",
             self.fast_adresse_pattern: "<ADRESSE>",
+            # r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s": "<NAME>",
         }
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
@@ -296,3 +298,87 @@ class RegexStrategy(AnalyzerStrategy):
             del result[key]
 
         return result
+
+
+class LossyStrategy(RegexStrategy):
+    """
+    Find word position based on regex
+
+    :param text: text to anonymise
+    :returns: List of tuples where each tuple contains:
+            - A tuple with the start and end positions of the word.
+            - The replacement string.
+    .. warning::
+    This strategy is intentionally lossy: it trades recall precision for
+    maximum anonymization coverage. Information loss is expected and assumed.
+    """
+    def __init__(self):
+        self.LOSSY_PATTERNS = {
+            # DUPONT Martin
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s": "<NAME>",
+            # Martin DUPONT
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s": "<NAME>",
+        }
+    def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
+        """
+        Analyze text using an aggressive uppercase-based matching strategy.
+
+        :param text: Text to anonymize.
+        :returns: Dictionary mapping span tuples to replacement strings.
+
+        .. warning::
+            This strategy can suppress legitimate content. Any token matching
+            the uppercase pattern will be replaced, regardless of whether it
+            is actually a personal identifier.
+        """
+
+
+        self.position = {}
+
+        for pattern, repl in self.LOSSY_PATTERNS.items():
+            matches_iter = list(regex.finditer(pattern, text, overlapped=True))
+            if not matches_iter:
+                continue
+
+            spans = [match.span() for match in matches_iter]
+            filtered_spans = self._remove_overlapping_spans(spans)
+            existing_keys = list(self.position.keys())
+
+            overlapping_keys = [
+                key for key in existing_keys
+                if any(span in key for span in filtered_spans)
+                or any(k in filtered_spans for k in key)
+            ]
+
+            if overlapping_keys:
+                combined_key = tuple(
+                    sorted(
+                        set(span for key in overlapping_keys for span in key).union(
+                            filtered_spans
+                        )
+                    )
+                )
+                for key in overlapping_keys:
+                    del self.position[key]
+                self.position[combined_key] = repl
+            else:
+                self.position[tuple(filtered_spans)] = repl
+
+        self.position = self._resolve_position_conflicts(self.position)
+        return self.position
+
+    def analyze(self, text: str):
+        """
+        Hide text using regular expression
+        :param text: text to anonymize
+        """
+        warnings.warn(
+            "LossyStrategy.analyze() uses aggressive pattern matching that may cause "
+            "unintended information loss. Tokens matching the uppercase pattern will be "
+            "replaced unconditionally, including potential false positives such as "
+            "acronyms, place names, or medical terminology. "
+            "Use a more precise strategy if data integrity is critical.",
+            UserWarning,
+            stacklevel=2,
+        )
+        return self.multi_subs_by_regex(text)

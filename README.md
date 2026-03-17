@@ -176,6 +176,15 @@ You can use it in CLI with the infos or in a json fil.
 
 > For further example you can see the CLI chapter
 
+### Lossy Strategy
+Another available anonymization strategy is **Lossy**.
+The idea is to mask pattern like DUPONT Marc or Marc DUPONT.
+
+!!!warn
+
+    It can produce false positive. Be aware that this strategy can can unexpected matched and  loose informations in your text
+
+For more details, see the [`LossyStrategy` class](incognito/analyzer.py)
 ---
 
 ## Anotation Process Details

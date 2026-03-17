@@ -10,6 +10,7 @@ dataset_regex = {
     "phone2": ("tél: 06 51 56 56 00", "tél: <NUMBER>"),
     "email": ("email : joe.lafripouille@chu-brest.fr", "email : <EMAIL>"),
     "email_2": ("email : Joe.LaFripouille@chu-brest.fr", "email : <EMAIL>"),
+    "email_3": ("bob@gmail.com", "<EMAIL>"),
     "nir": ("nir : 164064308898823", "nir : <NUMBER>"),
     "nir_space": ("nir : 1 64 06 43 088 988 (23)", "nir : <NUMBER> (23)"),
     "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
@@ -150,3 +151,23 @@ def test_set_annotator_error():
     ano = Anonymizer()
     with pytest.raises(Exception):
         ano.set_annotator("test")
+
+dataset_regex = {
+    "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
+    "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
+}
+
+
+datas_regex = list(dataset_regex.values())
+ids_regex = list(dataset_regex.keys())
+
+
+@pytest.mark.parametrize("input,output", datas_regex, ids=ids_regex)
+def test_lossy_strategie(input, output):
+
+    ano = Anonymizer()
+    ano.add_analyzer("lossy")
+    ano.set_mask("placeholder")
+    assert ano.anonymize(input) == output
+
+

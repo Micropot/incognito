@@ -19,6 +19,7 @@ class Anonymizer:
         self.ANALYZERS = {
             "regex": analyzer.RegexStrategy(),
             "pii": analyzer.PiiStrategy(),
+            "lossy": analyzer.LossyStrategy(),
         }
 
         # available masks
