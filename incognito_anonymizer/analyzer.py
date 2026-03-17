@@ -129,8 +129,23 @@ class RegexStrategy(AnalyzerStrategy):
         self.mois_pattern = rf"\b{mois}(?:[\s]+((?:1[6-9]|[2-9]\d)\d{{2}}))?\b"
         self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
 
-        self.email_pattern = r"(?i)(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
-
+        self.email_pattern = (
+            r"(?i)"
+            r"(?:"
+                r"[a-z0-9!#$%&'*+/=?^_`{|}~<>()\[\]\\:;,@\"\-]+"  # partie locale étendue
+                r"(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~<>()\[\]\\:;,@\"\-]+)*"
+                r"|"
+                r"\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\""
+            r")"
+            r"@"
+            r"(?:"
+                r"(?:[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-](?:[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-]*[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-])?\.)*"  
+                r"[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-](?:[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-]*[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-])?"
+                r"|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
+                r"(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:"
+                r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]"
+            r")"
+        )
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
         self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
 

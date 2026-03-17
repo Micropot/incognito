@@ -11,6 +11,7 @@ dataset_regex = {
     "email": ("email : joe.lafripouille@chu-brest.fr", "email : <EMAIL>"),
     "email_2": ("email : Joe.LaFripouille@chu-brest.fr", "email : <EMAIL>"),
     "email_3": ("bob@gmail.com", "<EMAIL>"),
+    "email_4": ("Joe.LaFripouille@chu-****.fr", "<EMAIL>"),
     "nir": ("nir : 164064308898823", "nir : <NUMBER>"),
     "nir_space": ("nir : 1 64 06 43 088 988 (23)", "nir : <NUMBER> (23)"),
     "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
