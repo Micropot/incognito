@@ -154,8 +154,10 @@ def test_set_annotator_error():
         ano.set_annotator("test")
 
 dataset_regex = {
-    "NOM_Prenom": ("name : DUPONT Jean", "name : DUPONT Jean"),
-    "Prenom_NOM": ("name : Jean DUPONT", "name : Jean DUPONT"),
+    "NOM_Prenom": ("name : DUPONT Jean", "name : <NAME>"),
+    "Prenom_NOM": ("name : Jean DUPONT", "name : <NAME>"),
+    "N._Prenom": ("name : D. Jean", "name : <NAME>"),
+    "N.-N._Prenom": ("name: D.D. Jean", "name: <NAME>"),
 }
 
 

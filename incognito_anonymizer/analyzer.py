@@ -329,10 +329,12 @@ class LossyStrategy(RegexStrategy):
     """
     def __init__(self):
         self.LOSSY_PATTERNS = {
-            # DUPONT Martin
-            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s": "<NAME>",
-            # Martin DUPONT
-            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s": "<NAME>",
+            # DUPONT Martin ou DUPONT de TOTO Martin ou DUPONT-TOTO Martin
+            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            # Martin DUPONT ou Martin DUPONT de TOTO ou Martion DUPONT-TOTO
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}": "<NAME>",
+            # J. Pierre ou J.P. Marie
+            r"([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}\s*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*" : "<NAME>"
         }
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
         """
