@@ -51,7 +51,9 @@ infos = {
 
 # Configure the anonymizer
 ano.set_info(infos)
-ano.set_strategies(['regex', 'pii'])
+ano.add_analyser('pii')
+ano.add_analyser('regex')
+ano.add_analyser('lossy') # trigger a warning. See doc string for better understanding
 ano.set_mask('placeholder')
 
 # Read and anonymize text
@@ -73,7 +75,8 @@ infos_json = ano.open_json_file("/path/to/infofile.json")
 
 # Configure the anonymizer
 ano.set_info(infos_json)
-ano.set_strategies(['regex', 'pii'])
+ano.add_analyser('pii')
+ano.add_analyser('regex')
 ano.set_mask('placeholder')
 
 # Read and anonymize text
@@ -94,7 +97,8 @@ infos_json = ano.open_json_file("/path/to/infofile.json")
 
 # Configure the annotator
 ano.set_info(infos_json)
-ano.set_strategies(['regex', 'pii'])
+ano.add_analyser('pii')
+ano.add_analyser('regex')
 ano.set_annotator('placeholder')
 
 # Read and annotate text
