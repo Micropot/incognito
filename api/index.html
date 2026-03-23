@@ -371,10 +371,7 @@
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Anonymizer</span><span class="p">:</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Anonymizer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Anonymization class based on strategies formating&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -403,7 +400,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">PlaceholderStrategy</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_annotator</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">open_text_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -445,6 +442,7 @@
 <span class="sd">        :param infos: PersonalInfo</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span> <span class="o">=</span> <span class="n">infos</span>
+        <span class="k">return</span> <span class="n">infos</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_info_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -464,10 +462,8 @@
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
         <span class="n">info_obj</span> <span class="o">=</span> <span class="n">PersonalInfo</span><span class="p">(</span><span class="o">**</span><span class="n">clean_data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_info</span><span class="p">(</span><span class="n">info_obj</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">info_obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span> <span class="o">=</span> <span class="n">info_obj</span>
+        <span class="k">return</span> <span class="n">info_obj</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_analyzer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -478,7 +474,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANALYZERS</span><span class="p">:</span>
             <span class="n">analyzer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANALYZERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">analyzer</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">analyzer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">analyzer</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> analyzer doesn&#39;t exist&quot;</span><span class="p">)</span>
 
@@ -505,7 +502,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> annotator doesn&#39;t exist&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">anonymize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">anonymize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">infos</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Global function to anonymise a text base on the choosen strategies</span>
 
@@ -513,15 +510,12 @@
 <span class="sd">        :returns: anonimized text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
-        <span class="n">spans</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
+        <span class="n">resolved_infos</span> <span class="o">=</span> <span class="n">infos</span> <span class="k">if</span> <span class="n">infos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span>
+        <span class="n">anonymized_text</span> <span class="o">=</span> <span class="n">text</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="p">:</span>
-            <span class="n">strategy</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span>
-            <span class="n">span</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
-            <span class="n">spans</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">span</span><span class="p">)</span>
-            <span class="n">anonymized_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">spans</span><span class="p">)</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">anonymized_text</span>
-            <span class="n">spans</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">spans</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">anonymized_text</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">resolved_infos</span><span class="p">)</span>
+            <span class="n">anonymized_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">anonymized_text</span><span class="p">,</span> <span class="n">spans</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">anonymized_text</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -572,7 +566,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+<span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -592,7 +587,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANALYZERS</span><span class="p">:</span>
         <span class="n">analyzer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANALYZERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">analyzer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">analyzer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">analyzer</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> analyzer doesn&#39;t exist&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -619,7 +615,10 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
@@ -630,10 +629,7 @@
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Global function to annotate a text base on the choosen strategies</span>
 
@@ -658,7 +654,7 @@
 
 
 <h3 id="incognito_anonymizer.anonymizer.Anonymizer.anonymize" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">anonymize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">anonymize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">infos</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -686,10 +682,7 @@
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">anonymize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">anonymize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">infos</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Global function to anonymise a text base on the choosen strategies</span>
 
@@ -697,15 +690,12 @@
 <span class="sd">    :returns: anonimized text</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
-    <span class="n">spans</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
+    <span class="n">resolved_infos</span> <span class="o">=</span> <span class="n">infos</span> <span class="k">if</span> <span class="n">infos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span>
+    <span class="n">anonymized_text</span> <span class="o">=</span> <span class="n">text</span>
     <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyzers</span><span class="p">:</span>
-        <span class="n">strategy</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span>
-        <span class="n">span</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
-        <span class="n">spans</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">span</span><span class="p">)</span>
-        <span class="n">anonymized_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">spans</span><span class="p">)</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">anonymized_text</span>
-        <span class="n">spans</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">spans</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">anonymized_text</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">resolved_infos</span><span class="p">)</span>
+        <span class="n">anonymized_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">anonymized_text</span><span class="p">,</span> <span class="n">spans</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">anonymized_text</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -886,13 +876,15 @@
 <span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infos</span><span class="p">:</span> <span class="n">PersonalInfo</span><span class="p">):</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infos</span><span class="p">:</span> <span class="n">PersonalInfo</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set personal info</span>
 
 <span class="sd">    :param infos: PersonalInfo</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span> <span class="o">=</span> <span class="n">infos</span>
+    <span class="k">return</span> <span class="n">infos</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -916,8 +908,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/anonymizer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
-<span class="normal"> 87</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
 <span class="normal"> 88</span>
 <span class="normal"> 89</span>
 <span class="normal"> 90</span>
@@ -936,8 +927,7 @@
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_info_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_info_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set dict to PersonalInfo Class</span>
 
@@ -955,10 +945,8 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
     <span class="n">info_obj</span> <span class="o">=</span> <span class="n">PersonalInfo</span><span class="p">(</span><span class="o">**</span><span class="n">clean_data</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">set_info</span><span class="p">(</span><span class="n">info_obj</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">info_obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_infos</span> <span class="o">=</span> <span class="n">info_obj</span>
+    <span class="k">return</span> <span class="n">info_obj</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1086,7 +1074,7 @@
 <span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnalyzerStrategy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructeur de la Class Strategy&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1230,7 +1218,16 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">398</span>
 <span class="normal">399</span>
 <span class="normal">400</span>
-<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LossyStrategy</span><span class="p">(</span><span class="n">RegexStrategy</span><span class="p">):</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LossyStrategy</span><span class="p">(</span><span class="n">RegexStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find word position based on regex</span>
 
@@ -1242,15 +1239,24 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="sd">    This strategy is intentionally lossy: it trades recall precision for</span>
 <span class="sd">    maximum anonymization coverage. Information loss is expected and assumed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LOSSY_PATTERNS</span> <span class="o">=</span> <span class="p">{</span>
             <span class="c1"># DUPONT Martin ou DUPONT de TOTO Martin ou DUPONT-TOTO Martin</span>
             <span class="sa">r</span><span class="s2">&quot;([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
             <span class="c1"># Martin DUPONT ou Martin DUPONT de TOTO ou Martion DUPONT-TOTO</span>
             <span class="sa">r</span><span class="s2">&quot;[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
             <span class="c1"># J. Pierre ou J.P. Marie</span>
-            <span class="sa">r</span><span class="s2">&quot;([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}\s*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*&quot;</span> <span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}\s*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
+            <span class="c1"># DUPONT Jean-Philippe ou DUPONT Jean Philippe (prénom composé avec ou sans trait d&#39;union)</span>
+            <span class="sa">r</span><span class="s2">&quot;([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*(\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*)+&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
+            <span class="c1"># L Philippe ou L. Philippe (initiale suivie d&#39;un prénom)</span>
+            <span class="sa">r</span><span class="s2">&quot;\b[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.?\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
+            <span class="c1"># Philippe LOC&#39;H (prénom suivi d&#39;un nom avec apostrophe)</span>
+            <span class="sa">r</span><span class="s2">&quot;[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z&#39;-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
         <span class="p">}</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Analyze text using an aggressive uppercase-based matching strategy.</span>
@@ -1264,7 +1270,6 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="sd">            is actually a personal identifier.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOSSY_PATTERNS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1277,7 +1282,8 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="n">existing_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
             <span class="n">overlapping_keys</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_keys</span>
+                <span class="n">key</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_keys</span>
                 <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">span</span> <span class="ow">in</span> <span class="n">key</span> <span class="k">for</span> <span class="n">span</span> <span class="ow">in</span> <span class="n">filtered_spans</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">filtered_spans</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span>
             <span class="p">]</span>
@@ -1299,7 +1305,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_position_conflicts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hide text using regular expression</span>
 <span class="sd">        :param text: text to anonymize</span>
@@ -1334,7 +1340,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
 
 <h3 id="incognito_anonymizer.analyzer.LossyStrategy.analyze" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1347,21 +1353,21 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
 <span class="normal">400</span>
-<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hide text using regular expression</span>
 <span class="sd">    :param text: text to anonymize</span>
@@ -1404,16 +1410,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">348</span>
 <span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span>
@@ -1450,7 +1447,16 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
-<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze text using an aggressive uppercase-based matching strategy.</span>
 
@@ -1462,7 +1468,6 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="sd">        the uppercase pattern will be replaced, regardless of whether it</span>
 <span class="sd">        is actually a personal identifier.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
 
     <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -1476,7 +1481,8 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
         <span class="n">existing_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
         <span class="n">overlapping_keys</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_keys</span>
+            <span class="n">key</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_keys</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">span</span> <span class="ow">in</span> <span class="n">key</span> <span class="k">for</span> <span class="n">span</span> <span class="ow">in</span> <span class="n">filtered_spans</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">filtered_spans</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span>
         <span class="p">]</span>
@@ -1620,7 +1626,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect personal infos&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">hide_by_keywords</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keywords</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
@@ -1667,33 +1673,33 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">replacement</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hide specific words based on keywords</span>
 
 <span class="sd">        :param text: text to anonymize</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="nb">tuple</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">PersonalInfo</span><span class="p">):</span>
-            <span class="n">keywords</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birth_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">ipp</span><span class="p">,</span> <span class="s2">&quot;&lt;IPP&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">iep</span><span class="p">,</span> <span class="s2">&quot;&lt;IEP&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">postal_code</span><span class="p">,</span> <span class="s2">&quot;&lt;CODE_POSTAL&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m </span><span class="si">%d</span><span class="s2"> %Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m:</span><span class="si">%d</span><span class="s2">:%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m-</span><span class="si">%d</span><span class="s2">-%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">adress</span><span class="p">,</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_by_keywords</span><span class="p">(</span>
-            <span class="n">text</span><span class="p">,</span> <span class="p">[(</span><span class="n">info</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">info</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">keywords</span> <span class="k">if</span> <span class="n">info</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">PersonalInfo</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;info must be a Personnal info type. Returning empty dict instead.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">keywords</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birth_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">ipp</span><span class="p">,</span> <span class="s2">&quot;&lt;IPP&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">iep</span><span class="p">,</span> <span class="s2">&quot;&lt;IEP&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">postal_code</span><span class="p">,</span> <span class="s2">&quot;&lt;CODE_POSTAL&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m </span><span class="si">%d</span><span class="s2"> %Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m:</span><span class="si">%d</span><span class="s2">:%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m-</span><span class="si">%d</span><span class="s2">-%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">adress</span><span class="p">,</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">),</span>
         <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_by_keywords</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">keywords</span> <span class="k">if</span> <span class="n">k</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1714,7 +1720,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
 
 <h3 id="incognito_anonymizer.analyzer.PiiStrategy.analyze" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -1753,33 +1759,33 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hide specific words based on keywords</span>
 
 <span class="sd">    :param text: text to anonymize</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="nb">tuple</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">PersonalInfo</span><span class="p">):</span>
-        <span class="n">keywords</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birth_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">ipp</span><span class="p">,</span> <span class="s2">&quot;&lt;IPP&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">iep</span><span class="p">,</span> <span class="s2">&quot;&lt;IEP&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">postal_code</span><span class="p">,</span> <span class="s2">&quot;&lt;CODE_POSTAL&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m </span><span class="si">%d</span><span class="s2"> %Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m:</span><span class="si">%d</span><span class="s2">:%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m-</span><span class="si">%d</span><span class="s2">-%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">adress</span><span class="p">,</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">),</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_by_keywords</span><span class="p">(</span>
-        <span class="n">text</span><span class="p">,</span> <span class="p">[(</span><span class="n">info</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">info</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">keywords</span> <span class="k">if</span> <span class="n">info</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">PersonalInfo</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;info must be a Personnal info type. Returning empty dict instead.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="n">keywords</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birth_name</span><span class="p">,</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">ipp</span><span class="p">,</span> <span class="s2">&quot;&lt;IPP&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">iep</span><span class="p">,</span> <span class="s2">&quot;&lt;IEP&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">postal_code</span><span class="p">,</span> <span class="s2">&quot;&lt;CODE_POSTAL&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m </span><span class="si">%d</span><span class="s2"> %Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m:</span><span class="si">%d</span><span class="s2">:%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m-</span><span class="si">%d</span><span class="s2">-%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">birthdate</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">),</span> <span class="s2">&quot;&lt;DATE&gt;&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">adress</span><span class="p">,</span> <span class="s2">&quot;&lt;ADRESSE&gt;&quot;</span><span class="p">),</span>
     <span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_by_keywords</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">keywords</span> <span class="k">if</span> <span class="n">k</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2163,23 +2169,23 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
         <span class="c1"># Mois seul : &quot;juillet 2020&quot; ou juste &quot;juillet&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mois_pattern</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;\b</span><span class="si">{</span><span class="n">mois</span><span class="si">}</span><span class="s2">(?:[\s]+((?:1[6-9]|[2-9]\d)\d</span><span class="se">{{</span><span class="s2">2</span><span class="se">}}</span><span class="s2">))?\b&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?|[Cc]hef(fe)? de service)&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">email_pattern</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">r</span><span class="s2">&quot;(?i)&quot;</span>
             <span class="sa">r</span><span class="s2">&quot;(?:&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~&lt;&gt;()\[\]</span><span class="se">\\</span><span class="s2">:;,@</span><span class="se">\&quot;</span><span class="s2">\-]+&quot;</span>  <span class="c1"># partie locale étendue</span>
-                <span class="sa">r</span><span class="s2">&quot;(?:\.[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~&lt;&gt;()\[\]</span><span class="se">\\</span><span class="s2">:;,@</span><span class="se">\&quot;</span><span class="s2">\-]+)*&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;|&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|</span><span class="se">\\</span><span class="s2">[\x01-\x09\x0b\x0c\x0e-\x7f])*</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~&lt;&gt;()\[\]</span><span class="se">\\</span><span class="s2">:;,@</span><span class="se">\&quot;</span><span class="s2">\-]+&quot;</span>  <span class="c1"># partie locale étendue</span>
+            <span class="sa">r</span><span class="s2">&quot;(?:\.[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~&lt;&gt;()\[\]</span><span class="se">\\</span><span class="s2">:;,@</span><span class="se">\&quot;</span><span class="s2">\-]+)*&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;|&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|</span><span class="se">\\</span><span class="s2">[\x01-\x09\x0b\x0c\x0e-\x7f])*</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
             <span class="sa">r</span><span class="s2">&quot;)&quot;</span>
             <span class="sa">r</span><span class="s2">&quot;@&quot;</span>
             <span class="sa">r</span><span class="s2">&quot;(?:&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;(?:[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-](?:[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-]*[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-])?\.)*&quot;</span>  
-                <span class="sa">r</span><span class="s2">&quot;[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-](?:[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-]*[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-])?&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)</span><span class="si">{3}</span><span class="s2">&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|</span><span class="se">\\</span><span class="s2">[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;(?:[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-](?:[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-]*[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-])?\.)*&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-](?:[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-]*[a-z0-9*&lt;&gt;()\[\]!#$%&amp;&#39;+=?^_`{|}~-])?&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.)</span><span class="si">{3}</span><span class="s2">&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:&quot;</span>
+            <span class="sa">r</span><span class="s2">&quot;(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|</span><span class="se">\\</span><span class="s2">[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]&quot;</span>
             <span class="sa">r</span><span class="s2">&quot;)&quot;</span>
         <span class="p">)</span>
         <span class="c1"># needs a comma  or \r to match. If it&#39;s in a middle of a phrase it won&#39;t match</span>
@@ -2277,7 +2283,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_position_conflicts</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hide text using regular expression</span>
 <span class="sd">        :param text: text to anonymize</span>
@@ -2369,7 +2375,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
 
 <h3 id="incognito_anonymizer.analyzer.RegexStrategy.analyze" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -2387,7 +2393,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hide text using regular expression</span>
 <span class="sd">    :param text: text to anonymize</span>
