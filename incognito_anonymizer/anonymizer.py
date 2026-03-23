@@ -40,7 +40,7 @@ class Anonymizer:
         self._infos = None
         self._position = []
         self._mask = mask.PlaceholderStrategy()
-        self._analyzers = set()
+        self._analyzers = []
         self._annotator = None
 
     def open_text_file(self, path: str) -> str:
@@ -82,6 +82,7 @@ class Anonymizer:
         :param infos: PersonalInfo
         """
         self._infos = infos
+        return infos
 
     def set_info_from_dict(self, **kwargs):
         """
@@ -101,10 +102,8 @@ class Anonymizer:
             for k, v in kwargs.items()
         }
         info_obj = PersonalInfo(**clean_data)
-        self.set_info(info_obj)
-        for key, value in vars(info_obj).items():
-            setattr(self, key, value)
-        return self
+        self._infos = info_obj
+        return info_obj
 
     def add_analyzer(self, name: str):
         """
@@ -115,7 +114,8 @@ class Anonymizer:
         """
         if name in self.ANALYZERS:
             analyzer = self.ANALYZERS.get(name)
-            self._analyzers.add(analyzer)
+            if analyzer not in self._analyzers:
+                self._analyzers.append(analyzer)
         else:
             raise Exception(f"{name} analyzer doesn't exist")
 
@@ -142,7 +142,7 @@ class Anonymizer:
         else:
             raise Exception(f"{name} annotator doesn't exist")
 
-    def anonymize(self, text: str) -> str:
+    def anonymize(self, text: str, infos: PersonalInfo = None) -> str:
         """
         Global function to anonymise a text base on the choosen strategies
 
@@ -150,15 +150,12 @@ class Anonymizer:
         :returns: anonimized text
         """
         if not text:
-            text = "NaN"
-        spans = {}
+            return "NaN"
+        resolved_infos = infos if infos is not None else self._infos
+        anonymized_text = text
         for strategy in self._analyzers:
-            strategy.info = self._infos
-            span = strategy.analyze(text=text)
-            spans.update(span)
-            anonymized_text = self._mask.mask(text, spans)
-            text = anonymized_text
-            spans = {}
+            spans = strategy.analyze(text=anonymized_text, info=resolved_infos)
+            anonymized_text = self._mask.mask(anonymized_text, spans)
         return anonymized_text
 
     def annotate(self, text: str) -> str:

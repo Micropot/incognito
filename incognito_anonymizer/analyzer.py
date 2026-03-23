@@ -22,7 +22,7 @@ class PersonalInfo(BaseModel):
 class AnalyzerStrategy:
     """Constructeur de la Class Strategy"""
 
-    def analyze(text):
+    def analyze(text: str, info: PersonalInfo = None):
         raise NotImplementedError()
 
 
@@ -30,7 +30,7 @@ class PiiStrategy(AnalyzerStrategy):
     """Detect personal infos"""
 
     def __init__(self):
-        self.info: PersonalInfo = None
+        pass
 
     def hide_by_keywords(
         self, text: str, keywords: Iterable[Tuple[str, str]]
@@ -77,33 +77,33 @@ class PiiStrategy(AnalyzerStrategy):
             result[key] = replacement
         return result
 
-    def analyze(self, text: str) -> str:
+    def analyze(self, text: str, info: PersonalInfo = None) -> str:
         """
         Hide specific words based on keywords
 
         :param text: text to anonymize
         """
         keywords: tuple
-        if isinstance(self.info, PersonalInfo):
-            keywords = (
-                (self.info.first_name, "<NAME>"),
-                (self.info.last_name, "<NAME>"),
-                (self.info.birth_name, "<NAME>"),
-                (self.info.ipp, "<IPP>"),
-                (self.info.iep, "<IEP>"),
-                (self.info.postal_code, "<CODE_POSTAL>"),
-                (self.info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%m %d %Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
-                (self.info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
-                (self.info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
-                (self.info.adress, "<ADRESSE>"),
-            )
-
-        return self.hide_by_keywords(
-            text, [(info, tag) for info, tag in keywords if info]
+        if not isinstance(info, PersonalInfo):
+            print("info must be a Personnal info type. Returning empty dict instead.")
+            return {}
+        keywords = (
+            (info.first_name, "<NAME>"),
+            (info.last_name, "<NAME>"),
+            (info.birth_name, "<NAME>"),
+            (info.ipp, "<IPP>"),
+            (info.iep, "<IEP>"),
+            (info.postal_code, "<CODE_POSTAL>"),
+            (info.birthdate.strftime("%m/%d/%Y"), "<DATE>"),
+            (info.birthdate.strftime("%m %d %Y"), "<DATE>"),
+            (info.birthdate.strftime("%m:%d:%Y"), "<DATE>"),
+            (info.birthdate.strftime("%m-%d-%Y"), "<DATE>"),
+            (info.birthdate.strftime("%Y-%m-%d"), "<DATE>"),
+            (info.birthdate.strftime("%d/%m/%Y"), "<DATE>"),
+            (info.adress, "<ADRESSE>"),
         )
+
+        return self.hide_by_keywords(text, [(k, t) for k, t in keywords if k])
 
 
 class RegexStrategy(AnalyzerStrategy):
@@ -131,6 +131,26 @@ class RegexStrategy(AnalyzerStrategy):
 
         self.email_pattern = r"(?i)(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
 
+<<<<<<< Updated upstream
+=======
+        self.email_pattern = (
+            r"(?i)"
+            r"(?:"
+            r"[a-z0-9!#$%&'*+/=?^_`{|}~<>()\[\]\\:;,@\"\-]+"  # partie locale étendue
+            r"(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~<>()\[\]\\:;,@\"\-]+)*"
+            r"|"
+            r"\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\""
+            r")"
+            r"@"
+            r"(?:"
+            r"(?:[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-](?:[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-]*[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-])?\.)*"
+            r"[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-](?:[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-]*[a-z0-9*<>()\[\]!#$%&'+=?^_`{|}~-])?"
+            r"|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
+            r"(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:"
+            r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]"
+            r")"
+        )
+>>>>>>> Stashed changes
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
         self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|cité|cite|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
 
@@ -226,7 +246,7 @@ class RegexStrategy(AnalyzerStrategy):
         self.position = self._resolve_position_conflicts(result)
         return self.position
 
-    def analyze(self, text: str):
+    def analyze(self, text: str, info: PersonalInfo = None):
         """
         Hide text using regular expression
         :param text: text to anonymize
@@ -298,3 +318,95 @@ class RegexStrategy(AnalyzerStrategy):
             del result[key]
 
         return result
+<<<<<<< Updated upstream
+=======
+
+
+class LossyStrategy(RegexStrategy):
+    """
+    Find word position based on regex
+
+    :param text: text to anonymise
+    :returns: List of tuples where each tuple contains:
+            - A tuple with the start and end positions of the word.
+            - The replacement string.
+    .. warning::
+    This strategy is intentionally lossy: it trades recall precision for
+    maximum anonymization coverage. Information loss is expected and assumed.
+    """
+
+    def __init__(self):
+        super().__init__
+        self.LOSSY_PATTERNS = {
+            # DUPONT Martin ou DUPONT de TOTO Martin ou DUPONT-TOTO Martin
+            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            # Martin DUPONT ou Martin DUPONT de TOTO ou Martion DUPONT-TOTO
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}": "<NAME>",
+            # J. Pierre ou J.P. Marie
+            r"([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}\s*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+        }
+
+    def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
+        """
+        Analyze text using an aggressive uppercase-based matching strategy.
+
+        :param text: Text to anonymize.
+        :returns: Dictionary mapping span tuples to replacement strings.
+
+        .. warning::
+            This strategy can suppress legitimate content. Any token matching
+            the uppercase pattern will be replaced, regardless of whether it
+            is actually a personal identifier.
+        """
+
+        self.position = {}
+
+        for pattern, repl in self.LOSSY_PATTERNS.items():
+            matches_iter = list(regex.finditer(pattern, text, overlapped=True))
+            if not matches_iter:
+                continue
+
+            spans = [match.span() for match in matches_iter]
+            filtered_spans = self._remove_overlapping_spans(spans)
+            existing_keys = list(self.position.keys())
+
+            overlapping_keys = [
+                key
+                for key in existing_keys
+                if any(span in key for span in filtered_spans)
+                or any(k in filtered_spans for k in key)
+            ]
+
+            if overlapping_keys:
+                combined_key = tuple(
+                    sorted(
+                        set(span for key in overlapping_keys for span in key).union(
+                            filtered_spans
+                        )
+                    )
+                )
+                for key in overlapping_keys:
+                    del self.position[key]
+                self.position[combined_key] = repl
+            else:
+                self.position[tuple(filtered_spans)] = repl
+
+        self.position = self._resolve_position_conflicts(self.position)
+        return self.position
+
+    def analyze(self, text: str, info: PersonalInfo = None):
+        """
+        Hide text using regular expression
+        :param text: text to anonymize
+        """
+        warnings.warn(
+            "LossyStrategy.analyze() uses aggressive pattern matching that may cause "
+            "unintended information loss. Tokens matching the uppercase pattern will be "
+            "replaced unconditionally, including potential false positives such as "
+            "acronyms, place names, or medical terminology. "
+            "Use a more precise strategy if data integrity is critical.",
+            UserWarning,
+            stacklevel=2,
+        )
+        return self.multi_subs_by_regex(text)
+>>>>>>> Stashed changes
