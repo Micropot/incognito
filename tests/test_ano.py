@@ -40,11 +40,16 @@ dataset_regex = {
     "Dr_Prenom_NOM": ("Dr Charle LECLERC", "Dr <NAME>"),
     "Dr_P._P._NOM": ("Dr J.F. LECLERC", "Dr <NAME>"),
     "Dr_P._P._NOM_2": ("Dr J. LECLERC", "Dr <NAME>"),
-    "Dr_P._P._NOM_2": ("Dr J. LECLERC", "Dr <NAME>"),
+    "Dr_P._P._NOM_3": ("Dr J. LECLERC", "Dr <NAME>"),
     "Professeur_P._de_NOM": ("Professeur L. de LALALAND", "Professeur <NAME>"),
     "Professeur_P._du_NOM": ("Professeur L. du LALALAND", "Professeur <NAME>"),
     "Professeur_P._DE_NOM": ("Professeur L. DE LALALAND", "Professeur <NAME>"),
     "Professeur_P._DU_NOM": ("Professeur L. DU LALALAND", "Professeur <NAME>"),
+    "Chef_de_service_P._NOM": ("Chef de service L. LARIDE", "Chef de service <NAME>"),
+    "Cheffe_de_service_P._NOM": (
+        "Cheffe de service L. LARIDE",
+        "Cheffe de service <NAME>",
+    ),
     "Mme_P._NOM": ("Mme C. CCCCC", "Mme <NAME>"),
     "DR._NOM": ("DR. LECLERC", "DR. <NAME>"),
     "PR_NAME": ("PR ABGRAL RONAN", "PR <NAME>"),
@@ -153,11 +158,15 @@ def test_set_annotator_error():
     with pytest.raises(Exception):
         ano.set_annotator("test")
 
+
 dataset_regex = {
     "NOM_Prenom": ("name : DUPONT Jean", "name : <NAME>"),
     "Prenom_NOM": ("name : Jean DUPONT", "name : <NAME>"),
     "N._Prenom": ("name : D. Jean", "name : <NAME>"),
     "N.-N._Prenom": ("name: D.D. Jean", "name: <NAME>"),
+    "N_Prenom": ("L Johan", "<NAME>"),
+    "NOM_Prenom_Composee": ("LARIDE Jean Philippe", "<NAME>"),
+    "Prenom_NOM_appostrophe": ("Jean HOC'H", "<NAME>"),
 }
 
 
@@ -172,5 +181,3 @@ def test_lossy_strategie(input, output):
     ano.add_analyzer("lossy")
     ano.set_mask("placeholder")
     assert ano.anonymize(input) == output
-
-

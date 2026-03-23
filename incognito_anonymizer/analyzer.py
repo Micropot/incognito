@@ -127,7 +127,7 @@ class RegexStrategy(AnalyzerStrategy):
 
         # Mois seul : "juillet 2020" ou juste "juillet"
         self.mois_pattern = rf"\b{mois}(?:[\s]+((?:1[6-9]|[2-9]\d)\d{{2}}))?\b"
-        self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?)"
+        self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?|[Cc]hef(fe)? de service)"
 
         self.email_pattern = (
             r"(?i)"
@@ -337,6 +337,12 @@ class LossyStrategy(RegexStrategy):
             r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}": "<NAME>",
             # J. Pierre ou J.P. Marie
             r"([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}\s*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            # DUPONT Jean-Philippe ou DUPONT Jean Philippe (prénom composé avec ou sans trait d'union)
+            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*(\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*)+": "<NAME>",
+            # L Philippe ou L. Philippe (initiale suivie d'un prénom)
+            r"\b[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.?\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            # Philippe LOC'H (prénom suivi d'un nom avec apostrophe)
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}": "<NAME>",
         }
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
