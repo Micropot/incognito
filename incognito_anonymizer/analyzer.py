@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Dict, Iterable, Optional, Tuple
 
 import regex
+import re
 import warnings
 from flashtext import KeywordProcessor
 from pydantic import BaseModel
@@ -332,19 +333,18 @@ class LossyStrategy(RegexStrategy):
         super().__init__
         self.LOSSY_PATTERNS = {
             # DUPONT Martin ou DUPONT de TOTO Martin ou DUPONT-TOTO Martin
-            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
-            # Martin DUPONT ou Martin DUPONT de TOTO ou Martion DUPONT-TOTO
-            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}": "<NAME>",
+            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            # Martin DUPONT ou Martin DUPONT de TOTO ou Martin DUPONT-TOTO
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*[ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}": "<NAME>",
             # J. Pierre ou J.P. Marie
-            r"([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}\s*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            r"([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){1,3}[ \t]*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
             # DUPONT Jean-Philippe ou DUPONT Jean Philippe (prénom composé avec ou sans trait d'union)
-            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}(\s+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*(\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*)+": "<NAME>",
+            r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*([ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*)+": "<NAME>",
             # L Philippe ou L. Philippe (initiale suivie d'un prénom)
-            r"\b[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.?\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
+            r"\b[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.?[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
             # Philippe LOC'H (prénom suivi d'un nom avec apostrophe)
-            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*\s+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}": "<NAME>",
+            r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*[ \t]+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}": "<NAME>",
         }
-
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
         """
         Analyze text using an aggressive uppercase-based matching strategy.
@@ -359,7 +359,7 @@ class LossyStrategy(RegexStrategy):
         """
 
         self.position = {}
-
+        text = text.replace('\x7f', '')
         for pattern, repl in self.LOSSY_PATTERNS.items():
             matches_iter = list(regex.finditer(pattern, text, overlapped=True))
             if not matches_iter:

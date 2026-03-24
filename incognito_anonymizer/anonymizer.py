@@ -10,7 +10,6 @@ from . import mask
 from . import anotate
 import json
 
-
 class Anonymizer:
     """Anonymization class based on strategies formating"""
 
