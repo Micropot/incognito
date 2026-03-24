@@ -31,7 +31,10 @@ dataset_regex = {
         "name : Interne : <NAME>",
     ),
     "Titre_Interne": ("Interne", "Interne"),
+    "Prenom_:_Prenom": ("Prenom : Georgette", "Prenom : <NAME>"),
     "Docteur_NOM_Prenom": ("Docteur DUPONT Jean", "Docteur <NAME>"),
+    "Docteur_PRENOM_NOM": ("Docteur DUPONT JEAN", "Docteur <NAME>"),
+    "Docteur\n_PRENOM_NOM": ("Docteur\nDUPONT JEAN", "Docteur\n<NAME>"),
     "Monsieur_P._NOM": ("Monsieur J. Jean", "Monsieur <NAME>"),
     "Monsieur_P._NOM_MAJUSCULE": ("Monsieur J. JEAN", "Monsieur <NAME>"),
     "Monsieur_P._NOM_apostrophe": ("Monsieur J. L'Jean", "Monsieur <NAME>"),
@@ -39,6 +42,7 @@ dataset_regex = {
     "Dr_NOM_Prenom": ("Dr LECLERC Charle", "Dr <NAME>"),
     "Dr_Prenom_NOM": ("Dr Charle LECLERC", "Dr <NAME>"),
     "Dr_P._P._NOM": ("Dr J.F. LECLERC", "Dr <NAME>"),
+    "Dr_P._P._Nom": ("Dr J.F. Laclerc", "Dr <NAME>"),
     "Dr_P._P._NOM_2": ("Dr J. LECLERC", "Dr <NAME>"),
     "Dr_P._P._NOM_3": ("Dr J. LECLERC", "Dr <NAME>"),
     "Professeur_P._de_NOM": ("Professeur L. de LALALAND", "Professeur <NAME>"),
@@ -68,6 +72,7 @@ dataset_regex = {
         "Bonjour Monsieur <NAME>, voici son numéro : <NUMBER> et son email <EMAIL>",
     ),
     "née_madame": ("Madame DUPONT Mariane née MORGAT", "Madame <NAME> née <NAME>"),
+    "née_madame_2": ("Nom : DUPONT Mariane née MORGAT", "Nom : <NAME> née <NAME>"),
     "né_monsieur": ("Monsieur J. Jean né LA RUE", "Monsieur <NAME> né <NAME>"),
     "test_None": (None, "NaN"),
     "Prof_NOM_PRENOM": ("Professeur JEAN JEAN", "Professeur <NAME>"),
@@ -80,6 +85,7 @@ dataset_regex = {
     "Date_phrase": ("Brest, le 01/01/2000", "Brest, le <DATE>"),
     "adresse_2": ("155 rue de Brest, 29820, Guilers", "<ADRESSE>"),
     "adresse_3": ("28 RUE DU CHATEAU", "<ADRESSE>"),
+    "adresse_4": ("20, bis rue de la Plage", "20, bis <ADRESSE>"),
     "date_mois": ("8 juillet 2020", "<DATE>"),
     "date_fourchette": ("du 15 au 24 octobre 2015", "du 15 au <DATE>"),
     "ville_date": ("BREST, le 4 Juin 2015", "BREST, le <DATE>"),
@@ -162,10 +168,13 @@ def test_set_annotator_error():
 dataset_regex = {
     "NOM_Prenom": ("name : DUPONT Jean", "name : <NAME>"),
     "Prenom_NOM": ("name : Jean DUPONT", "name : <NAME>"),
+    "Prenom_NOM_2": ("Karine LACUT", "<NAME>"),
+    "Prenom_NOM_3": ("   Jean DUPONT", "   <NAME>"),
     "N._Prenom": ("name : D. Jean", "name : <NAME>"),
     "N.-N._Prenom": ("name: D.D. Jean", "name: <NAME>"),
     "N_Prenom": ("L Johan", "<NAME>"),
     "NOM_Prenom_Composee": ("LARIDE Jean Philippe", "<NAME>"),
+    "NOM_Prenom_Composee_2": ("LA RIDE Jean François", "<NAME>"),
     "Prenom_NOM_appostrophe": ("Jean HOC'H", "<NAME>"),
 }
 
@@ -178,6 +187,28 @@ ids_regex = list(dataset_regex.keys())
 def test_lossy_strategie(input, output):
 
     ano = Anonymizer()
+    ano.add_analyzer("lossy")
+    ano.set_mask("placeholder")
+    assert ano.anonymize(input) == output
+
+
+dataset_regex = {
+    "NOM_Prenom": ("Jeanne ALLEE", "<NAME>"),
+    "word_test": ("l'incapacité de marcher par elle même", "l'incapacité de marcher par elle même"),
+    "Monsieur_NOM_Prenom": ("Monsieur VIDAL Jean", "Monsieur <NAME>"),
+    "medical_sentense": ("Voie orale, pendant 1 Mois", "Voie orale, pendant 1 Mois"),
+}
+
+
+datas_regex = list(dataset_regex.values())
+ids_regex = list(dataset_regex.keys())
+
+
+@pytest.mark.parametrize("input,output", datas_regex, ids=ids_regex)
+def test_full_strategies(input, output):
+
+    ano = Anonymizer()
+    ano.add_analyzer("regex")
     ano.add_analyzer("lossy")
     ano.set_mask("placeholder")
     assert ano.anonymize(input) == output
