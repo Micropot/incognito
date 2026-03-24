@@ -111,6 +111,7 @@ class RegexStrategy(AnalyzerStrategy):
     """Detect word based on regex"""
 
     def __init__(self):
+        super().__init__
         Xxxxx = r"[A-ZÀ-Ÿ]\p{Ll}+"
         XXxX_ = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]"
         XXxX_apostrophe = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*(?:[''][A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*)?"
@@ -331,6 +332,7 @@ class LossyStrategy(RegexStrategy):
 
     def __init__(self):
         super().__init__
+        self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?|[Cc]hef(fe)? de service|[Nn]om :)"
         self.LOSSY_PATTERNS = {
             # DUPONT Martin ou DUPONT de TOTO Martin ou DUPONT-TOTO Martin
             r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
@@ -344,6 +346,21 @@ class LossyStrategy(RegexStrategy):
             r"\b[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.?[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
             # Philippe LOC'H (prénom suivi d'un nom avec apostrophe)
             r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*[ \t]+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}": "<NAME>",
+            # DUPONT Martin ou DUPONT de TOTO Martin
+            rf"(?:{self.title_regex}[ \t\n]+)?([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){"{2,}"}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){{0,3}}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z][a-z-éèçùàâêîôûëïü]{{2,}})*": "<NAME>",
+            # Martin DUPONT
+            rf"(?:{self.title_regex}[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*[ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){{2,}}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){{0,3}}": "<NAME>",
+            # J. Pierre ou J.P. Marie
+            rf"(?:{self.title_regex}[ \t\n]+)?([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.){{1,3}}[ \t]*[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*": "<NAME>",
+            # DUPONT Jean-Philippe
+            rf"(?:{self.title_regex}[ \t\n]+)?([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){{2,}}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){{0,3}}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*([ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*)+": "<NAME>",
+            # L. Philippe
+            rf"(?:{self.title_regex}[ \t\n]+)?\b[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.?[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*": "<NAME>",
+            # Philippe LOC'H
+            rf"(?:{self.title_regex}[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*[ \t]+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){{2,}}": "<NAME>",
+            # B. ALBERT (initiale + point + nom en majuscules)
+            rf"(?:{self.title_regex}[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{{2,}}([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)": "<NAME>",
+
         }
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
         """
