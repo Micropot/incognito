@@ -111,7 +111,7 @@ class RegexStrategy(AnalyzerStrategy):
     """Detect word based on regex"""
 
     def __init__(self):
-        super().__init__
+        super().__init__()
         Xxxxx = r"[A-ZÀ-Ÿ]\p{Ll}+"
         XXxX_ = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]"
         XXxX_apostrophe = r"[A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*(?:[''][A-ZÀ-Ÿ][A-ZÀ-Ÿ\p{Ll}-]*)?"
@@ -159,13 +159,13 @@ class RegexStrategy(AnalyzerStrategy):
         )
         self.PATTERNS = {
             # rf"(?<={self.title_regex})([\s-][A-Z]+)+([\s-][A-Z][a-z]+)+(?![a-z])": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<LN0>[A-ZÀ-Ÿ][A-ZÀ-Ÿ](?:{sep}(?:ep[.]|de|[A-ZÀ-Ÿ]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-ZÀ-Ÿ][A-ZÀ-Ÿ]+(?:{sep}(?:ep[.]|de|[A-ZÀ-Ÿ]+))*)": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<FN0>[A-ZÀ-Ÿ][.])\s+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
-            rf"(?<={self.title_regex}[ \n]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?:de |d'|du |des )?(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<LN0>[A-ZÀ-Ÿ][A-ZÀ-Ÿ](?:{sep}(?:ep[.]|de|[A-ZÀ-Ÿ]+))*)[ ]+(?P<FN0>{Xxxxx}(?:{sep}{Xxxxx})*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<FN1>{Xxxxx}(?:{sep}{Xxxxx})*)[ ]+(?P<LN1>[A-ZÀ-Ÿ][A-ZÀ-Ÿ]+(?:{sep}(?:ep[.]|de|[A-ZÀ-Ÿ]+))*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<LN3>{Xxxxx}(?:(?:-|[ ]de[ ]|[ ]ep[.][ ]){Xxxxx})*)[ ]+(?P<FN2>{Xxxxx}(?:-{Xxxxx})*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<LN2>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<FN0>[A-ZÀ-Ÿ][.])[ \t]+(?P<LN0>{XXxX_}+(?:{sep}{XXxX_}+)*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
+            rf"(?P<TITLE>{self.title_regex}[ \n]+)(?P<FN0>[A-ZÀ-Ÿ][.](?:[A-ZÀ-Ÿ][.])*)\s+(?:de |d'|du |des )?(?P<LN0>{XXxX_apostrophe}+(?:{sep}{XXxX_apostrophe}+)*)": "<NAME>",
             # r"[12]\s*[0-9]{2}\s*(0[1-9]|1[0-2])\s*(2[AB]|[0-9]{2})\s*[0-9]{3}\s*[0-9]{3}\s*(?:\(?([0-9]{2})\)?)?": "<NIR>",
             # r"(?:(?:\+|00)33[\s.-]*|0)[\s.-]*[1-9](?:[\s.-]*\d{2}){4}": "<PHONE>",
             self.date_litteral_full: "<DATE>",  # 8 juillet 2020  ← plus spécifique en premier
@@ -180,6 +180,11 @@ class RegexStrategy(AnalyzerStrategy):
             self.fast_adresse_pattern: "<ADRESSE>",
             # r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s": "<NAME>",
         }
+
+        
+    def _replace(self, match):
+        title = match.group('TITLE') if 'TITLE' in match.groupdict() else ''
+        return title + "<NAME>"
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
         """
@@ -198,8 +203,19 @@ class RegexStrategy(AnalyzerStrategy):
             if not matches_iter:
                 continue
 
-            spans = [match.span() for match in matches_iter]
-
+            # spans = [match.span() for match in matches_iter]
+            spans = []
+            for match in matches_iter:
+                groups = match.groupdict()
+                # Si on a des groupes nommés LN/FN, on prend uniquement leur span
+                name_groups = [k for k in groups if (k.startswith('LN') or k.startswith('FN')) and groups[k] is not None]
+                if name_groups:
+                    # Prendre le span englobant tous les groupes LN/FN
+                    start = min(match.start(g) for g in name_groups)
+                    end = max(match.end(g) for g in name_groups)
+                    spans.append((start, end))
+                else:
+                    spans.append(match.span())
             # Dédoublonnage : pour les spans overlappants, garder uniquement le plus long
             filtered_spans = self._remove_overlapping_spans(spans)
             existing_keys = list(self.position.keys())
@@ -331,8 +347,8 @@ class LossyStrategy(RegexStrategy):
     """
 
     def __init__(self):
-        super().__init__
-        self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?|[Cc]hef(fe)? de service|[Nn]om :)"
+        super().__init__()
+        # self.title_regex = r"([Dd][Rr][.]?|[Dd]octeur|[mM]r?[.]?|[Ii]nterne[ ]*:?|INT|[Ee]xterne[ ]*:?|[Mm]onsieur|[Mm]adame|[Rr].f.rent[ ]*:?|[P][Rr][.]?|[Pp]rofesseure|[Pp]rofesseur|[Mm]me[.]?|[Ee]nfant|[Mm]lle|[Nn]ée?|[Cc]hef(fe)? de service|[Nn]om :)"
         self.LOSSY_PATTERNS = {
             # DUPONT Martin ou DUPONT de TOTO Martin ou DUPONT-TOTO Martin
             r"([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){0,3}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z][a-z-éèçùàâêîôûëïü]{2,})*": "<NAME>",
