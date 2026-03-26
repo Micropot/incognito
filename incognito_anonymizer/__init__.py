@@ -1,2 +1,2 @@
 from .analyzer import PersonalInfo
-from .anonymizer import Anonymizer
+from .anonymizer import Anonymizer, DetectedEntity

@@ -9,6 +9,15 @@ from . import analyzer
 from . import mask
 from . import anotate
 import json
+from dataclasses import dataclass
+
+@dataclass
+class DetectedEntity:
+    original: str
+    replacement: str
+    type: str
+    start: int
+    end: int
 
 class Anonymizer:
     """Anonymization class based on strategies formating"""
@@ -41,6 +50,7 @@ class Anonymizer:
         self._mask = mask.PlaceholderStrategy()
         self._analyzers = []
         self._annotator = None
+        self._entities: list[DetectedEntity] = []
 
     def open_text_file(self, path: str) -> str:
         """
@@ -150,12 +160,37 @@ class Anonymizer:
         """
         if not text:
             return "NaN"
+    
+        self._entities = []
         resolved_infos = infos if infos is not None else self._infos
         anonymized_text = text
+    
         for strategy in self._analyzers:
             spans = strategy.analyze(text=anonymized_text, info=resolved_infos)
+        
+            for positions, replacement in spans.items():
+                for start, end in positions:
+                    self._entities.append(DetectedEntity(
+                        original=anonymized_text[start:end],
+                        replacement=replacement,
+                        type=replacement.strip("<>"),
+                        start=start,
+                        end=end
+                    ))
+        
             anonymized_text = self._mask.mask(anonymized_text, spans)
+    
+        self._entities.sort(key=lambda e: e.start)
         return anonymized_text
+
+    def get_entities(self) -> list[DetectedEntity]:
+        """
+        Function to get matched entites in anonymisation.
+
+        :returns: DetectedEntity class list
+        """
+        return self._entities
+    
 
     def annotate(self, text: str) -> str:
         """

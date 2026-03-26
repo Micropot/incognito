@@ -188,6 +188,21 @@ The idea is to mask pattern like DUPONT Marc or Marc DUPONT.
 
     It can produce false positive. Be aware that this strategy can can unexpected matched and  loose informations in your text
 
+### Get the matched entities
+If you want to print the matched entities to check what the code did you can use the `get_entities()` function
+
+```python
+
+    ano = Anonymizer()
+    ano.add_analyzer("regex")
+    ano.add_analyzer("lossy")
+    ano.set_mask("placeholder")
+    ano.anonymize(input)
+    entities = ano.get_entities()
+```
+The output will match this kind of list :
+`[ {"original": "DUPONT", "replacement": "<NOM>", "type": "NOM", "start": 42, "end": 49}, {"original": "01/01/1970", "replacement": "<DATE>", "type": "DATE", "start": 80, "end": 90}, ]`
+
 For more details, see the [`LossyStrategy` class](incognito/analyzer.py)
 ---
 

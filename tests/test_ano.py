@@ -1,4 +1,5 @@
 from incognito_anonymizer import Anonymizer
+from incognito_anonymizer import DetectedEntity
 from incognito_anonymizer import analyzer
 from incognito_anonymizer import mask
 from incognito_anonymizer import PersonalInfo
@@ -212,3 +213,37 @@ def test_full_strategies(input, output):
     ano.add_analyzer("lossy")
     ano.set_mask("placeholder")
     assert ano.anonymize(input) == output
+
+dataset_entities = {
+    "NOM_Prenom": ("Jeanne ALLEE", [
+        DetectedEntity(original="Jeanne ALLEE", replacement="<NAME>", type="NAME", start=0, end=12)
+    ]),
+    "Prenom_NOM": ("Jean DUPONT", [
+        DetectedEntity(original="Jean DUPONT", replacement="<NAME>", type="NAME", start=0, end=11)
+    ]),
+    "Titre_NOM_Prenom": ("Dr DUPONT Jean", [
+        DetectedEntity(original="DUPONT Jean", replacement="<NAME>", type="NAME", start=3, end=14)
+    ]),
+    "DATE": ("le 8 juillet 2020", [
+        DetectedEntity(original="8 juillet 2020", replacement="<DATE>", type="DATE", start=3, end=17)
+    ]),
+    "EMAIL": ("contact: test@example.com", [
+        DetectedEntity(original="test@example.com", replacement="<EMAIL>", type="EMAIL", start=9, end=25)
+    ]),
+    "multiple": ("Dr Jean DUPONT né le 01/01/1970", [
+        DetectedEntity(original="Jean DUPONT", replacement="<NAME>", type="NAME", start=3, end=14),
+        DetectedEntity(original="01/01/1970", replacement="<DATE>", type="DATE", start=21, end=31)
+    ]),
+}
+
+datas_entities = list(dataset_entities.values())
+ids_entities = list(dataset_entities.keys())
+
+@pytest.mark.parametrize("input,expected", datas_entities, ids=ids_entities)
+def test_get_entities(input, expected):
+    ano = Anonymizer()
+    ano.add_analyzer("regex")
+    ano.add_analyzer("lossy")
+    ano.set_mask("placeholder")
+    ano.anonymize(input)
+    assert ano.get_entities() == expected
