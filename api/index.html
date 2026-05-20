@@ -1257,11 +1257,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
               <details class="quote">
                 <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
@@ -1364,7 +1360,11 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">440</span>
 <span class="normal">441</span>
 <span class="normal">442</span>
-<span class="normal">443</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LossyStrategy</span><span class="p">(</span><span class="n">RegexStrategy</span><span class="p">):</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LossyStrategy</span><span class="p">(</span><span class="n">RegexStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find word position based on regex</span>
 
@@ -1394,7 +1394,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="c1"># Philippe LOC&#39;H (prénom suivi d&#39;un nom avec apostrophe)</span>
             <span class="sa">r</span><span class="s2">&quot;[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*[ \t]+([A-Z][A-Z&#39;-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
             <span class="c1"># DUPONT Martin ou DUPONT de TOTO Martin</span>
-            <span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span><span class="si">}</span><span class="s2">[ \t\n]+)?([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)</span><span class="si">{</span><span class="s2">&quot;{2,}&quot;</span><span class="si">}</span><span class="s2">([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la))</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">(-[A-Z][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">)*&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
+            <span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span><span class="si">}</span><span class="s2">[ \t\n]+)?([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)</span><span class="si">{</span><span class="s1">&#39;{2,}&#39;</span><span class="si">}</span><span class="s2">([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la))</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">(-[A-Z][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">)*&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
             <span class="c1"># Martin DUPONT</span>
             <span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span><span class="si">}</span><span class="s2">[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">)*[ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la))</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
             <span class="c1"># J. Pierre ou J.P. Marie</span>
@@ -1407,8 +1407,8 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span><span class="si">}</span><span class="s2">[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">)*[ \t]+([A-Z][A-Z&#39;-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
             <span class="c1"># B. ALBERT (initiale + point + nom en majuscules)</span>
             <span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title_regex</span><span class="si">}</span><span class="s2">[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]</span><span class="se">{{</span><span class="s2">2,</span><span class="se">}}</span><span class="s2">([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span><span class="p">,</span>
-
         <span class="p">}</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Analyze text using an aggressive uppercase-based matching strategy.</span>
@@ -1423,7 +1423,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x7f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\x7f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOSSY_PATTERNS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">matches_iter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">regex</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overlapped</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">matches_iter</span><span class="p">:</span>
@@ -1505,11 +1505,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">433</span>
 <span class="normal">434</span>
 <span class="normal">435</span>
 <span class="normal">436</span>
@@ -1519,7 +1515,11 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">440</span>
 <span class="normal">441</span>
 <span class="normal">442</span>
-<span class="normal">443</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hide text using regular expression</span>
 <span class="sd">    :param text: text to anonymize</span>
@@ -1562,11 +1562,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
@@ -1608,7 +1604,11 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span>
-<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze text using an aggressive uppercase-based matching strategy.</span>
 
@@ -1622,7 +1622,7 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x7f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\x7f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOSSY_PATTERNS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">matches_iter</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">regex</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overlapped</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">matches_iter</span><span class="p">:</span>
@@ -2317,7 +2317,11 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
-<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegexStrategy</span><span class="p">(</span><span class="n">AnalyzerStrategy</span><span class="p">):</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegexStrategy</span><span class="p">(</span><span class="n">AnalyzerStrategy</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Detect word based on regex&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2359,10 +2363,10 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="sa">r</span><span class="s2">&quot;)&quot;</span>
         <span class="p">)</span>
         <span class="c1"># needs a comma  or \r to match. If it&#39;s in a middle of a phrase it won&#39;t match</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">adresse_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ&#39;\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ&#39;\-\.]+){0,10},?\s*\d</span><span class="si">{5}</span><span class="s2">,?\s*[a-zéèàùâêîôûïëüçæœ&#39;\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ&#39;\-\.]+){0,5}(?=\s*[,\{\n]|$)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adresse_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|square|résidence|residence|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ&#39;\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ&#39;\-\.]+){0,10},?\s*\d</span><span class="si">{5}</span><span class="s2">,?\s*[a-zéèàùâêîôûïëüçæœ&#39;\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ&#39;\-\.]+){0,5}(?=\s*[,\{\n]|$)&quot;</span>
 
         <span class="c1"># INFO: Non restrictive regexp for matching 3 word after a street description.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fast_adresse_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|place|square|villa|passage|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fast_adresse_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|square|villa|passage|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">zip_city_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">r</span><span class="s2">&quot;\b(\d</span><span class="si">{5}</span><span class="s2">)\s+([A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ][A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ\s\-]+)\b&quot;</span>
@@ -2391,9 +2395,8 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="c1"># r&quot;[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s&quot;: &quot;&lt;NAME&gt;&quot;,</span>
         <span class="p">}</span>
 
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;TITLE&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;TITLE&#39;</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;TITLE&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;TITLE&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="k">return</span> <span class="n">title</span> <span class="o">+</span> <span class="s2">&quot;&lt;NAME&gt;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
@@ -2418,7 +2421,12 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
             <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches_iter</span><span class="p">:</span>
                 <span class="n">groups</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
                 <span class="c1"># Si on a des groupes nommés LN/FN, on prend uniquement leur span</span>
-                <span class="n">name_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">groups</span> <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;LN&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;FN&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+                <span class="n">name_groups</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">k</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">groups</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;LN&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;FN&quot;</span><span class="p">))</span>
+                    <span class="ow">and</span> <span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">]</span>
                 <span class="k">if</span> <span class="n">name_groups</span><span class="p">:</span>
                     <span class="c1"># Prendre le span englobant tous les groupes LN/FN</span>
                     <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">name_groups</span><span class="p">)</span>
@@ -2574,12 +2582,12 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">PersonalInfo</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hide text using regular expression</span>
 <span class="sd">    :param text: text to anonymize</span>
@@ -2611,7 +2619,8 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>incognito_anonymizer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+<span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
@@ -2682,7 +2691,11 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
 <span class="normal">257</span>
 <span class="normal">258</span>
 <span class="normal">259</span>
-<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">multi_subs_by_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find word position based on regex</span>
 
@@ -2704,7 +2717,12 @@ maximum anonymization coverage. Information loss is expected and assumed.</p>
         <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches_iter</span><span class="p">:</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
             <span class="c1"># Si on a des groupes nommés LN/FN, on prend uniquement leur span</span>
-            <span class="n">name_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">groups</span> <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;LN&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;FN&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="n">name_groups</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">k</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">groups</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;LN&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;FN&quot;</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">]</span>
             <span class="k">if</span> <span class="n">name_groups</span><span class="p">:</span>
                 <span class="c1"># Prendre le span englobant tous les groupes LN/FN</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">name_groups</span><span class="p">)</span>
