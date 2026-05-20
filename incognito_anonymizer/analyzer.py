@@ -149,10 +149,10 @@ class RegexStrategy(AnalyzerStrategy):
             r")"
         )
         # needs a comma  or \r to match. If it's in a middle of a phrase it won't match
-        self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|place|square|résidence|residence|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
+        self.adresse_pattern = r"(?i)\d{1,4}\s*(?:bis|ter|quater)?\s+(?:rue|avenue|av\.|boulevard|bd\.?|impasse|allée|allee|chemin|route|square|résidence|residence|hameau|lieu[- ]dit|voie|passage|villa|domaine|lotissement|parc|traverse|ruelle|sentier|cours|quai|esplanade)\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-z0-9éèàùâêîôûïëüçæœ'\-\.]+){0,10},?\s*\d{5},?\s*[a-zéèàùâêîôûïëüçæœ'\-\.]+(?:\s+[a-zéèàùâêîôûïëüçæœ'\-\.]+){0,5}(?=\s*[,\{\n]|$)"
 
         # INFO: Non restrictive regexp for matching 3 word after a street description.
-        self.fast_adresse_pattern = r"(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|place|square|villa|passage|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}"
+        self.fast_adresse_pattern = r"(?i)(?:\d+\s+)?(rue|avenue|av|boulevard|bd|bld|allée|allee|impasse|chemin|route|square|villa|passage|domaine|hameau|lotissement|résidence|residence|quartier|sentier|traverse|cours|quai|esplanade|promenade|rond[- ]point)\b(?:\s+\S+){1,3}"
 
         self.zip_city_name = (
             r"\b(\d{5})\s+([A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ][A-ZÀÂÉÈÊËÎÏÔÙÛÜÇ\s\-]+)\b"
@@ -181,9 +181,8 @@ class RegexStrategy(AnalyzerStrategy):
             # r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{4,}\s+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{4,}\s": "<NAME>",
         }
 
-        
     def _replace(self, match):
-        title = match.group('TITLE') if 'TITLE' in match.groupdict() else ''
+        title = match.group("TITLE") if "TITLE" in match.groupdict() else ""
         return title + "<NAME>"
 
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
@@ -208,7 +207,12 @@ class RegexStrategy(AnalyzerStrategy):
             for match in matches_iter:
                 groups = match.groupdict()
                 # Si on a des groupes nommés LN/FN, on prend uniquement leur span
-                name_groups = [k for k in groups if (k.startswith('LN') or k.startswith('FN')) and groups[k] is not None]
+                name_groups = [
+                    k
+                    for k in groups
+                    if (k.startswith("LN") or k.startswith("FN"))
+                    and groups[k] is not None
+                ]
                 if name_groups:
                     # Prendre le span englobant tous les groupes LN/FN
                     start = min(match.start(g) for g in name_groups)
@@ -363,7 +367,7 @@ class LossyStrategy(RegexStrategy):
             # Philippe LOC'H (prénom suivi d'un nom avec apostrophe)
             r"[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{2,})*[ \t]+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){2,}": "<NAME>",
             # DUPONT Martin ou DUPONT de TOTO Martin
-            rf"(?:{self.title_regex}[ \t\n]+)?([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){"{2,}"}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){{0,3}}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z][a-z-éèçùàâêîôûëïü]{{2,}})*": "<NAME>",
+            rf"(?:{self.title_regex}[ \t\n]+)?([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){'{2,}'}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){{0,3}}[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z][a-z-éèçùàâêîôûëïü]{{2,}})*": "<NAME>",
             # Martin DUPONT
             rf"(?:{self.title_regex}[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*[ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){{2,}}([ \t]+([A-Z][A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*|de|du|des|von|van|le|la)){{0,3}}": "<NAME>",
             # J. Pierre ou J.P. Marie
@@ -376,8 +380,8 @@ class LossyStrategy(RegexStrategy):
             rf"(?:{self.title_regex}[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}}(-[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ][a-z-éèçùàâêîôûëïü]{{2,}})*[ \t]+([A-Z][A-Z'-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*){{2,}}": "<NAME>",
             # B. ALBERT (initiale + point + nom en majuscules)
             rf"(?:{self.title_regex}[ \t\n]+)?[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]\.[ \t]+[A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]{{2,}}([A-Z-ÉÈÀÂÊÎÔÛËÏÜÙÇ]*)": "<NAME>",
-
         }
+
     def multi_subs_by_regex(self, text: str) -> Dict[Tuple[Tuple[int, int]], str]:
         """
         Analyze text using an aggressive uppercase-based matching strategy.
@@ -392,7 +396,7 @@ class LossyStrategy(RegexStrategy):
         """
 
         self.position = {}
-        text = text.replace('\x7f', '')
+        text = text.replace("\x7f", "")
         for pattern, repl in self.LOSSY_PATTERNS.items():
             matches_iter = list(regex.finditer(pattern, text, overlapped=True))
             if not matches_iter:
